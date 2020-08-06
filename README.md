@@ -2,14 +2,14 @@
 
 ## Introduction
 
-This Web-Application provides access to all Adabas REST server tasks and data.
-All pages contain REST api web URL's used to retrieve the JSON content. The received data is displayed on the web page. Actions are added to the web page as well.
+This Web-Application provides access to Adabas REST server tasks and data.
+The pages contain REST api web URL's used to retrieve the JSON content. The received data is displayed on the web page. Actions are added to the web page as well.
 
 ![Login screen](image/login_screen.png)
 
 ## Installation
 
-The Adabas REST WebApp can be compiled using the NPM and Node infrastructure. NPM third party packages needed to be installed first. Following command will install the corresponding packages in `node_modules`:
+The Adabas REST web application can be compiled using the NPM and Node infrastructure. NPM third party packages needed to be installed first. Following command will install the corresponding packages in `node_modules`:
 
 ```sh
 npm install
@@ -27,15 +27,15 @@ The final Web-Application is located in the `dist` directory.
 
 The example consists out of three parts
 
-1. the web application provides access to Adabas data. The Adabas data access can use the Adabas Map long name which maps classic database reference to long name representation. Alternatively the usage of classic database id and short name reference can be used as well.
+1. the web application provides access to Adabas data. The Adabas data access can use the Adabas Map long name which maps classic database reference to long name representation. Alternatively the usage of classic database id and short name references can be used as well.
 2. Adabas administration tasks and monitoring access is possible. The creation of Adabas databases and maintaining Adabas parameters and resources are possible. Various monitor data can be requested.
 3. the Adabas REST server provides the start of jobs inside the installation of Adabas. The scripts defined inside the job list.
 
-Beside the main topics above a number of short data-access example pages are included in the Web application. Large objects or Unicode access to the Adabas database are contained in the Web application.
+Beside the main topics above, a number of short data-access example pages are included in the Web application. Large objects or Unicode access to the Adabas database are contained in the Web application.
 
-Nearly all pages provide the URL query call and the JSON response output in the corresponding `JSON response` tab.
+Nearly all pages display the URL query call and the JSON response output in the corresponding `JSON response` tab.
 
-A menu entry provides the Swagger API of Adabas REST server which can be used to get an overview of available Adabas REST operations.
+A menu entry provides the Swagger API web page of Adabas REST server which can be used to get an overview of available Adabas REST operations.
 
 ### Adabas data access
 
@@ -53,13 +53,13 @@ Adabas data records can be modified using the `Modify record` page.
 
 Inside the `Database administration` menu entry the corresponding list of Adabas databases can be viewed. It is possible to administrate and monitor various operation on the database. Dependent on the online state some actions are invisible.
 
+**Please keep in mind, that shutdown and delete operations and modifications are done on Adabas databases!!!!!**
+
 ![Database list](image/databases_list.png)
 
 The start and stop of the Adabas databases is initiated in background. Please have a look into the Adabas nucleus log to see the current state. The Adabas databases have a number of tasks which are displayed using the corresponding menues.
 
 Various different monitor tasks are updated periodically. Start and stop operations are called directly.
-
-**Please keep in mind, that delete operations and modifications are done on Adabas databases!!!!!**
 
 #### Monitoring
 
