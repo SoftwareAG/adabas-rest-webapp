@@ -8,7 +8,7 @@ node('docker-builds') {
        ], doGenerateSubmoduleConfigurations: false, extensions: [
          [$class: 'CleanBeforeCheckout']
        ], submoduleCfg: [], userRemoteConfigs: [
-         [url: 'https://softwareag.com/Adabas/adabas_rest_page.git']
+         [url: 'https://github.com/SoftwareAG/adabas-rest-webapp.git']
        ]])
     }
     docker.image('node:14.5.0-alpine').inside {
