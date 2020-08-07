@@ -2,75 +2,75 @@
 
 ## Introduction
 
-This Web-Application provides access to Adabas REST server tasks and data.
-The pages contain REST api web URL's used to retrieve the JSON content. The received data is displayed on the web page. Actions are added to the web page as well.
+This Web Application provides access to Adabas REST server tasks and data.
+The pages contain REST API web URLs used to retrieve the JSON content. The received data is displayed on the web page. Actions are added to the web page as well.
 
 ![Login screen](image/login_screen.png)
 
 ## Installation
 
-The Adabas REST web application can be compiled using the NPM and Node infrastructure. NPM third party packages needed to be installed first. Following command will install the corresponding packages in `node_modules`:
+The Adabas REST web application can be compiled using the NPM and Node infrastructure. NPM third party packages need to be installed first. The following command will install the corresponding packages in `node_modules`:
 
 ```sh
 npm install
 ```
 
-To final compile the web application the distribution need to be build using following command:
+To finally compile the web application, the distribution needs to be built using the following command:
 
 ```sh
 npm run build
 ```
 
-The final Web-Application is located in the `dist` directory.
+The final Web Application is located in the `dist` directory.
 
 ## Usage
 
-The example consists out of three parts
+The example consists of three parts:
 
-1. the web application provides access to Adabas data. The Adabas data access can use the Adabas Map long name which maps classic database reference to long name representation. Alternatively the usage of classic database id and short name references can be used as well.
+1. The web application provides access to Adabas data. The Adabas data access can use the Adabas Map long name which maps a classic database reference to a long name representation. Alternatively, classic database IDs and short name references can be used.
 2. Adabas administration tasks and monitoring access is possible. The creation of Adabas databases and maintaining Adabas parameters and resources are possible. Various monitor data can be requested.
-3. the Adabas REST server provides the start of jobs inside the installation of Adabas. The scripts defined inside the job list.
+3. The Adabas REST server provides the possibility to start jobs inside the Adabas installation. The scripts are defined in the job list.
 
-Beside the main topics above, a number of short data-access example pages are included in the Web application. Large objects or Unicode access to the Adabas database are contained in the Web application.
+Beside the main topics above, a number of short data access example pages are included in the Web application. Large objects and Unicode access to the Adabas database are contained in the Web application.
 
 Nearly all pages display the URL query call and the JSON response output in the corresponding `JSON response` tab.
 
-A menu entry provides the Swagger API web page of Adabas REST server which can be used to get an overview of available Adabas REST operations.
+A menu entry provides the Swagger API web page of the Adabas REST server which can be used to get an overview of the available Adabas REST operations.
 
 ### Adabas data access
 
-Inside the `Adabas Data access` menu you can access the Adabas example page using Adabas Map references. The Adabas Map administration is done using the `Adabas Client for Java` product delivered by Software AG. The Software AG Adabas Data Designer manage creation, import from various import formats and other administration of Adabas Maps.
+In the `Adabas Data access` menu you can access the Adabas example page using Adabas Map references. The Adabas Map administration is done using the `Adabas Client for Java` product delivered by Software AG. The Software AG Adabas Data Designer manages creation, import from various import formats and other administration of Adabas Maps.
 
-The Data access web page contains a number of search parameters like search query, descriptor read or sort criteria.
+The Data access web page contains a number of search parameters like search query, descriptor read and sort criteria.
 
-In addition the Adabas classic way to access Adabas data is provided as well. In the classic Adabas data access you need to define the Adabas database id and the Adabas file. The corresponding field list and possible descriptors are selectable. Press `Query Data` to request the record result.
+In addition, the Adabas classic way of accessing Adabas data is provided. In the classic Adabas data access you need to define the Adabas database ID and the Adabas file. The corresponding field list and possible descriptors are selectable. Press `Query Data` to request the record result.
 
-To get a deep insight into the Adabas Map metadata it can be evaluated using the `Adabas Map Metadata` entry.
+To get a deep insight into the Adabas Map metadata, it can be evaluated using the `Adabas Map Metadata` entry.
 
 Adabas data records can be modified using the `Modify record` page.
 
 ### Adabas administration and monitoring
 
-Inside the `Database administration` menu entry the corresponding list of Adabas databases can be viewed. It is possible to administrate and monitor various operation on the database. Dependent on the online state some actions are invisible.
+In the `Database administration` menu entry the corresponding list of Adabas databases can be viewed. It is possible to administrate and monitor various operations on the database. Depending on the online state, some actions are invisible.
 
-**Please keep in mind, that shutdown and delete operations and modifications are done on Adabas databases!!!!!**
+**Please keep in mind that shutdown and delete operations and modifications are done on Adabas databases!!!!!**
 
 ![Database list](image/databases_list.png)
 
-The start and stop of the Adabas databases is initiated in background. Please have a look into the Adabas nucleus log to see the current state. The Adabas databases have a number of tasks which are displayed using the corresponding menues.
+The start and stop of the Adabas databases is initiated in the background. Please have a look in the Adabas nucleus log to see the current state. The Adabas databases have a number of tasks which are displayed using the corresponding menus.
 
-Various different monitor tasks are updated periodically. Start and stop operations are called directly.
+Various monitoring tasks are updated periodically. Start and stop operations are called directly.
 
 #### Monitoring
 
-Various Adabas monitoring data can be retrieved. The number of table entries is not cached or optimized. A huge number of queue entries might take influences on the web application performance.
+Various items of Adabas monitoring data can be retrieved. The number of table entries is not cached or optimized. A huge number of queue entries might influence the web application performance.
 
 ![Command statistics](image/command_stats.png)
 
 
 ### Job control
 
-To start and display jobs the `Job list` menu entry can be used.
+To start and display jobs, the `Job list` menu entry can be used.
 
 ![Job control](image/job_control.png)
 
@@ -78,9 +78,9 @@ Job modifications are not added to the web application example.
 
 ## Summary
 
-The example pages don't use all REST API possibilities. Some new or enhanced features are not available. Even queue modifications, like stop or delete user queue entries are not possible. To see the full user queue information is not part of the web application example.
+The example pages don't use all of the REST API possibilities. Some new or enhanced features are not available. Even queue modifications, like stop or delete user queue entries, are not possible. The ability to see the full user queue information is not part of the web application example.
 
-**But pay attention. Adabas file delete or refresh operations are part of the web application**
+**But note: Adabas file delete or refresh operations are part of the web application**
 
 Have fun and stay healthy!
 
