@@ -24,7 +24,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Watch } from "vue-property-decorator";
+import {  Vue } from "vue-property-decorator";
 
 export default Vue.extend({
   name: "Footer",
@@ -38,7 +38,6 @@ export default Vue.extend({
     const v = localStorage.getItem("version");
     if (v) {
         this.$data.version = JSON.parse(v).version;
-        console.log("V: " + JSON.stringify(v) + " " + this.$data.version);
     }
 
   },

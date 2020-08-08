@@ -18,16 +18,16 @@
 */
 
 import { config } from '../store/config';
-import { authHeader, authInitHeader } from './auth-header';
+import {  authInitHeader } from './auth-header';
 
-function logout() {
+function logout(): void {
     // remove user from local storage to log user out
     localStorage.removeItem('user');
     version();
 }
 
-function handleResponse(response: any) {
-    return response.text().then((text: any) => {
+function handleResponse(response: Response) {
+    return response.text().then((text: string) => {
         const data = text && JSON.parse(text);
         if (!response.ok) {
             if (response.status === 401 || response.status === 404) {
@@ -43,17 +43,15 @@ function handleResponse(response: any) {
     });
 }
 
-function handleVersionResponse(response: any) {
+function handleVersionResponse(response: Response): Promise<Response>|any {
     return response.text().then((text: any) => {
         const data = text && JSON.parse(text);
-        console.log("X: " + data.Version);
         const v = { version: data.Version };
         localStorage.setItem('version', JSON.stringify(v));
         return v;
     });
 }
 function version() {
-    console.log("Query version");
     const requestOptions = {
         method: 'GET',
         headers: { Accept: 'application/json' },
@@ -62,11 +60,10 @@ function version() {
     return fetch(`${config.Url()}/version`, requestOptions).then(handleVersionResponse);
 }
 
-function login(username: string, password: string) {
+function login(username: string, password: string): Promise<Response> {
     const v = localStorage.getItem('version');
     if (v) {
         const version = JSON.parse(v).version;
-        console.log("V: " + JSON.stringify(v) + " " + version);
     }
     const requestOptions = {
         method: 'POST',
@@ -85,7 +82,7 @@ function login(username: string, password: string) {
                 }
                 user.username = username;
                 localStorage.setItem('user', JSON.stringify(user));
-                console.log("Save user: " + JSON.stringify(user));
+                // console.log("Save user: " + JSON.stringify(user));
             }
 
             return user;

@@ -25,6 +25,7 @@ import App from './App.vue'
 import './registerServiceWorker'
 import router from './router'
 import store from './store'
+import { Route } from 'vue-router'
 
 Vue.config.productionTip = false
 
@@ -36,7 +37,7 @@ router.afterEach((to, from) => {
         document.title = to.meta.title || DEFAULT_TITLE;
     });
 });
-router.beforeEach((to: any, from: any, next: any) => {
+router.beforeEach((to: Route, from: Route, next: any) => {
   // redirect to login page if not logged in and trying to access a restricted page
   const publicPages = ['/login'];
   const authRequired = !publicPages.includes(to.path);

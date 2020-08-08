@@ -20,16 +20,23 @@
 import { authHeader } from "../user/auth-header";
 import { config } from "../store/config";
 import { userService } from "../user/service";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import store from "../store/index";
 
+interface AdabasAdminType {
+  Active: boolean;
+  Dbid: number;
+  Name: string;
+  StructureLevel: number;
+  Version:string;
+}
 /* 
  * This typescript class AdabasAdmin handles all database administration
  * and monitor tasks provided by Adabas REST server.
  */
 export class AdabasAdmin {
-    private status: any;
-    constructor(dbInput: any) {
+    private status: AdabasAdminType;
+    constructor(dbInput: AdabasAdminType) {
         this.status = dbInput;
     }
     // Provide online status of this database
@@ -41,50 +48,52 @@ export class AdabasAdmin {
         return this.status.Dbid;
     }
     // Provide the database name defined in the configuration of the database
-    name(): number {
+    name(): string {
         return this.status.Name;
     }
     // Provide text file of Nucleus Log
-    nucleusLog(): Promise<any> {
+    async nucleusLog(): Promise<any> {
         const getConfig = {
             headers: authHeader("application/json"),
             useCredentails: true,
         };
         store.commit('SET_URL', { url: config.Url() + "/adabas/database/" + this.status.Dbid + "/nuclog", method: "get" });
-        return axios
-            .get(config.Url() + "/adabas/database/" + this.status.Dbid + "/nuclog", getConfig)
-            .then((response: any) => {
-                return response.data.Log.Log;
-            })
-            .catch((error: any) => {
-                if (error.response.status == 401 || error.response.status == 403) {
-                    userService.logout();
-                    location.reload(true);
-                }
-                throw error;
-            });
+        try {
+            const response = await axios
+                .get(config.Url() + "/adabas/database/" + this.status.Dbid + "/nuclog", getConfig);
+            return response.data.Log.Log;
+        }
+        catch (error) {
+            if (error.response.status == 401 || error.response.status == 403) {
+                userService.logout();
+                location.reload(true);
+            }
+            throw error;
+        }
     }
     // General database operation call which provide start, shutdown, cancel and abort of the Adabas database.
     callOperation(operation: string): Promise<any> {
         return triggerCall("/adabas/database/" + this.status.Dbid + ":" + operation);
     }
     // Delete the database with all container and data !!!!!!
-    delete(): Promise<any> {
+    async delete(): Promise<AxiosResponse<any>> {
         const getConfig = {
             headers: authHeader("application/json"),
             useCredentails: true,
         };
-        return axios
-            .delete(config.Url() + "/adabas/database/" + this.status.Dbid, getConfig)
-            .catch((error: any) => {
-                if (error.response) {
-                    if (error.response.status == 401 || error.response.status == 403) {
-                        userService.logout();
-                        location.reload(true);
-                    }
+        try {
+            return axios
+                .delete(config.Url() + "/adabas/database/" + this.status.Dbid, getConfig);
+        }
+        catch (error) {
+            if (error.response) {
+                if (error.response.status == 401 || error.response.status == 403) {
+                    userService.logout();
+                    location.reload(true);
                 }
-                throw error;
-            });
+            }
+            throw error;
+        }
     }
     // Provide the activity statistics
     activityStats(): Promise<any> {
@@ -127,19 +136,18 @@ export class AdabasAdmin {
         return triggerCallOnArray("/adabas/database/" + this.status.Dbid + "/parameterinfo", ["ParameterInfo", "Parameter"]);
     }
     // Get parameters (without metadata) of the Adabas database
-    parameters(staticType: boolean): Promise<any> {
-        return triggerCallOnParameter("/adabas/database/" + this.status.Dbid + "/parameter?type=" + (staticType ? "static" : "dynamic"), "Parameter").then((r) => {
-            if (!staticType) {
-                const dynamicFields = ["BFIO", "LOGGING", "NISNHQ", "OPTIONS",
-                    "TNAA", "TNAE", "TNAX", "TT",
-                    "RPL_RECORDS", "RPL_BLOCKS", "RPL_TOTAL", "WRL"] as string[];
-                r = r.filter((a: any) => {
-                    return (dynamicFields.indexOf(a.Name) !== -1);
-                });
-                return r;
-            }
+    async parameters(staticType: boolean): Promise<any> {
+        let r = await triggerCallOnParameter("/adabas/database/" + this.status.Dbid + "/parameter?type=" + (staticType ? "static" : "dynamic"), "Parameter");
+        if (!staticType) {
+            const dynamicFields = (["BFIO", "LOGGING", "NISNHQ", "OPTIONS",
+                "TNAA", "TNAE", "TNAX", "TT",
+                "RPL_RECORDS", "RPL_BLOCKS", "RPL_TOTAL", "WRL"] as string[]);
+            r = r.filter((a: any) => {
+                return (dynamicFields.indexOf(a.Name) !== -1);
+            });
             return r;
-        });
+        }
+        return r;
     }
     // Get the current thread table usage of the Adabas database
     threadTable(): Promise<any> {
@@ -154,209 +162,214 @@ export class AdabasAdmin {
         return triggerCall("/adabas/database/" + this.status.Dbid + "/gcb");
     }
     // Delete the given Adabas file number (all data is removed as well)!!
-    deleteFile(file: number): Promise<any> {
+    async deleteFile(file: number): Promise<any> {
         const getConfig = {
             headers: authHeader("application/json"),
             useCredentails: true,
         };
-        return axios
-            .delete(config.Url() + "/adabas/database/" + this.status.Dbid + "/file/" + file, getConfig)
-            .catch((error: any) => {
-                if (error.response) {
-                    if (error.response.status == 401 || error.response.status == 403) {
-                        userService.logout();
-                        location.reload(true);
-                    }
+        try {
+            return axios
+                .delete(config.Url() + "/adabas/database/" + this.status.Dbid + "/file/" + file, getConfig);
+        }
+        catch (error) {
+            if (error.response) {
+                if (error.response.status == 401 || error.response.status == 403) {
+                    userService.logout();
+                    location.reload(true);
                 }
-                throw error;
-            });
+            }
+            throw error;
+        }
     }
-    renameDatabase(newName: string): Promise<any> {
+    async renameDatabase(newName: string): Promise<any> {
         const getConfig = {
             headers: authHeader("application/json"),
             useCredentails: true,
         };
-        return axios
-            .put(config.Url() + "/adabas/database/"
-                + this.status.Dbid + "?name=" + newName, {}, getConfig)
-            .catch((error: any) => {
-                if (error.response) {
-                    if (error.response.status == 401 || error.response.status == 403) {
-                        userService.logout();
-                        location.reload(true);
-                    }
+        try {
+            return axios
+                .put(config.Url() + "/adabas/database/"
+                    + this.status.Dbid + "?name=" + newName, {}, getConfig);
+        }
+        catch (error) {
+            if (error.response) {
+                if (error.response.status == 401 || error.response.status == 403) {
+                    userService.logout();
+                    location.reload(true);
                 }
-                throw error;
-            });
+            }
+            throw error;
+        }
     }
     // Adabas file number can be renumbered
-    renumberFile(file: number, newNr: string): Promise<any> {
+    async renumberFile(file: number, newNr: string): Promise<any> {
         const getConfig = {
             headers: authHeader("application/json"),
             useCredentails: true,
         };
-        return axios
-            .put(config.Url() + "/adabas/database/"
-                + this.status.Dbid + "/file/" + file
-                + ":renumber?number=" + newNr, {}, getConfig)
-            .catch((error: any) => {
-                if (error.response) {
-                    if (error.response.status == 401 || error.response.status == 403) {
-                        userService.logout();
-                        location.reload(true);
-                    }
+        try {
+            return axios
+                .put(config.Url() + "/adabas/database/"
+                    + this.status.Dbid + "/file/" + file
+                    + ":renumber?number=" + newNr, {}, getConfig);
+        }
+        catch (error) {
+            if (error.response) {
+                if (error.response.status == 401 || error.response.status == 403) {
+                    userService.logout();
+                    location.reload(true);
                 }
-                throw error;
-            });
+            }
+            throw error;
+        }
     }
     // Refresh content of a given Adabas file number (attention: data is lost)!!!
-    refreshFile(file: number): Promise<any> {
+    async refreshFile(file: number): Promise<any> {
         const getConfig = {
             headers: authHeader("application/json"),
             useCredentails: true,
         };
-        return axios
-            .put(config.Url() + "/adabas/database/" + this.status.Dbid + "/file/" + file + ":refresh", {}, getConfig)
-            .catch((error: any) => {
-                if (error.response) {
-                    if (error.response.status == 401 || error.response.status == 403) {
-                        userService.logout();
-                        location.reload(true);
-                    }
+        try {
+            return axios
+                .put(config.Url() + "/adabas/database/" + this.status.Dbid + "/file/" + file + ":refresh", {}, getConfig);
+        }
+        catch (error) {
+            if (error.response) {
+                if (error.response.status == 401 || error.response.status == 403) {
+                    userService.logout();
+                    location.reload(true);
                 }
-                throw error;
-            });
+            }
+            throw error;
+        }
     }
     // Retrieve the field information of a given Adabas file number (FDT)
-    fileFields(file: number): Promise<any> {
-        return triggerCall("/adabas/database/" + this.status.Dbid + "/fields/" + file).then((response: any) => {
-            const f = [] as any[];
-            response.FDT.Fields.forEach((element: any) => {
-                f.push(element);
-            });
-            if (response.FDT.Descriptors !== null) {
-                response.FDT.Descriptors.forEach((element: any) => {
-                    f.push(element);
-                });
-            }
-            if (response.FDT.Referentials !== null) {
-                response.FDT.Referentials.forEach((element: any) => {
-                    f.push(element);
-                });
-            }
-            return f;
+    async fileFields(file: number): Promise<any> {
+        const response = await triggerCall("/adabas/database/" + this.status.Dbid + "/fields/" + file);
+        const f = ([] as any[]);
+        response.FDT.Fields.forEach((element: any) => {
+            f.push(element);
         });
+        if (response.FDT.Descriptors !== null) {
+            response.FDT.Descriptors.forEach((element_1: any) => {
+                f.push(element_1);
+            });
+        }
+        if (response.FDT.Referentials !== null) {
+            response.FDT.Referentials.forEach((element_2: any) => {
+                f.push(element_2);
+            });
+        }
+        return f;
     }
     // Retrieve current Adabas Highwater mark information
-    highWaterMark(file: number): Promise<any> {
-        return triggerCall("/adabas/database/" + this.status.Dbid + "/hwm").then((response) => {
-            const highwater = [] as any[];
-            ["UserQueue", "APU", "AttachedBuffer", "Bufferpool", "ClientQueue", "CommandQueue",
-                "ProtectionArea", "TransactionTime", "Workpool", "ProtectionAreaActive", "LABX",
-                "ComplexSearch", "GroupCommit", "HQUserLimit", "HoldQueue", "Threads"].forEach((element: string) => {
-                    const high = response.HighWater[element + "HighWaterMark"];
-                    let size = response.HighWater[element + "Size"];
-                    if (element == "Threads") {
-                        size = response.HighWater["ThreadSize"];
+    async highWaterMark(): Promise<any> {
+        const response = await triggerCall("/adabas/database/" + this.status.Dbid + "/hwm");
+        const highwater = ([] as any[]);
+        ["UserQueue", "APU", "AttachedBuffer", "Bufferpool", "ClientQueue", "CommandQueue",
+            "ProtectionArea", "TransactionTime", "Workpool", "ProtectionAreaActive", "LABX",
+            "ComplexSearch", "GroupCommit", "HQUserLimit", "HoldQueue", "Threads"].forEach((element: string) => {
+                const high = response.HighWater[element + "HighWaterMark"];
+                let size = response.HighWater[element + "Size"];
+                if (element == "Threads") {
+                    size = response.HighWater["ThreadSize"];
+                }
+                if (!size) {
+                    size = 1;
+                }
+                if (high) {
+                    let p = "";
+                    if (size > 0) {
+                        p = (high.inuse / size * 100).toFixed(2);
+                        //                   console.log(element+" "+high.inuse+" "+high.high+" "+p);
                     }
-                    if (!size) {
-                        size = 1;
-                    }
-                    if (high) {
-                        let p = "";
-                        if (size > 0) {
-                            p = (high.inuse / size * 100).toFixed(2);
-                            //                   console.log(element+" "+high.inuse+" "+high.high+" "+p);
-                        }
-                        highwater.push({
-                            Area: element, Size: size, InUse: high.inuse,
-                            High: high.high, Time: high.time, Percent: p
-                        });
-                    } else {
-                        console.log("Unknown " + element);
-                    }
-                });
-            return highwater;
-        });
+                    highwater.push({
+                        Area: element, Size: size, InUse: high.inuse,
+                        High: high.high, Time: high.time, Percent: p
+                    });
+                }
+                else {
+                    console.log("Unknown " + element);
+                }
+            });
+        return highwater;
     }
     // Retrieve a list of checkpoints in the database in an given time frame
-    checkpoints(from: string, to: string) {
+    checkpoints(from: string, to: string): Promise<any> {
         return triggerCallOnArray("/adabas/database/" + this.status.Dbid + "/checkpoints?end_time=" + to + "&start_time=" + from, ["Checkpoints"]);
     }
 }
 
 // This is a trigger call wrapper methods which takes JSON parameter and generates
 // any array of parameters needed for a table.
-function triggerCallOnParameter(resource: string, dataName: string): Promise<any> {
-    return triggerCall(resource).then((response: any) => {
-        const p = [] as any[];
-        Object.entries(response[dataName]).forEach((key: any) => {
-            p.push({ Name: key[0], Value: key[1] });
-        });
-        store.commit('SET_STATUS', 'OK');
-        return p;
+async function triggerCallOnParameter(resource: string, dataName: string): Promise<any> {
+    const response = await triggerCall(resource);
+    const p = ([] as any[]);
+    Object.entries(response[dataName]).forEach((key: any) => {
+        p.push({ Name: key[0], Value: key[1] });
     });
+    store.commit('SET_STATUS', 'OK');
+    return p;
 }
 
 // trigger a call which receives an array, dependent on the given Array path
 // the array is found.
-function triggerCallOnArray(resource: string, dataNames: string[]): Promise<any> {
-    return triggerCall(resource).then((response: any) => {
-        const p = [] as any[];
-        let r = response;
-        for (const i in dataNames) {
-            r = r[dataNames[i]];
-            if (!r) {
-                console.log("Error data " + dataNames[i] + ":" + JSON.stringify(response));
-                return;
-            }
+async function triggerCallOnArray(resource: string, dataNames: string[]): Promise<any> {
+    const response = await triggerCall(resource);
+    const p = ([] as any[]);
+    let r = response;
+    for (const i in dataNames) {
+        r = r[dataNames[i]];
+        if (!r) {
+            console.log("Error data " + dataNames[i] + ":" + JSON.stringify(response));
+            return;
         }
-
-        r.forEach((element: any) => {
-            p.push(element);
-        });
-        store.commit('SET_STATUS', 'OK');
-        return p;
+    }
+    r.forEach((element: any) => {
+        p.push(element);
     });
+    store.commit('SET_STATUS', 'OK');
+    return p;
 }
 // Trigger a AXIOS REST API call retrieving the corresponding content of 
 // the trigger and handle error code, statistic storage which will be displayed
 // in the web page. Stored are URL and content of the retrieved call
-export function triggerCall(resource: string): Promise<any> {
+export async function triggerCall(resource: string): Promise<any> {
     const getConfig = {
         headers: authHeader("application/json"),
         useCredentails: true,
     };
     store.commit('SET_URL', { url: config.Url() + resource, method: "get" });
-    return axios
-        .get(config.Url() + resource, getConfig)
-        .then((response: any) => {
-            store.commit('SET_STATUS', 'OK');
-            store.commit('SET_RESPONSE', JSON.stringify(response));
-            return response.data;
-        }).catch((error: any) => {
-            if (error.response) {
-                store.commit('SET_STATUS', JSON.stringify(error.response));
-                if (error.response.status == 401 || error.response.status == 403) {
-                    userService.logout();
-                    location.reload(true);
-                }
-            } else {
-                store.commit('SET_STATUS', JSON.stringify(error));
+    try {
+        const response = await axios
+            .get(config.Url() + resource, getConfig);
+        store.commit('SET_STATUS', 'OK');
+        store.commit('SET_RESPONSE', JSON.stringify(response));
+        return response.data;
+    }
+    catch (error) {
+        if (error.response) {
+            store.commit('SET_STATUS', JSON.stringify(error.response));
+            if (error.response.status == 401 || error.response.status == 403) {
+                userService.logout();
+                location.reload(true);
             }
-            throw error;
-        });
+        }
+        else {
+            store.commit('SET_STATUS', JSON.stringify(error));
+        }
+        throw error;
+    }
 }
 
 // Trigger a call loading all database and create a list of AdabasAdmin instances
 // per stored database.
-export function loadDatabases(): Promise<any> {
-    return triggerCall("/adabas/database").then((response: any) => {
-        store.commit('SET_STATUS', 'OK');
-        const databases = [] as any[];
-        response.Database.forEach((element: any) => {
-            databases.push(new AdabasAdmin(element));
-        });
-        return databases;
+export async function loadDatabases(): Promise<any> {
+    const response = await triggerCall("/adabas/database");
+    store.commit('SET_STATUS', 'OK');
+    const databases = ([] as AdabasAdmin[]);
+    response.Database.forEach((element: AdabasAdminType) => {
+        databases.push(new AdabasAdmin(element));
     });
+    return databases;
 }

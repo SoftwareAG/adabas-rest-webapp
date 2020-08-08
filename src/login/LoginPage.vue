@@ -164,9 +164,7 @@ export default {
       const v = localStorage.getItem("version");
       if (v) {
         version = JSON.parse(v).version;
-        console.log("V: " + JSON.stringify(v) + " " + version);
       }
-      console.log("Check version: " + version);
       if (version === "dev" || version.startsWith("6.7")) {
         console.log("Using baseauth authentication");
         let user = {

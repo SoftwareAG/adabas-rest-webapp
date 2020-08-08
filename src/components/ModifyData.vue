@@ -159,11 +159,11 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { Component, Vue } from "vue-property-decorator";
 import store from "../store/index";
 import { config } from "../store/config";
 import { authHeader } from "../user/auth-header";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { userService } from "../user/service";
 
 @Component
@@ -191,13 +191,13 @@ export default class ModifyData extends Vue {
       this.adaptMapOptions();
     }
   }
-  increment() {
+  increment(): void {
     if (this.$data.curIndex < this.$data.record.length - 1) {
       this.$data.curIndex++;
       (this.$refs.table as any).refresh();
     }
   }
-  decrement() {
+  decrement(): void {
     if (this.$data.curIndex === 0) {
       alert("Negative quantity not allowed");
     } else {
@@ -211,7 +211,7 @@ export default class ModifyData extends Vue {
     }
     return -1;
   }
-  getSelectedItem(myarg: any) {
+  getSelectedItem(myarg: any): void {
     // Just a regular js function that takes 1 arg
     console.log("Selected map: " + myarg);
     this.$data.query.search = "";
@@ -229,10 +229,10 @@ export default class ModifyData extends Vue {
       this.readData();
     });
   }
-  changeInput(event: any, item: any) {
+  changeInput(event: any, item: any): void {
     const ref = item.reference;
     let r = this.$data.record[this.$data.curIndex];
-    let l = r;
+    //let l = r;
     // console.log("Reference " + ref+" -> "+JSON.stringify(r));
     if (ref) {
       let s= ref.split(".");
@@ -244,7 +244,7 @@ export default class ModifyData extends Vue {
       });
     }
   }
-  getData(ref: string) {
+  getData(ref: string): void {
     let r = this.$data.record[this.$data.curIndex];
     // console.log("Reference " + ref+" -> "+JSON.stringify(r));
     if (ref) {
@@ -255,14 +255,14 @@ export default class ModifyData extends Vue {
     }
     return r;
   }
-  adaptMapOptions() {
+  adaptMapOptions(): void {
     const options = [{ value: null, text: "Please select an Adabas Map" }];
-    this.$data.maps.forEach((i: any, index: any) => {
+    this.$data.maps.forEach((i: any) => {
       options.push({ value: i, text: i });
       this.$data.options = options;
     });
   }
-  refreshMapList() {
+  refreshMapList(): void {
     console.log("Refresh maps: " + this.$data.maps.length);
     store
       .dispatch("INIT_MAPS")
@@ -274,7 +274,7 @@ export default class ModifyData extends Vue {
         console.log("Reason(created): " + JSON.stringify(reason));
       });
   }
-  readData() {
+  readData(): Promise<void> {
     this.$data.dataUrl = config.Url() + "/rest/map/" + this.$data.mapName; //+ "/" + this.$data.index;
     if (this.$data.query.search !== "" || this.$data.query.fields !== "") {
       this.$data.dataUrl = this.$data.dataUrl + "?";
@@ -326,19 +326,19 @@ export default class ModifyData extends Vue {
         throw error;
       });
   }
-  refreshRecordMapList(data: any) {
+  refreshRecordMapList(data: any): void {
     let newMapList = [] as any[];
     this.$data.mapFields.forEach((element:any) => {
-      console.log("Search "+element.name);
+      // console.log("Search "+element.name);
       let s = this.searchReference(element.name,this.$data.record[this.$data.curIndex]);
-      console.log("Found for "+element.name+" -> "+s);
+      // console.log("Found for "+element.name+" -> "+s);
       if (s!=="") {
         newMapList.push(element);
       }
     });
     this.$data.mapFields = newMapList;
   }
-  updateRecord() {
+  updateRecord(): Promise<void> {
     const getConfig = {
       headers: authHeader("application/json"),
       useCredentails: true,
@@ -348,10 +348,10 @@ export default class ModifyData extends Vue {
     let url = config.Url() + "/rest/map/" + this.$data.mapName ;
     return axios
       .put(url,inputData,getConfig)
-      .then((response: any) => {
-        console.log("XXX");
+      .then((response: AxiosResponse<any>) => {
+        console.log("Updated");
       }).catch((error:any) => {
-        console.log("Error:"+error);
+        console.log("Update error:"+error);
       });
   }
   searchReference(field: string, data: any): string {
@@ -376,7 +376,6 @@ export default class ModifyData extends Vue {
       }
       return true;
     });
-    //console.log("X: "+x);
     return x;
   }
 }
