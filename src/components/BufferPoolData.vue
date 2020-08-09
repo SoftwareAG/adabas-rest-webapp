@@ -181,9 +181,6 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
-import { authHeader } from "../user/auth-header";
-import { config } from "../store/config";
-import { userService } from "../user/service";
 import Sidebar from "./Sidebar.vue";
 import store from "../store/index";
 import StatusBar from "./StatusBar.vue";
@@ -213,7 +210,7 @@ export default class BufferPoolData extends Vue {
       this.$data.bufferPoolSize = this.searchValue("Size");
     });
   }
-  searchValue(s: string) {
+  searchValue(s: string): number {
     let v = this.$data.bufferpool.filter((row: any) => {
       return row.Name === s;
     });
@@ -222,7 +219,7 @@ export default class BufferPoolData extends Vue {
     }
     return 0;
   }
-  search(s: string) {
+  search(s: string): any {
     return this.$data.bufferpool.filter((row: any) => {
       return row.Name.startsWith(s);
     });

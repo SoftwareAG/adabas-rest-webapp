@@ -59,9 +59,6 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
-import { authHeader } from "../user/auth-header";
-import { config } from "../store/config";
-import { userService } from "../user/service";
 import Sidebar from "./Sidebar.vue";
 import store from "../store/index";
 import StatusBar from "./StatusBar.vue";
@@ -93,7 +90,7 @@ export default class HoldqueueList extends Vue {
       holdqueues: [],
     };
   }
-  created() {
+  created(): void {
     const db = store.getters.search(this.url);
     db.holdQueue().then((response: any) => {
       this.$data.holdqueues = response;

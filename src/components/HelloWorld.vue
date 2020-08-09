@@ -80,7 +80,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, PropSync, Vue } from "vue-property-decorator";
+import { Component, Prop, Vue } from "vue-property-decorator";
 import store from "../store/index";
 
 @Component
@@ -93,7 +93,7 @@ export default class HelloWorld extends Vue {
       mappingConfigExample:'<Mapping>\n <Directory url="file:xtsurl.cfg" />\n <Database dbid="111(adatcp://localhost:64111)" file="4" />\n</Mapping>'
     };
   }
-  created() {
+  created(): void {
     store.dispatch("INIT_DATABASES").then((dbs) => {
       this.$data.numberDbs = dbs.length;
     });

@@ -85,13 +85,13 @@ export default class GenericExample extends Vue {
       records: [],
     };
   }
-  created() {
+  created(): void {
     const getConfig = {
       headers: authHeader("application/json"),
       useCredentails: true,
     };
     store.commit('SET_URL',{url: config.Url() + this.$data.xURL,method: "get"});
-    return axios
+    axios
       .get(config.Url() + this.$data.xURL, getConfig)
       .then((response: any) => {
         store.commit("SET_STATUS", "OK");
@@ -112,7 +112,7 @@ export default class GenericExample extends Vue {
         throw error;
       });
   }
-  adaptFields() {
+  adaptFields(): void {
     const fs = [];
     /* Adapt and parse received data */
     if (this.$data.records && this.$data.records.length > 0) {

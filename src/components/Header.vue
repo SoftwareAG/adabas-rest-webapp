@@ -62,7 +62,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Watch } from "vue-property-decorator";
+import {  Vue } from "vue-property-decorator";
 import {
   NavbarPlugin,
   ButtonPlugin,
@@ -70,7 +70,6 @@ import {
   TablePlugin,
   FormCheckboxPlugin,
 } from "bootstrap-vue";
-import store from "../store/index";
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 import { userService } from "../user/service";

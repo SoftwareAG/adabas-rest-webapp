@@ -26,7 +26,7 @@ import { Component } from 'vue-property-decorator';
     mixins: [mixins.reactiveProp]
 })
 export default class CommitChart extends Bar {
-  mounted () {
+  mounted (): void {
     // Overwriting base render method with actual data.
     this.renderChart({
       labels: ['CL','BT','ET'],

@@ -49,9 +49,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, PropSync, Vue } from "vue-property-decorator";
-import store from "../store/index";
-import { BootstrapVue } from "bootstrap-vue";
+import { Component, Prop, Vue } from "vue-property-decorator";
 import MyHeader from "@/components/Header.vue";
 import "bootstrap/dist/css/bootstrap.css";
 

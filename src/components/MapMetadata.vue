@@ -169,7 +169,6 @@ export default Vue.extend({
     };
   },
   created() {
-    console.log("Created metadata "+JSON.stringify(this.metadata));
     store
       .dispatch("INIT_MAPS")
       .then((response) => {
@@ -183,7 +182,6 @@ export default Vue.extend({
   methods: {
     getSelectedItem: function(myarg: any) {
       // Just a regular js function that takes 1 arg
-      console.log("Selected map: " + myarg);
       if (this.query.map !== myarg) {
         this.url = config.Url() + "/rest/metadata/map/" + myarg;
         this.query.map = myarg;
@@ -209,7 +207,6 @@ export default Vue.extend({
   },
   watch: {
     maps: function(value: any, newvalue: any) {
-      // console.log("Maps changed:" + value);
       this.adaptMapOptions();
     },
     metadata: function(value: any, newvalue: any) {

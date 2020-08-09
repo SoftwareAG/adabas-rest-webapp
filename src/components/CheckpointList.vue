@@ -118,9 +118,6 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
-import { authHeader } from "../user/auth-header";
-import { config } from "../store/config";
-import { userService } from "../user/service";
 import Sidebar from "./Sidebar.vue";
 import store from "../store/index";
 import StatusBar from "./StatusBar.vue";
@@ -168,7 +165,7 @@ export default class CheckpointList extends Vue {
     this.$data.fromTime = this.convertTime(currentdate);
     this.updateCheckpoints();
   }
-  updateCheckpoints() {
+  updateCheckpoints(): void {
     let to = this.$data.to + "+" + this.$data.toTime;
     let from = this.$data.from + "+" + this.$data.fromTime;
     const db = store.getters.search(this.url);
@@ -176,7 +173,7 @@ export default class CheckpointList extends Vue {
       this.$data.checkpoints = response;
     });
   }
-  convertDate(currentdate: Date) {
+  convertDate(currentdate: Date): string {
     return (
       new String(currentdate.getFullYear()).padStart(4, "0") +
       "-" +
@@ -185,7 +182,7 @@ export default class CheckpointList extends Vue {
       new String(currentdate.getDate()).padStart(2, "0")
     );
   }
-  convertTime(currentdate: Date) {
+  convertTime(currentdate: Date): string {
     return (
       new String(currentdate.getHours()).padStart(2, "0") +
       ":" +
@@ -194,7 +191,7 @@ export default class CheckpointList extends Vue {
       new String(currentdate.getSeconds()).padStart(2, "0")
     );
   }
-  onContext(ctx: any) {
+  onContext(ctx: any): void {
     this.updateCheckpoints();
   }
 }

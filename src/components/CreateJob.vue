@@ -207,51 +207,46 @@ export default class CreateJob extends Vue {
   created() {
     this.$data.newJob.Job.User = userService.getUsername();
   }
-  removeParameter(parameter: number) {
+  removeParameter(parameter: number): void {
     this.$data.newJob.Job.Parameters.splice(parameter, 1);
   }
-  editParameter(parameter: any) {
+  editParameter(parameter: any): void {
     console.log("Remove " + parameter);
   }
-  prepareParameter() {
-    console.log("prepare parameter");
+  prepareParameter(): void {
     this.$data.editable = "Parameter";
     this.$data.description = this.$data.parameterDescription;
   }
-  prepareEnvironment() {
-    console.log("prepare environment");
+  prepareEnvironment(): void {
     this.$data.editable = "Environment";
     this.$data.description = this.$data.environmentDescription;
   }
-  handleOk(bvModalEvt: any) {
+  handleOk(bvModalEvt: any): void {
     if (this.$data.editable === "Environment") {
       console.log("Add environment " + this.$data.parameter);
       this.$data.newJob.Job.Environments.push({
         Parameter: this.$data.parameter,
       });
-      console.log("Final job " + JSON.stringify(this.$data.newJob));
     } else {
-      console.log("Add parameter " + this.$data.parameter);
       this.$data.newJob.Job.Parameters.push({
         Parameter: this.$data.parameter,
       });
     }
   }
-  checkFormValidity() {
+  checkFormValidity(): boolean {
     //const valid = this.$refs.jobForm.checkValidity()
     const valid = (this.$refs.jobForm as Vue & {
       checkValidity: () => boolean;
     }).checkValidity();
-    console.log("VALID: " + valid);
     return valid;
   }
-  insertJobInServer(bvModalEvt: any) {
+  insertJobInServer(bvModalEvt: any): void {
     // Prevent modal from closing
     bvModalEvt.preventDefault();
     // Trigger submit handler
     this.handleSubmit();
   }
-  handleSubmit() {
+  handleSubmit(): void {
     // Exit when the form isn't valid
     if (!this.checkFormValidity()) {
       return;
@@ -263,7 +258,7 @@ export default class CreateJob extends Vue {
       this.$bvModal.hide("modal-createjob");
     });
   }
-  resetModal() {
+  resetModal(): void {
     this.$data.name = "";
     this.$data.nameState = null;
   }

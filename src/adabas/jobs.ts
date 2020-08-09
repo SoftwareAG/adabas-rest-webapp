@@ -27,6 +27,7 @@ export class JobAdmin {
     private status: any;
     constructor(dbInput: any) {
         this.status = dbInput;
+        console.log("JOBS struct: "+JSON.stringify(dbInput));
     }
     start() {
         console.log("Starting ...");
