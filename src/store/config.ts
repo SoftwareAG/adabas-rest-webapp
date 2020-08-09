@@ -29,6 +29,14 @@ export function Url() {
    return '.';
 }
 
+export function Version(): string {
+   if (process.env.NODE_ENV === 'development') {
+      return 'dev';
+   }
+   return 'v1.0.0';
+}
+
 export const config = {
    Url,
+   Version,
 };

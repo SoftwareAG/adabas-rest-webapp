@@ -15,21 +15,24 @@
 
 <template>
   <div class="footer">
-  <b-card class="align-text-top text-right">
-    <div class="bg-light text-dark">
-      Adabas RESTfull application with REST server version: {{version}}
-    </div>
-  </b-card>      
+      <b-container fluid class="bg-light text-dark w-100">
+        <b-row><b-col class="text-left">Adabas REST WebApp {{webAppVersion}}</b-col>
+        <b-col  class="text-right">
+          Adabas RESTfull application with REST server version: {{version}}
+        </b-col></b-row>
+      </b-container>
   </div>
 </template>
 
 <script lang="ts">
 import {  Vue } from "vue-property-decorator";
+import { config } from "../store/config";
 
 export default Vue.extend({
   name: "Footer",
   data() {
     return {
+      webAppVersion: config.Version(),
       checked: true,
       version: null,
     };
