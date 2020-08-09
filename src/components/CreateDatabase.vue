@@ -336,14 +336,13 @@ export default class CreateDatabase extends Vue {
     this.$data.createJob.Job.Name = "CreateJob-" + new Date().getTime();
   }
   handleOk(bvModalEvt: any) {
-    console.log("Handle OK");
     if (this.$data.useJob) {
       this.createDatabaseJob();
     } else {
       this.createDatabaseAPI();
     }
   }
-  createDatabaseAPI() {
+  createDatabaseAPI(): void {
     const getConfig = {
       headers: authHeader("application/json"),
     };
@@ -362,10 +361,10 @@ export default class CreateDatabase extends Vue {
         );
       });
   }
-  changeUseJob() {
+  changeUseJob(): void {
     console.log("Change use job "+this.$data.useJob);
   }
-  createDatabaseJob() {
+  createDatabaseJob(): void {
     this.$data.createJob.Job.Parameters = [];
     this.$data.createJob.Job.Parameters.push({
       Parameter: "dbid=" + this.$data.createDatabase.Dbid,
@@ -430,7 +429,7 @@ export default class CreateDatabase extends Vue {
     // });
     insertJob(this.$data.createJob);
   }
-  replaceValue(str: string) {
+  replaceValue(str: string): string {
     const regex = /\$\{([^$]*)\}/gm;
     let m;
     let newstr = str;

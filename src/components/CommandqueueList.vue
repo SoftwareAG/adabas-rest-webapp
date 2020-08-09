@@ -59,9 +59,6 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
-import { authHeader } from "../user/auth-header";
-import { config } from "../store/config";
-import { userService } from "../user/service";
 import Sidebar from "./Sidebar.vue";
 import StatusBar from "./StatusBar.vue";
 import store from "../store/index";

@@ -119,11 +119,8 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
-import { authHeader } from "../user/auth-header";
-import { config } from "../store/config";
 import { JobAdmin } from "../adabas/jobs";
 import { userService } from "../user/service";
-import { BootstrapVue } from "bootstrap-vue";
 import store from "../store/index";
 import CreateJob from "./CreateJob.vue";
 import StatusBar from "./StatusBar.vue";
@@ -155,11 +152,11 @@ export default class JobList extends Vue {
       timer: "",
     };
   }
-  created() {
+  created(): void {
     this.loadJobs();
     this.$data.timer = setInterval(this.loadJobs, 5000);
   }
-  loadJobs() {
+  loadJobs(): void {
     store
       .dispatch("SYNC_ADMIN_JOBS")
       .then((response: any) => {
@@ -190,7 +187,7 @@ export default class JobList extends Vue {
         throw error;
       });
   }
-  onRowSelected(items: any) {
+  onRowSelected(items: any): void {
     if (items.length == 0) {
       return;
     }
@@ -199,26 +196,26 @@ export default class JobList extends Vue {
 
     return;
   }
-  onExecSelected(items: any) {
+  onExecSelected(items: any): void {
     if (items.length == 0) {
       return;
     }
   }
-  startJob(items: JobAdmin) {
+  startJob(items: JobAdmin): void {
     items.start();
   }
-  delJob(name: string) {
+  delJob(name: string): void {
     const jobToDelete = this.$data.jobs.find(
       (j: JobAdmin) => j.name() === name
     );
     console.log("Job to delete: " + name);
     jobToDelete.delete();
   }
-  delExecution(id: string) {
+  delExecution(id: string): void {
     console.log("Delete id " + id + " of " + this.$data.selected.name());
     this.$data.selected.delete_execution(id);
   }
-  beforeDestroy() {
+  beforeDestroy(): void {
     clearInterval(this.$data.timer);
   }
 }

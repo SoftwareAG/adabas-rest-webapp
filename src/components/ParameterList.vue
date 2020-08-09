@@ -256,7 +256,7 @@ export default class ParameterList extends Vue {
     this.$data.db = store.getters.search(this.url);
     this.queryParameters();
   }
-  queryParameters() {
+  queryParameters(): void {
     if (!this.$data.db) {
       this.$data.db = store
         .dispatch("INIT_DATABASES")

@@ -141,7 +141,7 @@ export default class ImageExample extends Vue {
         throw error;
       });
   }
-  loadThumbnail(isn: any) {
+  loadThumbnail(isn: any): string {
     let imageFilter = this.$data.image.filter((i:any)=>i.ISN == isn);
     if (imageFilter.length === 0) {
       return "";
@@ -169,12 +169,12 @@ export default class ImageExample extends Vue {
           image["pic"] = res;
           this.$data.currentPic = res;
           (this.$refs.table as any).refresh();
-          //this.$forceUpdate();
           return res;
         })
         .catch((error: any) => {
           console.log("ERROR: " + JSON.stringify(error));
         });
+        return "";
     }
     return image["pic"];
   }

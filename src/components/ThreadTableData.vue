@@ -59,9 +59,6 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
-import { authHeader } from "../user/auth-header";
-import { config } from "../store/config";
-import { userService } from "../user/service";
 import Sidebar from "./Sidebar.vue";
 import StatusBar from "./StatusBar.vue";
 import store from "../store/index";
@@ -91,19 +88,19 @@ export default class ThreadTableData extends Vue {
       db: null,
     };
   }
-  created() {
+  created():void {
     this.$data.db = store.getters.search(this.url);
     this.loadThreadTable();
     this.$data.timer = setInterval(this.loadThreadTable, 5000);
   }
-  loadThreadTable() {
+  loadThreadTable():void {
     if (this.$data.db && this.$data.db != null) {
       this.$data.db.threadTable().then((response: any) => {
         this.$data.threads = response;
       });
     }
   }
-  beforeDestroy() {
+  beforeDestroy():void {
     clearInterval(this.$data.timer);
   }
 }

@@ -129,11 +129,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
-import { authHeader } from "../user/auth-header";
-import { config } from "../store/config";
-import { userService } from "../user/service";
 import Sidebar from "./Sidebar.vue";
-import { AdabasAdmin } from "../adabas/admin";
 import store from "../store/index";
 import StatusBar from "./StatusBar.vue";
 import Url from "./Url.vue";
@@ -162,12 +158,12 @@ export default class ActivityDisplay extends Vue {
       this.$data.activity = response;
     });
   }
-  searchArray(s: any[]) {
+  searchArray(s: any[]): any {
     return this.$data.activity.filter((row: any) => {
       return s.indexOf(row.Name) > -1;
     });
   }
-  search(s: string) {
+  search(s: string): any {
     return this.$data.activity.filter((row: any) => {
       return row.Name.startsWith(s);
     });

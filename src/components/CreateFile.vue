@@ -178,8 +178,7 @@ export default class CreateFile extends Vue {
       this.$data.fdtFields.push(fdtField);
     });
   }
-  handleFileUpload() {
-    console.log("FILE: " + this.$data.file.name + " " + this.$data.file.value);
+  handleFileUpload(): void {
     if (!this.$data.file) {
       return;
     }
@@ -219,8 +218,7 @@ export default class CreateFile extends Vue {
     };
     reader.readAsText(this.$data.file);
   }
-  handleOk(bvModalEvt: any) {
-    console.log("Handle OK");
+  handleOk(bvModalEvt: any): void {
     const getConfig = {
       headers: authHeader("application/json"),
     };

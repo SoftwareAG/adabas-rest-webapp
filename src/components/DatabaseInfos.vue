@@ -62,9 +62,6 @@
 
 <script lang="ts">
 import { Component, Prop, Provide, Vue } from "vue-property-decorator";
-import { authHeader } from "../user/auth-header";
-import { config } from "../store/config";
-import { userService } from "../user/service";
 import Sidebar from "./Sidebar.vue";
 import StatusBar from "./StatusBar.vue";
 import store from "../store/index";
@@ -127,7 +124,7 @@ export default class ParameterList extends Vue {
     this.$data.db = store.getters.search(this.url);
     this.queryInformation();
   }
-  queryInformation() {
+  queryInformation(): void {
     this.$data.db.information().then((response: any) => {
       this.$data.infos = [];
       [
@@ -152,14 +149,14 @@ export default class ParameterList extends Vue {
       this.$data.information = response;
     });
   }
-  getTypeItem(newtype: any) {
+  getTypeItem(newtype: any): void {
     console.log("Get type item " + newtype);
     this.queryInformation();
   }
-  infoRenameDatabase() {
+  infoRenameDatabase(): void {
     this.$root.$emit("bv::show::modal", "modal-rename", "#btnShow");
   }
-  renameDatabase() {
+  renameDatabase(): void {
     if (this.$data.newName !== "") {
       this.$data.db.renameDatabase(this.$data.newName).then(()=> {
             this.queryInformation();

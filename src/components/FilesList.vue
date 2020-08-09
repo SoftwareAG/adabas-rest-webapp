@@ -198,9 +198,6 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
-import { authHeader } from "../user/auth-header";
-import { config } from "../store/config";
-import { userService } from "../user/service";
 import Sidebar from "./Sidebar.vue";
 import store from "../store/index";
 import StatusBar from "./StatusBar.vue";
@@ -278,17 +275,17 @@ export default class FilesList extends Vue {
       timer: "",
     };
   }
-  created() {
+  created(): void {
     this.$data.db = store.getters.search(this.url);
     this.loadFiles();
     this.$data.timer = setInterval(this.loadFiles, 15000);
   }
-  loadFiles() {
+  loadFiles(): void {
     this.$data.db.fileList().then((response: any) => {
       this.$data.files = response;
     });
   }
-  onRowSelected(items: any) {
+  onRowSelected(items: any): void {
     if (items.length == 0) {
       this.$data.fileParameter = [];
       this.$data.fileFields = [];
@@ -317,7 +314,7 @@ export default class FilesList extends Vue {
         this.$data.fdtAvailable = false;
       });
   }
-  levelSpace(nr: number) {
+  levelSpace(nr: number): string {
     let res = "";
     for (let i = 0; i < nr; i++) {
       res += " ";
@@ -325,7 +322,7 @@ export default class FilesList extends Vue {
 
     return res + nr;
   }
-  infoDeleteFile(item: any) {
+  infoDeleteFile(item: any): void {
     this.$data.currentFile = item.FileNr;
     console.log("Delete " + item.FileNr + " " + JSON.stringify(item));
     //  this.$data.db.deleteFile(item.FileNr);
@@ -362,12 +359,12 @@ export default class FilesList extends Vue {
         console.log("Catching err " + err);
       });
   }
-  infoRenumberFile(item: any) {
+  infoRenumberFile(item: any): void {
     this.$data.currentFile = item.FileNr;
     console.log("Renumber " + item.FileNr);
     this.$root.$emit("bv::show::modal", "modal-renumber", "#btnShow");
   }
-  renumberFile() {
+  renumberFile(): void {
     console.log(
       "Renumber " + this.$data.currentFile + " to " + this.$data.newNr
     );
@@ -376,7 +373,7 @@ export default class FilesList extends Vue {
     }
     this.$data.newNr = 0;
   }
-  refreshFile(item: any) {
+  refreshFile(item: any): void {
     this.$data.currentFile = item.FileNr;
     console.log("Refresh " + item.FileNr + " " + JSON.stringify(item));
     //  this.$data.db.deleteFile(item.FileNr);
@@ -413,7 +410,7 @@ export default class FilesList extends Vue {
         console.log("Catching err " + err);
       });
   }
-  beforeDestroy() {
+  beforeDestroy(): void {
     clearInterval(this.$data.timer);
   }
 }

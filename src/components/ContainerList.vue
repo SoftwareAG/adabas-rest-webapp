@@ -62,9 +62,6 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
-import { authHeader } from "../user/auth-header";
-import { config } from "../store/config";
-import { userService } from "../user/service";
 import Sidebar from "./Sidebar.vue";
 import store from "../store/index";
 import StatusBar from "./StatusBar.vue";
@@ -96,7 +93,6 @@ export default class DatabaseList extends Vue {
     };
   }
   created() {
-    console.log("Container list ..." + this.url);
     const db = store.getters.search(this.url);
     db.containerList().then((response: any) => {
       this.$data.containers = response;

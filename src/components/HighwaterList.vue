@@ -68,9 +68,6 @@
 
 <script lang="ts">
 import { Component, Prop, Provide, Vue } from "vue-property-decorator";
-import { authHeader } from "../user/auth-header";
-import { config } from "../store/config";
-import { userService } from "../user/service";
 import Sidebar from "./Sidebar.vue";
 import store from "../store/index";
 import StatusBar from "./StatusBar.vue";
@@ -102,17 +99,17 @@ export default class ParameterList extends Vue {
       timer: "",
     };
   }
-  created() {
+  created(): void {
     this.$data.db = store.getters.search(this.url);
     this.$data.timer = setInterval(this.queryParameters, 5000);
     this.queryParameters();
   }
-  queryParameters() {
+  queryParameters(): void {
     this.$data.db.highWaterMark().then((response: any) => {
       this.$data.highwater = response;
     });
   }
-  beforeDestroy() {
+  beforeDestroy(): void {
     clearInterval(this.$data.timer);
   }
 }

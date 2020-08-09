@@ -20,81 +20,51 @@
 import { authHeader } from "../user/auth-header";
 import { config } from "../store/config";
 import { userService } from "../user/service";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { triggerCall } from "./admin";
 
-export class JobAdmin {
-    private status: any;
-    constructor(dbInput: any) {
-        this.status = dbInput;
+interface JobJobType {
+    Name: string;
+    User: string;
+    Utility: string;
+    Environments: {
+        Parameter: string
     }
-    start() {
-        console.log("Starting ...");
-        const getConfig = {
-            headers: authHeader("application/json"),
-            useCredentails: true,
-        };
-        return axios
-            .put(config.Url() + "/scheduler/job/" + this.status.Job.Name, {}, getConfig)
-            .catch((error: any) => {
-                if (error.response) {
-                    if (error.response.status == 401 || error.response.status == 403) {
-                        userService.logout();
-                        location.reload(true);
-                    }
-                }
-                throw error;
-            });
-    }
-    name(): string {
-        return this.status.Job.Name;
-    }
-    delete() {
-        const getConfig = {
-            headers: authHeader("application/json"),
-            useCredentails: true,
-        };
-        return axios
-            .delete(config.Url() + "/scheduler/job/" + this.status.Job.Name, getConfig)
-            .catch((error: any) => {
-                if (error.response) {
-                    if (error.response.status == 401 || error.response.status == 403) {
-                        userService.logout();
-                        location.reload(true);
-                    }
-                }
-                throw error;
-            });
-    }
-    delete_execution(id: string) {
-        console.log("Starting ...");
-        const getConfig = {
-            headers: authHeader("application/json"),
-            useCredentails: true,
-        };
-        return axios
-            .delete(config.Url() + "/scheduler/job/" + this.status.Job.Name + "/result/" + id, getConfig)
-            .catch((error: any) => {
-                if (error.response) {
-                    if (error.response.status == 401 || error.response.status == 403) {
-                        userService.logout();
-                        location.reload(true);
-                    }
-                }
-                throw error;
-            });
-
+    Parameters: {
+        Parameter: string
     }
 }
 
-export function insertJob(job: any): Promise<any> {
-    const getConfig = {
-        headers: authHeader("application/json"),
-        useCredentails: true,
-    };
-    return axios
-        .post(config.Url() + "/scheduler/job/", job, getConfig)
-        .catch((error: any) => {
+interface JobExecutionType {
+    Ended: string;
+    ExitCode: number;
+    Log: string;
+    Id: string;
+    Scheduled: string;
+}
+
+interface JobAdminType {
+    Executions: JobExecutionType[];
+    Job: JobJobType;
+    Status: string;
+}
+
+export class JobAdmin {
+    private status: JobAdminType;
+    constructor(dbInput: JobAdminType) {
+        this.status = dbInput;
+    }
+    // Schedule the job
+    async start(): Promise<AxiosResponse<any>> {
+        const getConfig = {
+            headers: authHeader("application/json"),
+            useCredentails: true,
+        };
+        try {
+            return axios
+                .put(config.Url() + "/scheduler/job/" + this.status.Job.Name, {}, getConfig);
+        }
+        catch (error) {
             if (error.response) {
                 if (error.response.status == 401 || error.response.status == 403) {
                     userService.logout();
@@ -102,14 +72,81 @@ export function insertJob(job: any): Promise<any> {
                 }
             }
             throw error;
-        });
+        }
+    }
+    name(): string {
+        return this.status.Job.Name;
+    }
+    async delete(): Promise<AxiosResponse<any>> {
+        const getConfig = {
+            headers: authHeader("application/json"),
+            useCredentails: true,
+        };
+        try {
+            return axios
+                .delete(config.Url() + "/scheduler/job/" + this.status.Job.Name, getConfig);
+        }
+        catch (error) {
+            if (error.response) {
+                if (error.response.status == 401 || error.response.status == 403) {
+                    userService.logout();
+                    location.reload(true);
+                }
+            }
+            throw error;
+        }
+    }
+    async delete_execution(id: string): Promise<AxiosResponse<any>> {
+        console.log("Starting ...");
+        const getConfig = {
+            headers: authHeader("application/json"),
+            useCredentails: true,
+        };
+        try {
+            return axios
+                .delete(config.Url() + "/scheduler/job/" + this.status.Job.Name + "/result/" + id, getConfig);
+        }
+        catch (error) {
+            if (error.response) {
+                if (error.response.status == 401 || error.response.status == 403) {
+                    userService.logout();
+                    location.reload(true);
+                }
+            }
+            throw error;
+        }
+
+    }
 }
-export function loadJobs(): Promise<any> {
-    return triggerCall("/scheduler/job").then((response: any) => {
-        const jobs = [] as any[];
-        response.JobDefinition.forEach((element: any) => {
-            jobs.push(new JobAdmin(element));
-        });
-        return jobs;
+
+// Insert job in REST server configuration.
+export async function insertJob(job: any): Promise<any> {
+    const getConfig = {
+        headers: authHeader("application/json"),
+        useCredentails: true,
+    };
+    try {
+        return axios
+            .post(config.Url() + "/scheduler/job/", job, getConfig);
+    }
+    catch (error) {
+        if (error.response) {
+            if (error.response.status == 401 || error.response.status == 403) {
+                userService.logout();
+                location.reload(true);
+            }
+        }
+        throw error;
+    }
+}
+
+// Load all jobs available in REST server. Return array
+// of all jobs.
+export async function loadJobs(): Promise<any> {
+    const response = await triggerCall("/scheduler/job");
+    const jobs = ([] as JobAdmin[]);
+    response.JobDefinition.forEach((element: any) => {
+        jobs.push(new JobAdmin(element));
     });
+    return jobs;
 }

@@ -24,12 +24,13 @@ import axios, { AxiosResponse } from "axios";
 import store from "../store/index";
 
 interface AdabasAdminType {
-  Active: boolean;
-  Dbid: number;
-  Name: string;
-  StructureLevel: number;
-  Version:string;
+    Active: boolean;
+    Dbid: number;
+    Name: string;
+    StructureLevel: number;
+    Version: string;
 }
+
 /* 
  * This typescript class AdabasAdmin handles all database administration
  * and monitor tasks provided by Adabas REST server.

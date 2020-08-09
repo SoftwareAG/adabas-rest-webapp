@@ -292,12 +292,10 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
-import { authHeader } from "../user/auth-header";
-import { config } from "../store/config";
-import { loadDatabases, AdabasAdmin } from "../adabas/admin";
+import { AdabasAdmin } from "../adabas/admin";
 import { userService } from "../user/service";
 import CreateDatabase from "./CreateDatabase.vue";
-import { BootstrapVue, BIconXCircle } from "bootstrap-vue";
+import { BIconXCircle } from "bootstrap-vue";
 import store from "../store/index";
 import StatusBar from "./StatusBar.vue";
 import Url from "./Url.vue";
@@ -342,7 +340,7 @@ export default class DatabaseList extends Vue {
    * submit the request to get the list of Adabas databases.
    * The list contains database which are able to be administrated.
    */
-  loadDatabases() {
+  loadDatabases(): void {
     store
       .dispatch("SYNC_ADMIN_DBS")
       .then((response: any) => {
@@ -369,7 +367,7 @@ export default class DatabaseList extends Vue {
   /*
    * Start the selected database
    */
-  startDatabase(dbid: AdabasAdmin) {
+  startDatabase(dbid: AdabasAdmin): void {
     this.operation(dbid, "start");
   }
   /*
@@ -377,14 +375,14 @@ export default class DatabaseList extends Vue {
    * stop operation. Possible values are 'shutdown','cancel'
    * and 'abort'.
    */
-  stopDatabase(dbid: AdabasAdmin, stopType: string) {
+  stopDatabase(dbid: AdabasAdmin, stopType: string): void {
     this.operation(dbid, stopType);
   }
   /*
    * General entry point to call operations to the database.
    */
 
-  operation(dbid: AdabasAdmin, operation: string) {
+  operation(dbid: AdabasAdmin, operation: string): void {
     dbid
       .callOperation(operation)
       .then((response: any) => {
@@ -405,7 +403,7 @@ export default class DatabaseList extends Vue {
   /*
    * Delete the selected Adabas database
    */
-  del_database(dbid: AdabasAdmin) {
+  del_database(dbid: AdabasAdmin): void {
     console.log("Delete database : " + dbid);
     this.$bvModal
       .msgBoxConfirm(
@@ -447,14 +445,14 @@ export default class DatabaseList extends Vue {
         }
       });
   }
-  onRowSelected(items: any) {
+  onRowSelected(items: any): void {
     if (items.length == 0) {
       return;
     }
     this.$router.push({ path: "/information/" + items[0].status.Dbid });
     return;
   }
-  beforeDestroy() {
+  beforeDestroy(): void {
     clearInterval(this.$data.timer);
   }
 }

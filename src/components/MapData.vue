@@ -361,7 +361,7 @@ export default class MapData extends Vue {
       },
     };
   }
-  created() {
+  created(): void {
     // console.log("Created " + this.classicMode);
     if (this.classicMode == "true") {
       store.dispatch("INIT_DATABASES").then((dbs) => {
@@ -379,13 +379,13 @@ export default class MapData extends Vue {
         });
     }
   }
-  get rows() {
+  get rows(): number {
     if (!this.$data.records) {
       return 0;
     }
     return this.$data.records.length;
   }
-  getSelectedItem(myarg: any) {
+  getSelectedItem(myarg: any): void {
     // Just a regular js function that takes 1 arg
     if (this.classicMode == "true") {
       var n = myarg.indexOf("(");
@@ -414,7 +414,7 @@ export default class MapData extends Vue {
       });
     }
   }
-  getFileItem(myarg: any) {
+  getFileItem(myarg: any): void {
     var n = this.$data.selected.indexOf("(");
     let s = this.$data.selected.substring(
       0,
@@ -434,7 +434,7 @@ export default class MapData extends Vue {
         this.generateAllFields(response.data);
       });
   }
-  generateUrl() {
+  generateUrl(): string {
     let url = config.Url();
     if (this.classicMode == "true") {
       var n = this.$data.query.database.url.indexOf("(");
@@ -516,7 +516,7 @@ export default class MapData extends Vue {
     }
     return url;
   }
-  callQuery() {
+  callQuery(): void {
     const url = this.generateUrl();
     this.$data.url = url;
     this.$data.fields = null;
@@ -525,21 +525,21 @@ export default class MapData extends Vue {
     });
     this.$data.jsonString = JSON.stringify(this.$data.records);
   }
-  refreshMapList() {
+  refreshMapList(): void {
     store.dispatch("INIT_MAPS").then((response) => {
       this.adaptMapOptions();
     });
   }
-  addAllFieldList() {
+  addAllFieldList(): void {
     this.$data.query.fields = [];
     this.$data.query.validFields.forEach((f: any) => {
       this.$data.query.fields.push(f);
     });
   }
-  clearFieldList() {
+  clearFieldList(): void {
     this.$data.query.fields = [];
   }
-  adaptDbOptions(dbs: any) {
+  adaptDbOptions(dbs: any): void {
     const optionsDatabases = [
       { value: null, text: "Please select an Adabas Database" },
     ];
@@ -548,14 +548,14 @@ export default class MapData extends Vue {
     });
     this.$data.optionsDatabases = optionsDatabases;
   }
-  adaptMapOptions() {
+  adaptMapOptions(): void {
     const options = [{ value: null, text: "Please select an Adabas Map" }];
     this.$data.maps.forEach((i: any, index: any) => {
       options.push({ value: i, text: i });
     });
     this.$data.options = options;
   }
-  adaptFields(value: any) {
+  adaptFields(value: any): void {
     if (this.$data.fields == null) {
       const fs = [];
       /* Adapt and parse received data */
@@ -567,7 +567,7 @@ export default class MapData extends Vue {
       this.$data.fields = fs;
     }
   }
-  generateAllFields(metadata: any) {
+  generateAllFields(metadata: any): void {
     this.$data.query.fields = [];
     this.$data.query.validFields = [];
     this.$data.sortOptions = [
@@ -591,7 +591,7 @@ export default class MapData extends Vue {
       });
     }
   }
-  tagValidator(tag: string) {
+  tagValidator(tag: string): boolean {
     return this.$data.query.validFields.indexOf(tag) > -1;
   }
   @Watch("metadata")

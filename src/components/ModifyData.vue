@@ -213,19 +213,16 @@ export default class ModifyData extends Vue {
   }
   getSelectedItem(myarg: any): void {
     // Just a regular js function that takes 1 arg
-    console.log("Selected map: " + myarg);
     this.$data.query.search = "";
     this.$data.query.fields = "";
     this.$data.mapName = myarg;
     this.$data.url = config.Url() + "/rest/metadata/map/" + myarg;
 
     store.dispatch("QUERY_MAP_FIELDS", myarg).then((response) => {
-      console.log("Query ... map: " + JSON.stringify(response));
       this.$data.mapFields = [{ name: "ISN", formatType: "B", shortName: "" }];
       response.data.Map.fields.forEach((element: any) => {
         this.$data.mapFields.push(element);
       });
-      console.log("-> MAPFIELDS: " + JSON.stringify(this.$data.mapFields));
       this.readData();
     });
   }
