@@ -15,6 +15,7 @@
 
 <template>
   <div class="databaseinfos p-2">
+    <ErrorModal />
     <div class="card">
       <div class="card-header h5">Adabas Database information</div>
       <div class="card-body">
@@ -46,7 +47,6 @@
         </b-modal>
         <b-table
           class="w-100 p-3"
-          
           striped
           bordered
           hover
@@ -66,12 +66,14 @@ import Sidebar from "./Sidebar.vue";
 import StatusBar from "./StatusBar.vue";
 import store from "../store/index";
 import Url from "./Url.vue";
+import ErrorModal from "@/components/ErrorModal.vue";
 
 @Component({
   components: {
     Sidebar,
     StatusBar,
     Url,
+    ErrorModal,
   },
 })
 export default class ParameterList extends Vue {
@@ -158,9 +160,22 @@ export default class ParameterList extends Vue {
   }
   renameDatabase(): void {
     if (this.$data.newName !== "") {
-      this.$data.db.renameDatabase(this.$data.newName).then(()=> {
-            this.queryInformation();
-      });
+      this.$data.db
+        .renameDatabase(this.$data.newName)
+        .then(() => {
+          this.queryInformation();
+        })
+        .catch((error: any) => {
+          let errorText = "unknown error to rename database";
+          if (error.response !== undefined) {
+            errorText =
+              error.response.data.Error.code +
+              ": " +
+              error.response.data.Error.message;
+          }
+          this.$root.$emit("errorMessage", errorText);
+          this.$root.$emit("bv::show::modal", "modal-error", "#btnShow");
+        });
     }
     this.$data.newName = "";
   }

@@ -26,21 +26,20 @@ function logout(): void {
     version();
 }
 
-function handleResponse(response: Response) {
-    return response.text().then((text: string) => {
-        const data = text && JSON.parse(text);
-        if (!response.ok) {
-            if (response.status === 401 || response.status === 404) {
-                // auto logout if 401 response returned from api
-                logout();
-                location.reload(true);
-            }
-
-            const error = (data && data.message) || response.statusText;
-            return Promise.reject(error);
+async function handleResponse(response: Response) {
+    const text = await response.text();
+    const data = text && JSON.parse(text);
+    if (!response.ok) {
+        if (response.status === 401 || response.status === 404) {
+            // auto logout if 401 response returned from api
+            logout();
+            location.reload(true);
         }
-        return data;
-    });
+
+        const error = (data && data.message) || response.statusText;
+        return Promise.reject(error);
+    }
+    return data;
 }
 
 function handleVersionResponse(response: Response): Promise<Response>|any {
@@ -51,16 +50,18 @@ function handleVersionResponse(response: Response): Promise<Response>|any {
         return v;
     });
 }
-function version() {
+async function version() {
     const requestOptions = {
         method: 'GET',
         headers: { Accept: 'application/json' },
     };
 
-    return fetch(`${config.Url()}/version`, requestOptions).then(handleVersionResponse);
+    const response = await fetch(`${config.Url()}/version`, requestOptions);
+    return handleVersionResponse(response);
 }
 
-function login(username: string, password: string): Promise<Response> {
+// call login with username and password
+async function login(username: string, password: string): Promise<Response> {
     const v = localStorage.getItem('version');
     if (v) {
         const version = JSON.parse(v).version;
@@ -70,25 +71,26 @@ function login(username: string, password: string): Promise<Response> {
         headers: authInitHeader(username, password),
     };
 
-    return fetch(`${config.Url()}/login`, requestOptions)
-        .then(handleResponse)
-        .then((user) => {
-            // login successful if there's a user in the response
-            if (user) {
-                // store user details and basic auth credentials in local storage
-                // to keep user logged in between page refreshes
-                if (!user.token) {
-                    user.authdata = window.btoa(username + ':' + password);
-                }
-                user.username = username;
-                localStorage.setItem('user', JSON.stringify(user));
-                // console.log("Save user: " + JSON.stringify(user));
-            }
-
-            return user;
-        });
+    const response = await fetch(`${config.Url()}/login`, requestOptions);
+    const user = await handleResponse(response);
+    // login successful if there's a user in the response
+    if (user) {
+        // store user details and basic auth credentials in local storage
+        // to keep user logged in between page refreshes
+        if (user.token===undefined) {
+            user.authdata = window.btoa(username + ':' + password);
+        }
+        if (user.AdminRole===undefined) {
+            user.AdminRole = true;
+        }
+        user.username = username;
+        localStorage.setItem('user', JSON.stringify(user));
+        // console.log("Save user: " + JSON.stringify(user));
+    }
+    return user;
 }
 
+// get login user name
 function getUsername() {
     const x = localStorage.getItem('user');
     if (x === null) {

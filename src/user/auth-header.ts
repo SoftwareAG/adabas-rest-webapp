@@ -65,5 +65,12 @@ export function adminRole() : boolean {
         return false;
     }
     const user = JSON.parse(x);
-    return user.AdminRole;
+    if (user.AdminRole!==undefined) {
+        return user.AdminRole;
+    }
+    if (user.roles!==undefined) {
+        const roles = user.roles.split(",");
+        return roles.includes("aifadmin");
+    }
+    return false;
 }

@@ -108,7 +108,7 @@ export default class ImageExample extends Vue {
       ],
       image: [],
       xURL:
-        "/rest/map/LOBEXAMPLE?fields=Filename,Size,@Thumbnail,@Picture,Model,DateOriginal,EXIFinformation",
+        "/rest/map/LOBEXAMPLE?fields=Filename,Size,@Thumbnail,@Picture,Model,DateOriginal,EXIFinformation&limit=0",
     };
   }
   created() {

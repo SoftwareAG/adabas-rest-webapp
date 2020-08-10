@@ -4257,6 +4257,8 @@ definitions:
     properties:
       token:
         type: string
+      roles:
+        type: string
       AdminRole:
         type: boolean
         x-omitempty: false

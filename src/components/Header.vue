@@ -33,8 +33,8 @@
             <b-dropdown-item to="/metadata">Adabas Map Metadata</b-dropdown-item>
             <b-dropdown-item to="/modify">Modify record</b-dropdown-item>
           </b-nav-item-dropdown>
-            <b-nav-item to="/databases">Database Administration</b-nav-item>
-            <b-nav-item to="/jobs">Job list</b-nav-item>
+            <b-nav-item :disabled="!isAdministrator" to="/databases">Database Administration</b-nav-item>
+            <b-nav-item :disabled="!isAdministrator" to="/jobs">Job list</b-nav-item>
         </b-navbar-nav>
         <b-navbar-nav class="ml-auto" right>
             <b-nav-item target="_blank" href="/api/">Swagger API</b-nav-item>
@@ -54,7 +54,7 @@
               >Descriptor read</b-dropdown-item
             >
           </b-nav-item-dropdown>
-          <b-nav-item v-on:click="logout">Logout</b-nav-item>
+          <b-nav-item v-on:click="logout">Logout<br/>&lt;{{user}}&gt;</b-nav-item>
         </b-navbar-nav>
       </b-collapse>
     </b-navbar>
@@ -73,6 +73,7 @@ import {
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 import { userService } from "../user/service";
+import { authHeader, adminRole } from '../user/auth-header';
 
 Vue.use(NavbarPlugin);
 Vue.use(ButtonPlugin);
@@ -91,14 +92,14 @@ export default Vue.extend({
   name: "Header",
   data() {
     return {
+      user: "",
+      isAdministrator: false,
       checked: true,
     };
   },
   created() {
-    // console.log("Created Header, read maps");
-    // store.dispatch('INIT_MAPS');
-    // console.log("Created Header, read databases");
-    // store.dispatch('INIT_DATABASES');
+    this.$data.isAdministrator = adminRole();
+    this.$data.user = userService.getUsername()
   },
   methods: {
     logout() {

@@ -187,12 +187,10 @@ export class AdabasAdmin {
             headers: authHeader("application/json"),
             useCredentails: true,
         };
-        try {
             return axios
                 .put(config.Url() + "/adabas/database/"
-                    + this.status.Dbid + "?name=" + newName, {}, getConfig);
-        }
-        catch (error) {
+                    + this.status.Dbid + "?name=" + newName, {}, getConfig)
+        .catch((error:any) => {
             if (error.response) {
                 if (error.response.status == 401 || error.response.status == 403) {
                     userService.logout();
@@ -200,7 +198,7 @@ export class AdabasAdmin {
                 }
             }
             throw error;
-        }
+        });
     }
     // Adabas file number can be renumbered
     async renumberFile(file: number, newNr: string): Promise<any> {
@@ -208,13 +206,12 @@ export class AdabasAdmin {
             headers: authHeader("application/json"),
             useCredentails: true,
         };
-        try {
-            return axios
-                .put(config.Url() + "/adabas/database/"
+        return axios
+            .put(config.Url() + "/adabas/database/"
                     + this.status.Dbid + "/file/" + file
-                    + ":renumber?number=" + newNr, {}, getConfig);
-        }
-        catch (error) {
+                    + ":renumber?number=" + newNr, {}, getConfig)
+            .catch ((error: any) => {
+            console.log("E: "+JSON.stringify(error));
             if (error.response) {
                 if (error.response.status == 401 || error.response.status == 403) {
                     userService.logout();
@@ -222,7 +219,7 @@ export class AdabasAdmin {
                 }
             }
             throw error;
-        }
+        });
     }
     // Refresh content of a given Adabas file number (attention: data is lost)!!!
     async refreshFile(file: number): Promise<any> {
