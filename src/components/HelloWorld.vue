@@ -19,22 +19,22 @@
       <div class="card-header h5">Adabas data access</div>
       <div class="card-body">
         <p>
-          The application provides a small overview of accessing Adabas records and form of data provided by Adabas REST API.
-          It contains Adabas record data acces as well as Adabas
-          administration and monitor tasks. In advance it shows how to use the Adabas Map
-          technology defined and used in Adabas Client for Java. The Adabas Map maps the classic Adabas database short name to
-          long names, similar to Natural does it. The Adabas Map information are stored in the Adabas database.
+          The application provides an overview of accessing Adabas records and the form of data provided by the Adabas REST API.
+          It contains Adabas record data access as well as Adabas
+          administration and monitoring tasks. Additionally it shows how to use the Adabas Map
+          technology defined and used in the Adabas Client for Java. The Adabas Map maps the classic Adabas database short names to
+          long names, similar to how Natural does this. The Adabas Map information is stored in the Adabas database.
         </p>
-        <p>The example web application is hosted at GITHUB: <a href="https://github.com/SoftwareAG/adabas-rest-vuejs">https://github.com/SoftwareAG/adabas-rest-vuejs</a></p>
+        <p>The example web application is hosted at GitHub: <a href="https://github.com/SoftwareAG/adabas-rest-vuejs">https://github.com/SoftwareAG/adabas-rest-vuejs</a></p>
         <p>
-          All example data, viewed in the content of this example web appplication, is stored in the Adabas database.
+          All example data viewed in the content of this example web application is stored in the Adabas database.
           It contains Alpha field data as well as binary images in large objects
-          or unicode content.
+          or Unicode content.
         </p>
         <p>
           The Adabas Data Designer or the mappingTool are part of the Adabas
           Client for Java product package. These tools are able to create Adabas
-          Maps. Transfer of already available definition on base of an Adabas
+          Maps. The transfer of already available definitions based on an Adabas
           database FDT comment or a SYSOBJH exported DDM are possible. The
           Adabas Maps provide long name and table name access to Adabas data.
           The classic Natural related DDM based types like NATDATE or Logical
@@ -48,12 +48,12 @@
           delivered backup file which is located in the Software AG installation
           at
           <code>AdabasRestAdministration/data</code>. In addition you need to
-          configure the Rest server configuration to add Mapping repository
+          configure the Rest server configuration to add the Mapping repository
           using the <code>Mapping</code> configuration.
           <pre lang="xml">{{mappingConfigExample}} </pre>
         </p>
         <p>
-          At the moment are {{ numberMaps }} Adabas Maps in the Mapping
+          At the moment {{ numberMaps }} Adabas Maps are in the Mapping
           repository defined by the configuration. There are
           {{ numberDbs }} databases which can be accessed directly.
         </p>
@@ -63,14 +63,14 @@
       <div class="card-header h5">Adabas administration</div>
       <div class="card-body">
         <p>
-          Beside the Adabas data access, this application provide example how to
-          access administration operations being using the REST API of the
+          Beside the Adabas data access, this application provides examples of how to
+          access administration operations using the REST API of the
           administration layer. This includes online as well as offline
           administration tasks of Adabas. The user needs administration access
           to see administration tasks.
         </p>
         <p>
-          Simple administration tasks and monitoring is possible. The job
+          Simple administration tasks and monitoring are possible. The job
           control management used to start long running Adabas utility jobs can
           be used as well.
         </p>

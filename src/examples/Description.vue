@@ -20,26 +20,26 @@
       <div class="card-header h5">Adabas example description</div>
       <div class="card-body">
         <p>
-          The example database data are prerequisite to use the REST server example pages.
+          The example database data are a prerequisite for using the REST server example pages.
           All Adabas files are delivered in an Adabas backup file. The
           file contains example data records used in the image example and
           contains predefined Adabas Maps. To load the example data, restore the
           delivered backup file which is located in the Software AG installation
           at
           <code>AdabasRestAdministration/data</code>. In addition you need to
-          configure the Rest server configuration to add Mapping repository
+          configure the Rest server configuration to add the Mapping repository
           using the <code>Mapping</code> configuration.
           <pre lang="xml">{{mappingConfigExample}} </pre>
         </p>
-        <p>Except the Adabas image example and Map definitions, all data is equal to the 
+        <p>Except for the Adabas image example and Map definitions, all data is the same as for the 
             Adabas demo database data.</p>
-        <p>Following Adabas Maps are used:
+        <p>The following Adabas Maps are used:
                 <table class="table">
                     <thead><th>Map Name</th><th>Usage</th></thead>
                     <tbody>
                     <tr><td>EMPLOYEES-NAT-DDM</td><td>Adabas long name Map for Adabas employees example file (11) imported using DDM.</td></tr>
                     <tr><td>NEW_EMPLOYEES</td><td>Adabas long name Map for new Adabas employees example file (9).</td></tr>
-                    <tr><td>LOBEXAMPLE</td><td>Adabas Large object image example Map</td></tr>
+                    <tr><td>LOBEXAMPLE</td><td>Adabas Large object image example Map.</td></tr>
                     </tbody>
                 </table>
             </p>
