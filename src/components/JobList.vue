@@ -29,7 +29,6 @@
           <b-col sm="6">
             <b-table
               class="w-100 p-3"
-              
               striped
               bordered
               hover
@@ -57,9 +56,8 @@
                   variant="info"
                   class="mr-2"
                   v-b-modal="'modal-definition-' + row.item.status.Job.Name"
-                  >Job definition</b-button
+                  >Show</b-button
                 >
-
                 <b-modal
                   size="xl"
                   :id="'modal-definition-' + row.item.status.Job.Name"
@@ -68,13 +66,19 @@
                 >
                   <pre class="my-4">{{ row.item.status.Job }}</pre>
                 </b-modal>
+                <b-button
+                  variant="info"
+                  id="expJob"
+                  class="mr-2"
+                  v-on:click="exportJob(row.item.status.Job.Name)"
+                  >Export</b-button
+                >
               </template>
             </b-table>
           </b-col>
           <b-col sm="6">
             <b-table
               class="w-100 p-3"
-              
               striped
               bordered
               hover
@@ -210,6 +214,14 @@ export default class JobList extends Vue {
     );
     console.log("Job to delete: " + name);
     jobToDelete.delete();
+  }
+  exportJob(name: string): void {
+    const jobToExport = this.$data.jobs.find(
+      (j: JobAdmin) => j.name() === name
+    );
+    console.log(
+      "Job to export: " + name + " " + JSON.stringify(jobToExport.status.Job)
+    );
   }
   delExecution(id: string): void {
     console.log("Delete id " + id + " of " + this.$data.selected.name());

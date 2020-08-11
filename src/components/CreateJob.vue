@@ -15,7 +15,9 @@
 
 <template>
   <div class="createjob">
-    <b-button variant="success" v-b-modal.modal-createjob>Create RESTful server job</b-button>
+    <b-button variant="success" v-b-modal.modal-createjob
+      >Create RESTful server job</b-button
+    >
 
     <b-modal
       @ok="insertJobInServer"
@@ -101,13 +103,17 @@
                   <b-button v-on:click="removeParameter(row.index)"
                     >Remove</b-button
                   >
-                  <b-button v-on:click="editParameter">Edit</b-button>
+                  <b-button
+                    v-on:click="editParameter(row.index)"
+                    v-b-modal.modal-parameter
+                    >Edit</b-button
+                  >
                 </template>
               </b-table>
               <b-modal
                 id="modal-parameter"
                 ref="modal"
-                :title="'Add ' + editable"
+                :title="operation + ' ' + editable"
                 @show="resetModal"
                 @hidden="resetModal"
                 @ok="handleOk"
@@ -178,12 +184,15 @@ export default class CreateJob extends Vue {
           CronScheduler: "(null)",
         },
       },
+      newSavedJob: null,
       editable: "Parameter",
+      operation: "Add",
       description: "xxx",
       parameterDescription: "The parameter for the Adabas utility",
       environmentDescription:
         "The environment defined with {VAR}={VALUE} for the Adabas utility",
       parameter: "",
+      parameterEditIndex: -1,
       nameState: null,
       submittedNames: [],
       paraFields: ["Parameter", "action"],
@@ -206,31 +215,57 @@ export default class CreateJob extends Vue {
   }
   created() {
     this.$data.newJob.Job.User = userService.getUsername();
+    this.$data.newSavedJob = this.$data.newJob;
+    this.$root.$on("editJob", (data: any) => {
+      this.$data.newJob = data;
+    });
+
   }
   removeParameter(parameter: number): void {
     this.$data.newJob.Job.Parameters.splice(parameter, 1);
   }
-  editParameter(parameter: any): void {
-    console.log("Remove " + parameter);
+  editParameter(parameter: number): void {
+    console.log("Edit " + parameter);
+    this.$data.parameterEditIndex = parameter;
+    this.$data.parameter = this.$data.newJob.Job.Parameters[
+      parameter
+    ].Parameter;
+    this.$data.editable = "Parameter";
+    this.$data.operation = "Edit";
+    this.$data.description = this.$data.parameterDescription;
   }
   prepareParameter(): void {
     this.$data.editable = "Parameter";
+    this.$data.operation = "Add";
     this.$data.description = this.$data.parameterDescription;
   }
   prepareEnvironment(): void {
     this.$data.editable = "Environment";
+    this.$data.operation = "Add";
     this.$data.description = this.$data.environmentDescription;
   }
   handleOk(bvModalEvt: any): void {
-    if (this.$data.editable === "Environment") {
-      console.log("Add environment " + this.$data.parameter);
-      this.$data.newJob.Job.Environments.push({
-        Parameter: this.$data.parameter,
-      });
+    if (this.$data.operation === "Edit") {
+      if (this.$data.editable === "Environment") {
+        this.$data.newJob.Job.Environments[
+          this.$data.parameterEditIndex
+        ].Parameter = this.$data.parameter;
+      } else {
+        this.$data.newJob.Job.Parameters[
+          this.$data.parameterEditIndex
+        ].Parameter = this.$data.parameter;
+      }
     } else {
-      this.$data.newJob.Job.Parameters.push({
-        Parameter: this.$data.parameter,
-      });
+      if (this.$data.editable === "Environment") {
+        console.log("Add environment " + this.$data.parameter);
+        this.$data.newJob.Job.Environments.push({
+          Parameter: this.$data.parameter,
+        });
+      } else {
+        this.$data.newJob.Job.Parameters.push({
+          Parameter: this.$data.parameter,
+        });
+      }
     }
   }
   checkFormValidity(): boolean {
