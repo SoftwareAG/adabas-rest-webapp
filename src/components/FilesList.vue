@@ -76,110 +76,119 @@
                 </b-input-group>
               </b-form-group>
             </b-col></b-row
-          ><b-row><b-col>
-        <b-table
-          id="my-table"
-          striped
-          bordered
-          hover
-          selectable
-          select-mode="single"
-          :per-page="perPage"
-          :current-page="currentPage"
-          small
-          :filter="filter"
-          :filterIncludedFields="filterOn"
-          @row-selected="onRowSelected"
-          :items="files"
-          :fields="fields"
-        >
-          <template v-slot:cell(action)="row">
-            <b-dropdown
-              size="sm"
-              variant="outline-info"
-              class="mr-2 w-100"
-              text="Actions"
-            >
-              <b-dropdown-item
-                size="sm"
-                variant="info"
-                v-on:click="infoDeleteFile(row.item)"
-                class="mr-2"
-                >Delete</b-dropdown-item
+          ><b-row
+            ><b-col>
+              <b-table
+                id="my-table"
+                striped
+                bordered
+                hover
+                selectable
+                select-mode="single"
+                :per-page="perPage"
+                :current-page="currentPage"
+                small
+                :filter="filter"
+                :filterIncludedFields="filterOn"
+                @row-selected="onRowSelected"
+                :items="files"
+                :fields="fields"
               >
-              <b-dropdown-item
-                size="sm"
-                variant="info"
-                v-on:click="infoRenumberFile(row.item)"
-                class="mr-2"
-                >Renumber</b-dropdown-item
-              >
-              <b-dropdown-item
-                size="sm"
-                variant="info"
-                v-on:click="refreshFile(row.item)"
-                class="mr-2"
-                >Refresh</b-dropdown-item
-              >
-            </b-dropdown>
-          </template>
-        </b-table>
-            </b-col></b-row>
-            <b-row><b-col>
-        <div v-if="hideFileParameter">
-          <b-alert show>Please select Adabas file</b-alert>
-        </div>
-        <div v-else>
-          <b-tabs content-class="mt-3">
-            <b-tab title="Information" active>
-              <b-table small :items="fileParameter" :fields="parameterFields">
-                <template v-slot:cell(Value)="row">
-                  <div
-                    v-if="
-                      row.item.Name === 'NIextents' ||
-                        row.item.Name === 'UIextents' ||
-                        row.item.Name === 'ACextents' ||
-                        row.item.Name === 'DSextents'
-                    "
+                <template v-slot:cell(action)="row">
+                  <b-dropdown
+                    size="sm"
+                    variant="outline-info"
+                    class="mr-2 w-100"
+                    text="Actions"
                   >
-                    <b-table
-                      small
-                      :items="row.item.Value"
-                      :fields="['FirstRabn', 'LastRabn', 'LenOrIsns']"
+                    <b-dropdown-item
+                      size="sm"
+                      variant="info"
+                      v-on:click="infoDeleteFile(row.item)"
+                      class="mr-2"
+                      >Delete</b-dropdown-item
                     >
-                    </b-table>
-                  </div>
-                  <div v-else>
-                    {{ row.item.Value }}
-                  </div>
+                    <b-dropdown-item
+                      size="sm"
+                      variant="info"
+                      v-on:click="infoRenumberFile(row.item)"
+                      class="mr-2"
+                      >Renumber</b-dropdown-item
+                    >
+                    <b-dropdown-item
+                      size="sm"
+                      variant="info"
+                      v-on:click="refreshFile(row.item)"
+                      class="mr-2"
+                      >Refresh</b-dropdown-item
+                    >
+                  </b-dropdown>
                 </template>
               </b-table>
-            </b-tab>
-            <b-tab title="Field definition">
-              <div v-if="!fdtAvailable">
-                <b-alert show
-                  >Adabas file definition table only available if Adabas
-                  database is online</b-alert
-                >
+            </b-col></b-row
+          >
+          <b-row
+            ><b-col>
+              <div v-if="hideFileParameter">
+                <b-alert show>Please select Adabas file</b-alert>
               </div>
               <div v-else>
-                <b-table
-                  striped
-                  small
-                  bordered
-                  hover
-                  :items="fileFields"
-                  :fields="fieldFields"
-                >
-                  <template v-slot:cell(Level)="row">
-                    <pre> {{ levelSpace(row.item.Level) }}</pre>
-                  </template>
-                </b-table>
+                <b-tabs content-class="mt-3">
+                  <b-tab title="Information" active>
+                    <b-table
+                      small
+                      :items="fileParameter"
+                      :fields="parameterFields"
+                    >
+                      <template v-slot:cell(Value)="row">
+                        <div
+                          v-if="
+                            row.item.Name === 'NIextents' ||
+                              row.item.Name === 'UIextents' ||
+                              row.item.Name === 'ACextents' ||
+                              row.item.Name === 'DSextents'
+                          "
+                        >
+                          <b-table
+                            small
+                            :items="row.item.Value"
+                            :fields="['FirstRabn', 'LastRabn', 'LenOrIsns']"
+                          >
+                          </b-table>
+                        </div>
+                        <div v-else>
+                          {{ row.item.Value }}
+                        </div>
+                      </template>
+                    </b-table>
+                  </b-tab>
+                  <b-tab title="Field definition">
+                    <div v-if="!fdtAvailable">
+                      <b-alert show
+                        >Adabas file definition table only available if Adabas
+                        database is online</b-alert
+                      >
+                    </div>
+                    <div v-else>
+                      <b-table
+                        striped
+                        small
+                        bordered
+                        hover
+                        :items="fileFields"
+                        :fields="fieldFields"
+                      >
+                        <template v-slot:cell(Level)="row">
+                          <pre> {{ levelSpace(row.item.Level) }}</pre>
+                        </template>
+                      </b-table>
+                    </div>
+                  </b-tab>
+                </b-tabs>
               </div>
-            </b-tab>
-          </b-tabs>
-        </div>
-            </b-col></b-row></b-container>
+            </b-col></b-row
+          ></b-container
+        >
       </div>
     </div>
     <b-modal
@@ -277,10 +286,20 @@ export default class FilesList extends Vue {
   }
   created(): void {
     this.$data.db = store.getters.search(this.url);
-    this.loadFiles();
     this.$data.timer = setInterval(this.loadFiles, 15000);
+    if (this.$data.db === undefined) {
+      store.dispatch("SYNC_ADMIN_DBS");
+      return;
+    }
+    this.loadFiles();
   }
   loadFiles(): void {
+    if (this.$data.db === undefined) {
+      this.$data.db = store.getters.search(this.url);
+      if (this.$data.db === undefined) {
+        return;
+      }
+    }
     this.$data.db.fileList().then((response: any) => {
       this.$data.files = response;
     });

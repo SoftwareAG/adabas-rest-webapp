@@ -59,7 +59,7 @@
           </b-form-group>
           <b-form-group
             label-cols-sm="3"
-            label="Use job control:"
+            label="Create database creation job (need extra start):"
             label-align-sm="right"
             class="mb-0"
           >
