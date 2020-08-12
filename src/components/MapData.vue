@@ -475,7 +475,7 @@ export default class MapData extends Vue {
       } else {
         url += "&";
       }
-      url += "offset=" + this.$data.query.offset;
+      url += "start=" + this.$data.query.offset;
       first = true;
     }
     if (this.$data.selectedSortField !== null) {
