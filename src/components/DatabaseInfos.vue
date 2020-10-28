@@ -42,7 +42,7 @@
           @ok="renameDatabase"
           no-stacking
         >
-          <p>Rename Adabas database {{ infos["Name"] }}</p>
+          <p>Rename Adabas database {{ infos['Name'] }}</p>
           <b-form-input v-model="newName"></b-form-input>
         </b-modal>
         <b-table
@@ -61,12 +61,12 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Provide, Vue } from "vue-property-decorator";
-import Sidebar from "./Sidebar.vue";
-import StatusBar from "./StatusBar.vue";
-import store from "../store/index";
-import Url from "./Url.vue";
-import ErrorModal from "@/components/ErrorModal.vue";
+import { Component, Prop, Provide, Vue } from 'vue-property-decorator';
+import Sidebar from './Sidebar.vue';
+import StatusBar from './StatusBar.vue';
+import store from '../store/index';
+import Url from './Url.vue';
+import ErrorModal from '@/components/ErrorModal.vue';
 
 @Component({
   components: {
@@ -78,39 +78,39 @@ import ErrorModal from "@/components/ErrorModal.vue";
 })
 export default class ParameterList extends Vue {
   @Prop(String) readonly url: string | undefined;
-  @Provide() type = "static";
+  @Provide() type = 'static';
   data() {
     return {
       db: null,
-      newName: "",
+      newName: '',
       infos: [],
-      fields: ["Name", "Value"],
+      fields: ['Name', 'Value'],
       information: {
         ACRABNLength: 4,
         ASSO1BlockSize: 8192,
         AlphaEncoding: 4,
-        Architecture: "ASCII7,BYTESWAPPED,IEEE",
+        Architecture: 'ASCII7,BYTESWAPPED,IEEE',
         CheckpointFile: 1,
         CurrentPLOGNumber: 1,
-        Date: "2020-05-18T21:07:10.000+02:00",
+        Date: '2020-05-18T21:07:10.000+02:00',
         Dbid: 23,
         ETDataFile: 3,
         ExtentRABNASSOArray: [11, 0, 0, 0],
         ExtentRABNDATAArray: [15, 0, 0, 0, 0, 0, 0, 0],
         ExtentRABNDSSTArray: [13, 0, 0, 0],
-        Flags: "NEW_DATABASE,RECOVER_DONE",
+        Flags: 'NEW_DATABASE,RECOVER_DONE',
         MaxFileNumber: 320,
         MaxFileNumberLoaded: 48,
-        Name: "GENERAL_DATABASE",
+        Name: 'GENERAL_DATABASE',
         SecurityFile: 2,
-        StructureLevel: "Adabas v6.7 (21)",
-        TimeStampLog: "2020-05-18T21:07:25.000+02:00",
-        TimeStampReplication: "1970-01-01T01:00:00.000+01:00",
+        StructureLevel: 'Adabas v6.7 (21)',
+        TimeStampLog: '2020-05-18T21:07:25.000+02:00',
+        TimeStampReplication: '1970-01-01T01:00:00.000+01:00',
         WORKExtents: [
           {
             BlockSize: 4096,
-            DeviceType: "Filesystem",
-            Id: "W",
+            DeviceType: 'Filesystem',
+            Id: 'W',
             Number: 1,
             RABNfirst: 1,
             RABNlast: 5120,
@@ -130,21 +130,21 @@ export default class ParameterList extends Vue {
     this.$data.db.information().then((response: any) => {
       this.$data.infos = [];
       [
-        "Dbid",
-        "Name",
-        "StructureLevel",
-        "Architecture",
-        "Date",
-        "Flags",
-        "Last changed",
-        "PLOG count",
-        "CurrentPLOGNumber",
-        "Files loaded",
-        "TimeStampLog",
-        "MaxFileNumber",
-        "SecurityFile",
-        "CheckpointFile",
-        "ETDataFile",
+        'Dbid',
+        'Name',
+        'StructureLevel',
+        'Architecture',
+        'Date',
+        'Flags',
+        'Last changed',
+        'PLOG count',
+        'CurrentPLOGNumber',
+        'Files loaded',
+        'TimeStampLog',
+        'MaxFileNumber',
+        'SecurityFile',
+        'CheckpointFile',
+        'ETDataFile',
       ].forEach((element: string) => {
         this.$data.infos.push({ Name: element, Value: response.Gcb[element] });
       });
@@ -152,32 +152,32 @@ export default class ParameterList extends Vue {
     });
   }
   getTypeItem(newtype: any): void {
-    console.log("Get type item " + newtype);
+    console.log('Get type item ' + newtype);
     this.queryInformation();
   }
   infoRenameDatabase(): void {
-    this.$root.$emit("bv::show::modal", "modal-rename", "#btnShow");
+    this.$root.$emit('bv-show-modal', 'modal-rename', '#btnShow');
   }
   renameDatabase(): void {
-    if (this.$data.newName !== "") {
+    if (this.$data.newName !== '') {
       this.$data.db
         .renameDatabase(this.$data.newName)
         .then(() => {
           this.queryInformation();
         })
         .catch((error: any) => {
-          let errorText = "unknown error to rename database";
+          let errorText = 'unknown error to rename database';
           if (error.response !== undefined) {
             errorText =
               error.response.data.Error.code +
-              ": " +
+              ': ' +
               error.response.data.Error.message;
           }
-          this.$root.$emit("errorMessage", errorText);
-          this.$root.$emit("bv::show::modal", "modal-error", "#btnShow");
+          this.$root.$emit('error-message', errorText);
+          this.$root.$emit('bv::show::modal', 'modal-error', '#btnShow');
         });
     }
-    this.$data.newName = "";
+    this.$data.newName = '';
   }
 }
 </script>

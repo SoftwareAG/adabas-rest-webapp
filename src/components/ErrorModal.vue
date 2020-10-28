@@ -15,25 +15,30 @@
 
 <template>
   <div class="errormodal p-2">
-    <b-modal id="modal-error" header-bg-variant="danger" title="Error..." ok-only>
+    <b-modal
+      id="modal-error"
+      header-bg-variant="danger"
+      title="Error..."
+      ok-only
+    >
       <div class="d-block">Problem: {{ error }}</div>
     </b-modal>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component
 export default class ErrorModal extends Vue {
   @Prop() private msg!: string;
   data() {
     return {
-      error: "xx",
+      error: 'xx',
     };
   }
   created() {
-    this.$root.$on("errorMessage", (data: any) => {
+    this.$root.$on('error-message', (data: any) => {
       this.$data.error = data;
     });
   }

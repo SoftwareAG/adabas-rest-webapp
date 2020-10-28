@@ -23,8 +23,8 @@ import Vue from 'vue';
 export function Url() {
    // console.log('Mode:' + process.env.NODE_ENV);
    if (process.env.NODE_ENV === 'development') {
-      // return 'http://localhost:8130'; // GO
-      return 'http://localhost:8091'; // Java
+      return 'http://localhost:8130'; // GO
+      // return 'http://localhost:8091'; // Java
    }
    return '.';
 }
