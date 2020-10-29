@@ -187,18 +187,18 @@ export class AdabasAdmin {
             headers: authHeader("application/json"),
             useCredentails: true,
         };
-            return axios
-                .put(config.Url() + "/adabas/database/"
-                    + this.status.Dbid + "?name=" + newName, {}, getConfig)
-        .catch((error:any) => {
-            if (error.response) {
-                if (error.response.status == 401 || error.response.status == 403) {
-                    userService.logout();
-                    location.reload(true);
+        return axios
+            .put(config.Url() + "/adabas/database/"
+                + this.status.Dbid + "?name=" + newName, {}, getConfig)
+            .catch((error: any) => {
+                if (error.response) {
+                    if (error.response.status == 401 || error.response.status == 403) {
+                        userService.logout();
+                        location.reload(true);
+                    }
                 }
-            }
-            throw error;
-        });
+                throw error;
+            });
     }
     // Adabas file number can be renumbered
     async renumberFile(file: number, newNr: string): Promise<any> {
@@ -208,18 +208,18 @@ export class AdabasAdmin {
         };
         return axios
             .put(config.Url() + "/adabas/database/"
-                    + this.status.Dbid + "/file/" + file
-                    + ":renumber?number=" + newNr, {}, getConfig)
-            .catch ((error: any) => {
-            console.log("E: "+JSON.stringify(error));
-            if (error.response) {
-                if (error.response.status == 401 || error.response.status == 403) {
-                    userService.logout();
-                    location.reload(true);
+                + this.status.Dbid + "/file/" + file
+                + ":renumber?number=" + newNr, {}, getConfig)
+            .catch((error: any) => {
+                console.log("E: " + JSON.stringify(error));
+                if (error.response) {
+                    if (error.response.status == 401 || error.response.status == 403) {
+                        userService.logout();
+                        location.reload(true);
+                    }
                 }
-            }
-            throw error;
-        });
+                throw error;
+            });
     }
     // Refresh content of a given Adabas file number (attention: data is lost)!!!
     async refreshFile(file: number): Promise<any> {
@@ -355,6 +355,7 @@ export async function triggerCall(resource: string): Promise<any> {
         }
         else {
             store.commit('SET_STATUS', JSON.stringify(error));
+            console.log("Skip logout" + JSON.stringify(error));
         }
         throw error;
     }

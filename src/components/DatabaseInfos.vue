@@ -156,7 +156,7 @@ export default class ParameterList extends Vue {
     this.queryInformation();
   }
   infoRenameDatabase(): void {
-    this.$root.$emit('bv-show-modal', 'modal-rename', '#btnShow');
+    this.$root.$emit('bv::show::modal', 'modal-rename', '#btnShow');
   }
   renameDatabase(): void {
     if (this.$data.newName !== '') {

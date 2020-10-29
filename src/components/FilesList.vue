@@ -381,7 +381,7 @@ export default class FilesList extends Vue {
   infoRenumberFile(item: any): void {
     this.$data.currentFile = item.FileNr;
     console.log('Renumber ' + item.FileNr);
-    this.$root.$emit('bv-show-modal', 'modal-renumber', '#btnShow');
+    this.$root.$emit('bv::show::modal', 'modal-renumber', '#btnShow');
   }
   renumberFile(): void {
     console.log(
