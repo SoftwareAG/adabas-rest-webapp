@@ -42,15 +42,122 @@ export class AdabasConfig {
             this.status = x;
             return x;
         });
-        // catch (error) {
-        //         if (error.response.status == 401 || error.response.status == 403) {
-        //             userService.logout();
-        //             location.reload(true);
-        //         }
-        //         throw error;
-        //     });
     }
     config(): any {
         return status
+    }
+    async deleteInstallation(l: string): Promise<AxiosResponse<any>> {
+        const getConfig = {
+            headers: authHeader("application/json"),
+            useCredentails: true,
+        };
+        try {
+            return axios
+                .delete(config.Url() + "/adabas/config/module/installation?installation=" + l, getConfig);
+        }
+        catch (error) {
+            if (error.response) {
+                if (error.response.status == 401 || error.response.status == 403) {
+                    userService.logout();
+                    location.reload(true);
+                }
+            }
+            throw error;
+        }
+    }
+    async deleteMapping(l: string, f: number): Promise<AxiosResponse<any>> {
+        const getConfig = {
+            headers: authHeader("application/json"),
+            useCredentails: true,
+        };
+        try {
+            return axios
+                .delete(config.Url() + "/adabas/config/mapping&url=" + l + "&file=" + f, getConfig);
+        }
+        catch (error) {
+            if (error.response) {
+                if (error.response.status == 401 || error.response.status == 403) {
+                    userService.logout();
+                    location.reload(true);
+                }
+            }
+            throw error;
+        }
+    }
+    async deleteAccess(l: string): Promise<AxiosResponse<any>> {
+        const getConfig = {
+            headers: authHeader("application/json"),
+            useCredentails: true,
+        };
+        try {
+            return axios
+                .delete(config.Url() + "/adabas/config/classic&url=" + l, getConfig);
+        }
+        catch (error) {
+            if (error.response) {
+                if (error.response.status == 401 || error.response.status == 403) {
+                    userService.logout();
+                    location.reload(true);
+                }
+            }
+            throw error;
+        }
+    }
+    async deleteDirectory(l: string): Promise<AxiosResponse<any>> {
+        const getConfig = {
+            headers: authHeader("application/json"),
+            useCredentails: true,
+        };
+        try {
+            return axios
+                .delete(config.Url() + "/adabas/config/module/directories&url=" + l, getConfig);
+        }
+        catch (error) {
+            if (error.response) {
+                if (error.response.status == 401 || error.response.status == 403) {
+                    userService.logout();
+                    location.reload(true);
+                }
+            }
+            throw error;
+        }
+    }
+    async deleteMetric(l: string): Promise<AxiosResponse<any>> {
+        const getConfig = {
+            headers: authHeader("application/json"),
+            useCredentails: true,
+        };
+        try {
+            return axios
+                .delete(config.Url() + "/adabas/config/metric&url=" + l, getConfig);
+        }
+        catch (error) {
+            if (error.response) {
+                if (error.response.status == 401 || error.response.status == 403) {
+                    userService.logout();
+                    location.reload(true);
+                }
+            }
+            throw error;
+        }
+    }
+    async store(): Promise<AxiosResponse<any>> {
+        const getConfig = {
+            headers: authHeader("application/json"),
+            useCredentails: true,
+        };
+        try {
+            return axios
+                .post(config.Url() + "/adabas/config", getConfig);
+        }
+        catch (error) {
+            if (error.response) {
+                if (error.response.status == 401 || error.response.status == 403) {
+                    userService.logout();
+                    location.reload(true);
+                }
+            }
+            throw error;
+        }
     }
 }
