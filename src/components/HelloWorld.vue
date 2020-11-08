@@ -15,9 +15,12 @@
 
 <template>
   <div class="hello p-2">
-    <div class="card">
-      <div class="card-header h5">Adabas data access</div>
-      <div class="card-body">
+    <b-card
+      header="Adabas data access"
+      border-variant="secondary"
+      header-border-variant="secondary"
+    >
+      <b-card-body>
         <p>
           The application provides an overview of accessing Adabas records and the form of data provided by the Adabas REST API.
           It contains Adabas record data access as well as Adabas
@@ -57,11 +60,13 @@
           repository defined by the configuration. There are
           {{ numberDbs }} databases which can be accessed directly.
         </p>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-header h5">Adabas administration</div>
-      <div class="card-body">
+      </b-card-body></b-card>
+    <b-card
+      header="Adabas administration"
+      border-variant="secondary"
+      header-border-variant="secondary"
+    >
+      <b-card-body>
         <p>
           Beside the Adabas data access, this application provides examples of how to
           access administration operations using the REST API of the
@@ -74,8 +79,7 @@
           control management used to start long running Adabas utility jobs can
           be used as well.
         </p>
-      </div>
-    </div>
+      </b-card-body></b-card>
   </div>
 </template>
 

@@ -15,22 +15,13 @@
 
 <template>
   <div class="databaseinfos p-2">
-    <ErrorModal />
-    <div class="card">
-      <div class="card-header h5">Adabas Database information</div>
-      <div class="card-body">
-        <p>
-          This page provide the list of Adabas database information to be
-          administrate through this Adabas RESTful server.
-        </p>
-      </div>
-    </div>
     <Sidebar :url="url" />
-    <div class="card">
-      <div class="card-header h5">
-        Adabas Database information for database {{ url }}
-      </div>
-      <div class="card-body">
+    <b-card
+      :header="'Adabas Database information for database ' + url"
+      border-variant="secondary"
+      header-border-variant="secondary"
+    >
+      <b-card-body>
         <Url url="/adabas/database" />
         <b-button variant="outline-primary" v-on:click="infoRenameDatabase()"
           >Rename database</b-button
@@ -54,9 +45,10 @@
           :items="infos"
           :fields="fields"
         ></b-table>
-      </div>
-    </div>
+      </b-card-body>
+    </b-card>
     <StatusBar />
+    <ErrorModal />
   </div>
 </template>
 
@@ -186,6 +178,10 @@ export default class ParameterList extends Vue {
 <style scoped lang="scss">
 h3 {
   margin: 40px 0 0;
+}
+.card-header {
+  font-weight: bold;
+  font-size: 18px;
 }
 ul {
   list-style-type: none;

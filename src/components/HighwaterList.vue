@@ -16,17 +16,13 @@
 <template>
   <div class="highwaterlist p-2">
     <Sidebar :url="url" />
-    <div class="card">
-      <div class="card-header h5">
-        Adabas Database High Watermark for database {{ url }}
-      </div>
-      <div class="card-body">
+    <b-card
+      :header="'Adabas Database High Watermark for database ' + url"
+      border-variant="secondary"
+      header-border-variant="secondary"
+    >
+      <b-card-body>
         <b-container fluid>
-          <b-row>
-            <b-col class="font-weight-bold text-center h1">
-              Adabas Highwater Mark
-            </b-col>
-          </b-row>
           <b-row>
             <b-col>
               This page provide the list of Adabas database High Watermark.
@@ -49,7 +45,7 @@
               >
                 <template v-slot:cell(statistics)="row">
                   <b-progress
-                    show-value=false
+                    show-value="false"
                     :value="row.item.Percent"
                     max="100"
                     :precision="2"
@@ -59,19 +55,18 @@
               </b-table>
             </b-col>
           </b-row>
-        </b-container>
-      </div>
-    </div>
+        </b-container> </b-card-body
+    ></b-card>
     <StatusBar />
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Provide, Vue } from "vue-property-decorator";
-import Sidebar from "./Sidebar.vue";
-import store from "../store/index";
-import StatusBar from "./StatusBar.vue";
-import Url from "./Url.vue";
+import { Component, Prop, Provide, Vue } from 'vue-property-decorator';
+import Sidebar from './Sidebar.vue';
+import store from '../store/index';
+import StatusBar from './StatusBar.vue';
+import Url from './Url.vue';
 
 @Component({
   components: {
@@ -82,21 +77,21 @@ import Url from "./Url.vue";
 })
 export default class ParameterList extends Vue {
   @Prop(String) readonly url: string | undefined;
-  @Provide() type = "static";
+  @Provide() type = 'static';
   data() {
     return {
       db: null,
       fields: [
-        "Area",
-        "Size",
-        "High",
-        "InUse",
-        "Time",
-        "Percent",
-        "statistics",
+        'Area',
+        'Size',
+        'High',
+        'InUse',
+        'Time',
+        'Percent',
+        'statistics',
       ],
       highwater: [] as any[],
-      timer: "",
+      timer: '',
     };
   }
   created(): void {
@@ -119,6 +114,10 @@ export default class ParameterList extends Vue {
 <style scoped lang="scss">
 h3 {
   margin: 40px 0 0;
+}
+.card-header {
+  font-weight: bold;
+  font-size: 18px;
 }
 ul {
   list-style-type: none;

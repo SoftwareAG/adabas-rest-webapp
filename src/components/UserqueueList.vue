@@ -16,17 +16,13 @@
 <template>
   <div class="userqueuelist p-2">
     <Sidebar :url="url" />
-    <div class="card">
-      <div class="card-header h5">
-        Adabas Database user queue list for database {{ url }}
-      </div>
-      <div class="card-body">
+    <b-card
+      :header="'Adabas Database user queue list for database ' + url"
+      border-variant="secondary"
+      header-border-variant="secondary"
+    >
+      <b-card-body>
         <b-container fluid>
-          <b-row>
-            <b-col class="font-weight-bold text-center h1">
-              Adabas user queue
-            </b-col>
-          </b-row>
           <b-row
             ><b-col>
               This page provide the list of Adabas database user queue to be
@@ -49,20 +45,18 @@
                 :fields="fields"
               >
               </b-table>
-            </b-col> </b-row
-        ></b-container>
-      </div>
-    </div>
+            </b-col> </b-row></b-container></b-card-body
+    ></b-card>
     <StatusBar />
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import Sidebar from "./Sidebar.vue";
-import StatusBar from "./StatusBar.vue";
-import Url from "./Url.vue";
-import store from "../store/index";
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import Sidebar from './Sidebar.vue';
+import StatusBar from './StatusBar.vue';
+import Url from './Url.vue';
+import store from '../store/index';
 
 @Component({
   components: {
@@ -76,15 +70,15 @@ export default class UserqueueList extends Vue {
   data() {
     return {
       fields: [
-        "Uid.Id",
-        "Uid.Node",
-        "Uid.Terminal",
-        "Uid.Timestamp",
-        "UqId",
-        "User",
+        'Uid.Id',
+        'Uid.Node',
+        'Uid.Terminal',
+        'Uid.Timestamp',
+        'UqId',
+        'User',
       ],
       userqueues: [],
-      timer: "",
+      timer: '',
       db: null,
     };
   }
@@ -108,6 +102,10 @@ export default class UserqueueList extends Vue {
 <style scoped lang="scss">
 h3 {
   margin: 40px 0 0;
+}
+.card-header {
+  font-weight: bold;
+  font-size: 18px;
 }
 ul {
   list-style-type: none;

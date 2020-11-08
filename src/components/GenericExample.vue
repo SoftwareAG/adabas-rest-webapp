@@ -16,18 +16,21 @@
 <template>
   <div class="descriptorexample">
     <MyHeader></MyHeader>
-    <div class="card">
-      <div class="card-header h5">{{title}}</div>
-      <div class="card-body">
+    <b-card
+      :header="title"
+      border-variant="secondary"
+      header-border-variant="secondary"
+    >
+      <b-card-body>
         <p>
           This application provides access to Adabas data using the Adabas
           RESTful administration and the Adabas Map technology defined and being
           used in Adabas Client for Java.
         </p>
         <p>
-          {{infoText}}
-          </p>
-           <Url :url="xURL" />
+          {{ infoText }}
+        </p>
+        <Url :url="xURL"/>
         <b-pagination
           v-model="currentPage"
           :total-rows="records.length"
@@ -46,23 +49,22 @@
           :items="records"
           :fields="fields"
         >
-        </b-table>
-      </div>
-    </div>
-     <StatusBar />
+        </b-table></b-card-body
+    ></b-card>
+    <StatusBar />
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import { authHeader } from "../user/auth-header";
-import { config } from "../store/config";
-import { userService } from "../user/service";
-import store from "../store/index";
-import MyHeader from "@/components/Header.vue";
-import StatusBar from "@/components/StatusBar.vue";
-import Url from "@/components/Url.vue";
-import axios from "axios";
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import { authHeader } from '../user/auth-header';
+import { config } from '../store/config';
+import { userService } from '../user/service';
+import store from '../store/index';
+import MyHeader from '@/components/Header.vue';
+import StatusBar from '@/components/StatusBar.vue';
+import Url from '@/components/Url.vue';
+import axios from 'axios';
 
 @Component({
   components: {
@@ -87,27 +89,30 @@ export default class GenericExample extends Vue {
   }
   created(): void {
     const getConfig = {
-      headers: authHeader("application/json"),
+      headers: authHeader('application/json'),
       useCredentails: true,
     };
-    store.commit('SET_URL',{url: config.Url() + this.$data.xURL,method: "get"});
+    store.commit('SET_URL', {
+      url: config.Url() + this.$data.xURL,
+      method: 'get',
+    });
     axios
       .get(config.Url() + this.$data.xURL, getConfig)
       .then((response: any) => {
-        store.commit("SET_STATUS", "OK");
+        store.commit('SET_STATUS', 'OK');
         this.$data.records = response.data.Records;
         this.adaptFields();
       })
       .catch((error: any) => {
-        console.log("ERROR: " + JSON.stringify(error));
+        console.log('ERROR: ' + JSON.stringify(error));
         if (error.response) {
-          store.commit("SET_STATUS", JSON.stringify(error.response));
+          store.commit('SET_STATUS', JSON.stringify(error.response));
           if (error.response.status == 401 || error.response.status == 403) {
             userService.logout();
             location.reload(true);
           }
         } else {
-          store.commit("SET_STATUS", JSON.stringify(error));
+          store.commit('SET_STATUS', JSON.stringify(error));
         }
         throw error;
       });
@@ -129,6 +134,10 @@ export default class GenericExample extends Vue {
 <style scoped lang="scss">
 h3 {
   margin: 40px 0 0;
+}
+.card-header {
+  font-weight: bold;
+  font-size: 18px;
 }
 ul {
   list-style-type: none;

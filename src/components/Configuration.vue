@@ -16,9 +16,12 @@
 <template>
   <div class="configuration p-2">
     <MyHeader></MyHeader>
-    <div class="card">
-      <div class="card-header h5">Adabas REST server configuration</div>
-      <div class="card-body">
+    <b-card
+      header="Adabas REST server configuration"
+      border-variant="secondary"
+      header-border-variant="secondary"
+    >
+      <b-card-body>
         <b-tabs content-class="mt-3">
           <b-tab title="Server services" active>
             <b-table
@@ -154,10 +157,8 @@
                   ></b-icon-x-circle>
                 </div> </template
             ></b-table>
-          </b-tab>
-        </b-tabs>
-      </div>
-    </div>
+          </b-tab> </b-tabs></b-card-body
+    ></b-card>
   </div>
 </template>
 
@@ -245,6 +246,10 @@ export default class Configuration extends Vue {
 <style scoped lang="scss">
 h3 {
   margin: 40px 0 0;
+}
+.card-header {
+  font-weight: bold;
+  font-size: 18px;
 }
 ul {
   list-style-type: none;

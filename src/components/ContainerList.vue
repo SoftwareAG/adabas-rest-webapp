@@ -16,17 +16,13 @@
 <template>
   <div class="containerlist p-2">
     <Sidebar :url="url" />
-    <div class="card">
-      <div class="card-header h5">
-        Adabas Database containers for database {{ url }}
-      </div>
-      <div class="card-body">
+    <b-card
+      :header="'Adabas Database containers for database ' + url"
+      border-variant="secondary"
+      header-border-variant="secondary"
+    >
+      <b-card-body>
         <b-container fluid>
-          <b-row>
-            <b-col class="font-weight-bold text-center h1">
-              Adabas container volumes
-            </b-col>
-          </b-row>
           <b-row
             ><b-col>
               This page provide the list of Adabas database containers to be
@@ -34,8 +30,7 @@
             </b-col></b-row
           >
           <b-row
-            ><b-col>
-              <Url url="/adabas/database" /> </b-col
+            ><b-col> <Url url="/adabas/database" /> </b-col
           ></b-row>
           <b-row
             ><b-col>
@@ -54,18 +49,18 @@
             </b-col></b-row
           >
         </b-container>
-      </div>
-    </div>
+      </b-card-body></b-card
+    >
     <StatusBar />
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import Sidebar from "./Sidebar.vue";
-import store from "../store/index";
-import StatusBar from "./StatusBar.vue";
-import Url from "./Url.vue";
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import Sidebar from './Sidebar.vue';
+import store from '../store/index';
+import StatusBar from './StatusBar.vue';
+import Url from './Url.vue';
 
 @Component({
   components: {
@@ -79,15 +74,15 @@ export default class DatabaseList extends Vue {
   data() {
     return {
       fields: [
-        "Path",
-        "Type",
-        "ContainerNumber",
-        "DeviceType",
-        "BlockSize",
-        "FirstExtentRabn",
-        "LastExtentRabn",
-        "FirstUnusedRabn",
-        { label: "Size", key: "calc" },
+        'Path',
+        'Type',
+        'ContainerNumber',
+        'DeviceType',
+        'BlockSize',
+        'FirstExtentRabn',
+        'LastExtentRabn',
+        'FirstUnusedRabn',
+        { label: 'Size', key: 'calc' },
       ],
       containers: [],
     };
@@ -105,19 +100,19 @@ export default class DatabaseList extends Vue {
     return this.formatSizeUnits(size);
   }
   formatSizeUnits(bytes: number): string {
-    let formatedSize = "";
+    let formatedSize = '';
     if (bytes >= 1073741824) {
-      formatedSize = (bytes / 1073741824).toFixed(2) + " GB";
+      formatedSize = (bytes / 1073741824).toFixed(2) + ' GB';
     } else if (bytes >= 1048576) {
-      formatedSize = (bytes / 1048576).toFixed(2) + " MB";
+      formatedSize = (bytes / 1048576).toFixed(2) + ' MB';
     } else if (bytes >= 1024) {
-      formatedSize = (bytes / 1024).toFixed(2) + " KB";
+      formatedSize = (bytes / 1024).toFixed(2) + ' KB';
     } else if (bytes > 1) {
-      formatedSize = bytes + " bytes";
+      formatedSize = bytes + ' bytes';
     } else if (bytes == 1) {
-      formatedSize = bytes + " byte";
+      formatedSize = bytes + ' byte';
     } else {
-      formatedSize = "0 bytes";
+      formatedSize = '0 bytes';
     }
     return formatedSize;
   }
@@ -128,6 +123,10 @@ export default class DatabaseList extends Vue {
 <style scoped lang="scss">
 h3 {
   margin: 40px 0 0;
+}
+.card-header {
+  font-weight: bold;
+  font-size: 18px;
 }
 ul {
   list-style-type: none;

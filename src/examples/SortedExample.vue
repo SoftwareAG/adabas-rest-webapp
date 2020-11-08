@@ -14,22 +14,25 @@
  * limitations under the License.-->
 
 <template>
-  <div class="sortedexample">
-    <GenericExample URL="/rest/map/EMPLOYEES-NAT-DDM?search=NAME='SMITH'&fields=FULL-NAME,DEPARTMENT&sorted_by=DEPARTMENT" 
+  <div class="sortedexample p-2">
+    <GenericExample
+      URL="/rest/map/EMPLOYEES-NAT-DDM?search=NAME='SMITH'&fields=FULL-NAME,DEPARTMENT&sorted_by=DEPARTMENT"
       title="Sorting example"
-      text="In this example a search is requested. The result should be sorted by 'DEPARTMENT(S1)' field. This page may return an error if the Adabas nucleus is not started with the option TRUNCATION." />
+      text="In this example a search is requested. The result should be sorted by 'DEPARTMENT(S1)' field. This page may return an error if the Adabas nucleus is not started with the option TRUNCATION."
+    />
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import GenericExample from "@/components/GenericExample.vue"
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import GenericExample from '@/components/GenericExample.vue';
 
 @Component({
   components: {
     GenericExample,
   },
-})export default class SortedExample extends Vue {
+})
+export default class SortedExample extends Vue {
   @Prop() private msg!: string;
 }
 </script>

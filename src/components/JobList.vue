@@ -15,9 +15,12 @@
 
 <template>
   <div class="joblist p-2">
-    <div class="card">
-      <div class="card-header h5">Job administration</div>
-      <div class="card-body">
+    <b-card
+      header="Job administration"
+      border-variant="secondary"
+      header-border-variant="secondary"
+    >
+      <b-card-body>
         <p>
           This page provide access to the list of Adabas RESTful server jobs to
           be administrate through this Adabas RESTful server. These jobs can
@@ -115,20 +118,20 @@
             </b-table>
           </b-col>
         </b-row>
-      </div>
-    </div>
+      </b-card-body>
+    </b-card>
     <StatusBar />
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import { JobAdmin } from "../adabas/jobs";
-import { userService } from "../user/service";
-import store from "../store/index";
-import CreateJob from "./CreateJob.vue";
-import StatusBar from "./StatusBar.vue";
-import Url from "./Url.vue";
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import { JobAdmin } from '../adabas/jobs';
+import { userService } from '../user/service';
+import store from '../store/index';
+import CreateJob from './CreateJob.vue';
+import StatusBar from './StatusBar.vue';
+import Url from './Url.vue';
 
 @Component({
   components: {
@@ -143,17 +146,17 @@ export default class JobList extends Vue {
     return {
       selected: null,
       fields: [
-        { key: "status.Job.Name", label: "Name" },
-        { key: "status.Job.User", label: "User" },
-        { key: "status.Job.Utility", label: "Utility" },
-        { key: "status.Status", label: "Status" },
-        { key: "status.Job.Description", label: "Description" },
-        "info",
+        { key: 'status.Job.Name', label: 'Name' },
+        { key: 'status.Job.User', label: 'User' },
+        { key: 'status.Job.Utility', label: 'Utility' },
+        { key: 'status.Status', label: 'Status' },
+        { key: 'status.Job.Description', label: 'Description' },
+        'info',
       ],
-      execFields: ["Id", "Scheduled", "Ended", "ExitCode", "log"],
+      execFields: ['Id', 'Scheduled', 'Ended', 'ExitCode', 'log'],
       jobs: [] as JobAdmin[],
       executions: [],
-      timer: "",
+      timer: '',
     };
   }
   created(): void {
@@ -162,7 +165,7 @@ export default class JobList extends Vue {
   }
   loadJobs(): void {
     store
-      .dispatch("SYNC_ADMIN_JOBS")
+      .dispatch('SYNC_ADMIN_JOBS')
       .then((response: any) => {
         if (this.$data.selected != null) {
           const name = this.$data.selected.status.Job.Name;
@@ -176,15 +179,15 @@ export default class JobList extends Vue {
         this.$data.jobs = response;
       })
       .catch((error: any) => {
-        console.log("ERROR JOBLIST: " + JSON.stringify(error));
+        console.log('ERROR JOBLIST: ' + JSON.stringify(error));
         if (error.response) {
-          store.commit("SET_STATUS", JSON.stringify(error.response));
+          store.commit('SET_STATUS', JSON.stringify(error.response));
           if (error.response.status == 401 || error.response.status == 403) {
             userService.logout();
             location.reload(true);
           }
         } else {
-          store.commit("SET_STATUS", JSON.stringify(error));
+          store.commit('SET_STATUS', JSON.stringify(error));
           userService.logout();
           location.reload(true);
         }
@@ -210,21 +213,21 @@ export default class JobList extends Vue {
   }
   delJob(name: string): void {
     const jobToDelete = this.$data.jobs.find(
-      (j: JobAdmin) => j.name() === name
+      (j: JobAdmin) => j.name() === name,
     );
-    console.log("Job to delete: " + name);
+    console.log('Job to delete: ' + name);
     jobToDelete.delete();
   }
   exportJob(name: string): void {
     const jobToExport = this.$data.jobs.find(
-      (j: JobAdmin) => j.name() === name
+      (j: JobAdmin) => j.name() === name,
     );
     console.log(
-      "Job to export: " + name + " " + JSON.stringify(jobToExport.status.Job)
+      'Job to export: ' + name + ' ' + JSON.stringify(jobToExport.status.Job),
     );
   }
   delExecution(id: string): void {
-    console.log("Delete id " + id + " of " + this.$data.selected.name());
+    console.log('Delete id ' + id + ' of ' + this.$data.selected.name());
     this.$data.selected.delete_execution(id);
   }
   beforeDestroy(): void {
@@ -237,6 +240,10 @@ export default class JobList extends Vue {
 <style scoped lang="scss">
 .joblist {
   font-size: 14px;
+}
+.card-header {
+  font-weight: bold;
+  font-size: 18px;
 }
 h3 {
   margin: 40px 0 0;

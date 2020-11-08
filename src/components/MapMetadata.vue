@@ -14,16 +14,16 @@
  * limitations under the License.-->
 
 <template>
-  <div class="mapmetadata p-4">
+  <div class="mapmetadata p-2">
     <b-card
-      header="Access Parameter"
+      header="Adabas Map Metadata"
       border-variant="secondary"
       header-border-variant="secondary"
     >
       <b-card-body>
         <p>
-          This page query the Adabas Map Metadata of the Adabas Map technology used in
-          Adabas Client for Java.
+          This page query the Adabas Map Metadata of the Adabas Map technology
+          used in Adabas Client for Java.
         </p>
         <Url url="/adabas/database" />
         <b-container fluid>
@@ -85,35 +85,49 @@
           >Response</b-button
         >
       </b-card-header>
-      <b-collapse id="accordion-1" accordion="my-accordion" visible role="tabpanel">
+      <b-collapse
+        id="accordion-1"
+        accordion="my-accordion"
+        visible
+        role="tabpanel"
+      >
         <b-card-body>
           <b-card-text>
             <b-container fluid>
               <b-row>
-                <b-col  sm="2"><div  class="font-weight-bold">Map definition:</div>
+                <b-col sm="2"
+                  ><div class="font-weight-bold">Map definition:</div>
                 </b-col>
-                <b-col  sm="5"><div  class="font-weight-bold">Target:</div> {{map.data.target}}
+                <b-col sm="5"
+                  ><div class="font-weight-bold">Target:</div>
+                  {{ map.data.target }}
                 </b-col>
-                <b-col  sm="5"><div  class="font-weight-bold">File:</div> {{map.data.file}}
-                </b-col>
-              </b-row>
-              <b-row>
-                <b-col  sm="2"><div  class="font-weight-bold">Data reference:</div>
-                </b-col>
-                <b-col  sm="5"><div  class="font-weight-bold">Target:</div> {{map.definition.target}}
-                </b-col>
-                <b-col  sm="5"><div  class="font-weight-bold">File:</div> {{map.definition.file}}
+                <b-col sm="5"
+                  ><div class="font-weight-bold">File:</div>
+                  {{ map.data.file }}
                 </b-col>
               </b-row>
               <b-row>
-                <b-col  sm="2"><div  class="font-weight-bold">Last modified:</div>
+                <b-col sm="2"
+                  ><div class="font-weight-bold">Data reference:</div>
                 </b-col>
-                <b-col  sm="8">{{map.lastModified}}
+                <b-col sm="5"
+                  ><div class="font-weight-bold">Target:</div>
+                  {{ map.definition.target }}
                 </b-col>
+                <b-col sm="5"
+                  ><div class="font-weight-bold">File:</div>
+                  {{ map.definition.file }}
+                </b-col>
+              </b-row>
+              <b-row>
+                <b-col sm="2"
+                  ><div class="font-weight-bold">Last modified:</div>
+                </b-col>
+                <b-col sm="8">{{ map.lastModified }} </b-col>
               </b-row>
             </b-container>
             <b-table
-              
               striped
               bordered
               hover
@@ -137,45 +151,45 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
-import "bootstrap/dist/css/bootstrap.css";
-import store from "../store/index";
-import { config } from "../store/config";
-import StatusBar from "./StatusBar.vue";
-import Url from "./Url.vue";
+import Vue from 'vue';
+import 'bootstrap/dist/css/bootstrap.css';
+import store from '../store/index';
+import { config } from '../store/config';
+import StatusBar from './StatusBar.vue';
+import Url from './Url.vue';
 
 export default Vue.extend({
-  name: "MapMetadata",
-  components: {StatusBar,Url},
+  name: 'MapMetadata',
+  components: { StatusBar, Url },
   data() {
     return {
       maps: store.state.maps,
       map: {
-        data: {target:"",file:""},
-        definition: {target:"",file:""},
+        data: { target: '', file: '' },
+        definition: { target: '', file: '' },
         fields: [],
       },
-      url: config.Url() + "/rest/metadata/map/<to be selected>",
+      url: config.Url() + '/rest/metadata/map/<to be selected>',
       selected: null,
       status: store.state.status,
       metadata: store.state.metadata,
       mapFields: [],
-      fields: ['name','contentType','shortName','length'],
-      jsonString: "No query JSON result available" as string,
-      options: [{ value: null, text: "Please select an Adabas Map" }],
+      fields: ['name', 'contentType', 'shortName', 'length'],
+      jsonString: 'No query JSON result available' as string,
+      options: [{ value: null, text: 'Please select an Adabas Map' }],
       query: {
-        map: "",
+        map: '',
       },
     };
   },
   created() {
     store
-      .dispatch("INIT_MAPS")
+      .dispatch('INIT_MAPS')
       .then((response) => {
-        console.log("Response: " + JSON.stringify(response));
+        console.log('Response: ' + JSON.stringify(response));
       })
       .catch((reason: any) => {
-        console.log("Reason(created): " + JSON.stringify(reason));
+        console.log('Reason(created): ' + JSON.stringify(reason));
       });
     this.adaptMapOptions();
   },
@@ -183,11 +197,11 @@ export default Vue.extend({
     getSelectedItem: function(myarg: any) {
       // Just a regular js function that takes 1 arg
       if (this.query.map !== myarg) {
-        this.url = config.Url() + "/rest/metadata/map/" + myarg;
+        this.url = config.Url() + '/rest/metadata/map/' + myarg;
         this.query.map = myarg;
       }
 
-      store.dispatch("QUERY_MAP_FIELDS", myarg).then((response)=>{
+      store.dispatch('QUERY_MAP_FIELDS', myarg).then((response) => {
         // console.log("Query map: "+JSON.stringify(response));
         this.mapFields = response.data.Map.fields;
         this.map = response.data.Map;
@@ -195,10 +209,10 @@ export default Vue.extend({
       });
     },
     refreshMapList: function() {
-      store.dispatch("INIT_MAPS");
+      store.dispatch('INIT_MAPS');
     },
     adaptMapOptions: function() {
-      const options = [{ value: null, text: "Please select an Adabas Map" }];
+      const options = [{ value: null, text: 'Please select an Adabas Map' }];
       this.maps.forEach((i: any, index: any) => {
         options.push({ value: i, text: i });
         this.options = options;
@@ -210,7 +224,7 @@ export default Vue.extend({
       this.adaptMapOptions();
     },
     metadata: function(value: any, newvalue: any) {
-      console.log("Metadata changed:" + JSON.stringify(newvalue));
+      console.log('Metadata changed:' + JSON.stringify(newvalue));
     },
   },
 });
@@ -223,7 +237,7 @@ export default Vue.extend({
 }
 .card-header {
   font-weight: bold;
-  font-size: 16px;
+  font-size: 18px;
 }
 h3 {
   margin: 40px 0 0;

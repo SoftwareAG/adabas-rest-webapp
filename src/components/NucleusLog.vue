@@ -16,25 +16,20 @@
 <template>
   <div class="nucleuslog p-2">
     <Sidebar :url="url" />
-    <div class="card">
-      <div class="card-header h5">
-        Adabas Databases Nucleus log of database {{ url }}
-      </div>
-      <div class="card-body">
+    <b-card
+      :header="'Adabas Databases Nucleus log of database ' + url"
+      border-variant="secondary"
+      header-border-variant="secondary"
+    >
+      <b-card-body>
         <b-container fluid>
-          <b-row>
-            <b-col class="font-weight-bold text-center h1">
-              Adabas nucleus log
-            </b-col>
-          </b-row>
           <b-row
             ><b-col>
               This page provide Adabas database nucleus log/output.
             </b-col></b-row
           >
           <b-row
-            ><b-col>
-              <Url url="/adabas/database" /> </b-col
+            ><b-col> <Url url="/adabas/database" /> </b-col
           ></b-row>
           <b-row
             ><b-col>
@@ -43,19 +38,19 @@
               >
             </b-col></b-row
           ></b-container
-        >
-      </div>
-    </div>
+        ></b-card-body
+      ></b-card
+    >
     <StatusBar />
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import Sidebar from "./Sidebar.vue";
-import StatusBar from "./StatusBar.vue";
-import Url from "./Url.vue";
-import store from "../store/index";
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import Sidebar from './Sidebar.vue';
+import StatusBar from './StatusBar.vue';
+import Url from './Url.vue';
+import store from '../store/index';
 
 @Component({
   components: {
@@ -68,7 +63,7 @@ export default class DatabaseList extends Vue {
   @Prop(String) readonly url: string | undefined;
   data() {
     return {
-      log: "" as string,
+      log: '' as string,
       db: null,
     };
   }
@@ -92,6 +87,10 @@ export default class DatabaseList extends Vue {
 <style scoped lang="scss">
 h3 {
   margin: 40px 0 0;
+}
+.card-header {
+  font-weight: bold;
+  font-size: 18px;
 }
 ul {
   list-style-type: none;

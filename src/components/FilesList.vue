@@ -16,17 +16,13 @@
 <template>
   <div class="fileslist p-2">
     <Sidebar :url="url" />
-    <div class="card">
-      <div class="card-header h5">
-        Adabas Database files for database {{ url }}
-      </div>
-      <div class="card-body">
+    <b-card
+      :header="'Adabas Database files for database ' + url"
+      border-variant="secondary"
+      header-border-variant="secondary"
+    >
+      <b-card-body>
         <b-container fluid>
-          <b-row>
-            <b-col class="font-weight-bold text-center h1">
-              Adabas File list
-            </b-col>
-          </b-row>
           <b-row>
             <b-col>
               This page provide the list of Adabas database files to be
@@ -188,9 +184,9 @@
               </div>
             </b-col></b-row
           ></b-container
-        >
-      </div>
-    </div>
+        ></b-card-body
+      ></b-card
+    >
     <b-modal
       id="modal-renumber"
       size="lg"
@@ -439,6 +435,10 @@ export default class FilesList extends Vue {
 <style scoped lang="scss">
 h3 {
   margin: 40px 0 0;
+}
+.card-header {
+  font-weight: bold;
+  font-size: 18px;
 }
 ul {
   list-style-type: none;

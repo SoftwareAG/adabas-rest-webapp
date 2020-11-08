@@ -16,80 +16,74 @@
 <template>
   <div class="commandstatsdata p-2">
     <Sidebar :url="url" />
-    <div class="card">
-      <div class="card-header h5">
-        Adabas Database command statistics for database {{ url }}
-      </div>
-      <div class="card-body">
-         <b-container fluid>
+    <b-card
+      :header="'Adabas Database command statistics for database ' + url"
+      border-variant="secondary"
+      header-border-variant="secondary"
+    >
+      <b-card-body>
+        <b-container fluid>
           <b-row>
-            <b-col class="font-weight-bold text-center h1">
-              Adabas command statistics
+            <b-col>
+              This page provide the list of Adabas database command statistics
+              to be administrate through this Adabas RESTful server.
             </b-col>
           </b-row>
           <b-row>
             <b-col>
-            This page provide the list of Adabas database command statistics to be
-          administrate through this Adabas RESTful server.
+              <Url :url="'/adabas/database/' + url + '/cmdstats'" />
             </b-col>
           </b-row>
           <b-row>
-            <b-col>
-        <Url :url="'/adabas/database/'+url+'/cmdstats'" />
-            </b-col>
-          </b-row>
-        <b-row>
-          <b-col sm="4" class="h-100 p-1">
-            <b-pagination
-              v-model="currentPage"
-              :total-rows="comstats.length"
-              :per-page="perPage"
-              aria-controls="my-table"
-            ></b-pagination>
+            <b-col sm="4" class="h-100 p-1">
+              <b-pagination
+                v-model="currentPage"
+                :total-rows="comstats.length"
+                :per-page="perPage"
+                aria-controls="my-table"
+              ></b-pagination>
 
-            <b-table
-              id="my-table"
-              class="h-100"
-              striped
-              bordered
-              hover
-              small
-              :per-page="perPage"
-              :current-page="currentPage"
-              :items="comstats"
-              :sort-by.sync="sortBy"
-              :sort-desc.sync="sortDesc"
-              :fields="fields"
-              sort-icon-left
-              responsive="sm"
-            >
-            </b-table>
-          </b-col>
-          <b-col sm="4">
-            <div class="small Chart w-100">
-              <commit-chart :chart-data="datacollection"></commit-chart>
-            </div>
-          </b-col>
-          <b-col sm="4">
-            <div class="small Chart w-100">
-              <bar-chart :chart-data="datacollection"></bar-chart>
-            </div>
-          </b-col>
-        </b-row></b-container>
-      </div>
-    </div>
+              <b-table
+                id="my-table"
+                class="h-100"
+                striped
+                bordered
+                hover
+                small
+                :per-page="perPage"
+                :current-page="currentPage"
+                :items="comstats"
+                :sort-by.sync="sortBy"
+                :sort-desc.sync="sortDesc"
+                :fields="fields"
+                sort-icon-left
+                responsive="sm"
+              >
+              </b-table>
+            </b-col>
+            <b-col sm="4">
+              <div class="small Chart w-100">
+                <commit-chart :chart-data="datacollection"></commit-chart>
+              </div>
+            </b-col>
+            <b-col sm="4">
+              <div class="small Chart w-100">
+                <bar-chart :chart-data="datacollection"></bar-chart>
+              </div>
+            </b-col> </b-row></b-container></b-card-body
+    ></b-card>
     <StatusBar />
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import Sidebar from "./Sidebar.vue";
-import store from "../store/index";
-import BarChart from "./BarChart";
-import CommitChart from "./DoughnutChart";
-import StatusBar from "./StatusBar.vue";
-import Url from "./Url.vue";
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import Sidebar from './Sidebar.vue';
+import store from '../store/index';
+import BarChart from './BarChart';
+import CommitChart from './DoughnutChart';
+import StatusBar from './StatusBar.vue';
+import Url from './Url.vue';
 
 @Component({
   components: {
@@ -106,9 +100,9 @@ export default class CommandStatsData extends Vue {
     return {
       perPage: 12,
       currentPage: 1,
-      sortBy: "CommandCount",
+      sortBy: 'CommandCount',
       sortDesc: true,
-      fields: ["CommandName", "CommandCount"],
+      fields: ['CommandName', 'CommandCount'],
       comstats: [],
       datacollection: null,
     };
@@ -120,41 +114,41 @@ export default class CommandStatsData extends Vue {
       let labels = [] as string[];
       let data = [] as number[];
       let datacollection = {
-        labels: ["A1", "E1", "L1", "S1", "ET", "CL"],
+        labels: ['A1', 'E1', 'L1', 'S1', 'ET', 'CL'],
         datasets: [
           {
-            label: "Adabas commands",
+            label: 'Adabas commands',
             backgroundColor: [
-              "rgb(200,126,64)",
-              "rgb(200,226,202)",
-              "rgb(200,210,172)",
-              "rgb(200,189,139)",
-              "rgb(200,162,103)",
-              "rgb(150,126,64)",
-              "rgb(150,126,64)",
-              "rgb(150,226,202)",
-              "rgb(150,210,172)",
-              "rgb(150,189,139)",
-              "rgb(130,162,103)",
-              "rgb(130,126,64)",
-              "rgb(130,126,64)",
-              "rgb(130,226,202)",
-              "rgb(130,210,172)",
-              "rgb(130,189,139)",
-              "rgb(130,162,103)",
-              "rgb(226,126,64)",
-              "rgb(226,126,64)",
-              "rgb(232,226,202)",
-              "rgb(226,210,172)",
-              "rgb(223,189,139)",
-              "rgb(223,162,103)",
-              "rgb(226,126,64)",
-              "rgb(226,126,64)",
-              "rgb(232,226,202)",
-              "rgb(226,210,172)",
-              "rgb(223,189,139)",
-              "rgb(223,162,103)",
-              "rgb(226,126,64)",
+              'rgb(200,126,64)',
+              'rgb(200,226,202)',
+              'rgb(200,210,172)',
+              'rgb(200,189,139)',
+              'rgb(200,162,103)',
+              'rgb(150,126,64)',
+              'rgb(150,126,64)',
+              'rgb(150,226,202)',
+              'rgb(150,210,172)',
+              'rgb(150,189,139)',
+              'rgb(130,162,103)',
+              'rgb(130,126,64)',
+              'rgb(130,126,64)',
+              'rgb(130,226,202)',
+              'rgb(130,210,172)',
+              'rgb(130,189,139)',
+              'rgb(130,162,103)',
+              'rgb(226,126,64)',
+              'rgb(226,126,64)',
+              'rgb(232,226,202)',
+              'rgb(226,210,172)',
+              'rgb(223,189,139)',
+              'rgb(223,162,103)',
+              'rgb(226,126,64)',
+              'rgb(226,126,64)',
+              'rgb(232,226,202)',
+              'rgb(226,210,172)',
+              'rgb(223,189,139)',
+              'rgb(223,162,103)',
+              'rgb(226,126,64)',
             ],
             borderWidth: 0,
             hoverBorderWidth: 0,
@@ -180,6 +174,10 @@ export default class CommandStatsData extends Vue {
 <style scoped lang="scss">
 h3 {
   margin: 40px 0 0;
+}
+.card-header {
+  font-weight: bold;
+  font-size: 18px;
 }
 ul {
   list-style-type: none;

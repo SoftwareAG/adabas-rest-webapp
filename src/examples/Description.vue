@@ -14,11 +14,14 @@
  * limitations under the License.-->
 
 <template>
-  <div class="description">
+  <div class="description p-2">
     <MyHeader></MyHeader>
-    <div class="card">
-      <div class="card-header h5">Adabas example description</div>
-      <div class="card-body">
+    <b-card
+      header="Adabas example description"
+      border-variant="secondary"
+      header-border-variant="secondary"
+    >
+      <b-card-body>
         <p>
           The example database data are a prerequisite for using the REST server example pages.
           All Adabas files are delivered in an Adabas backup file. The
@@ -42,9 +45,7 @@
                     <tr><td>LOBEXAMPLE</td><td>Adabas Large object image example Map.</td></tr>
                     </tbody>
                 </table>
-            </p>
-      </div>
-    </div>
+            </p></b-card-body></b-card>
   </div>
 </template>
 
@@ -72,6 +73,10 @@ export default class Description extends Vue {
 <style scoped lang="scss">
 h3 {
   margin: 40px 0 0;
+}
+.card-header {
+  font-weight: bold;
+  font-size: 18px;
 }
 ul {
   list-style-type: none;

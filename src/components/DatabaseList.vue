@@ -15,17 +15,13 @@
 
 <template>
   <div class="databaselist p-2">
-    <div class="card">
-      <div class="card-header h5">
-        Adabas Databases list available to administrate
-      </div>
-      <div class="card-body">
+    <b-card
+      header="List of local Adabas Databases available for administration"
+      border-variant="secondary"
+      header-border-variant="secondary"
+    >
+      <b-card-body>
         <b-container fluid>
-          <b-row>
-            <b-col class="font-weight-bold text-center h1">
-              Adabas Database list
-            </b-col>
-          </b-row>
           <b-row>
             <b-col>
               This page provide access to the list of Adabas database to be
@@ -286,8 +282,8 @@
                 </template> </b-table></b-col
           ></b-row>
         </b-container>
-      </div>
-    </div>
+      </b-card-body>
+    </b-card>
     <StatusBar />
   </div>
 </template>
@@ -464,6 +460,10 @@ export default class DatabaseList extends Vue {
 <style scoped lang="scss">
 h3 {
   margin: 40px 0 0;
+}
+.card-header {
+  font-weight: bold;
+  font-size: 18px;
 }
 ul {
   list-style-type: none;
