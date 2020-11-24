@@ -45,7 +45,7 @@
               >
                 <template v-slot:cell(statistics)="row">
                   <b-progress
-                    show-value="false"
+                    :show-value="false"
                     :value="row.item.Percent"
                     max="100"
                     :precision="2"

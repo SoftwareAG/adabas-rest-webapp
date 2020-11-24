@@ -77,11 +77,17 @@ export default class UCBList extends Vue {
     return {
       fields: ['Count', 'DBMode', 'Date', 'Id', 'Sequence', 'files'],
       ucb: [],
+      timer: '',
+      db: null,
     };
   }
   created() {
-    const db = store.getters.search(this.url);
-    db.ucb().then((response: any) => {
+    this.$data.db = store.getters.search(this.url);
+    this.$data.timer = setInterval(this.loadUCBList, 5000);
+    this.loadUCBList();
+  }
+  loadUCBList() {
+    this.$data.db.ucb().then((response: any) => {
       this.$data.ucb = response;
     });
   }

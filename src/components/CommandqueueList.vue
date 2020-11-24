@@ -82,13 +82,22 @@ export default class CommandqueueList extends Vue {
         'User.Timestamp',
       ],
       commandqueues: [],
+      timer: '',
+      db: null,
     };
   }
   created() {
-    const db = store.getters.search(this.url);
-    db.commandQueue().then((response: any) => {
+    this.$data.db = store.getters.search(this.url);
+    this.$data.timer = setInterval(this.loadCommandQueue, 5000);
+    this.loadCommandQueue();
+  }
+  loadCommandQueue() {
+    this.$data.db.commandQueue().then((response: any) => {
       this.$data.commandqueues = response;
     });
+  }
+  beforeDestroy() {
+    clearInterval(this.$data.timer);
   }
 }
 </script>

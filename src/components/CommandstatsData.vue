@@ -105,11 +105,17 @@ export default class CommandStatsData extends Vue {
       fields: ['CommandName', 'CommandCount'],
       comstats: [],
       datacollection: null,
+      timer: '',
+      db: null,
     };
   }
   mounted() {
-    const db = store.getters.search(this.url);
-    db.commandStats().then((response: any) => {
+    this.$data.db = store.getters.search(this.url);
+    this.$data.timer = setInterval(this.loadCommandStat, 5000);
+    this.loadCommandStat();
+  }
+  loadCommandStat() {
+    this.$data.db.commandStats().then((response: any) => {
       this.$data.comstats = response;
       let labels = [] as string[];
       let data = [] as number[];
@@ -166,6 +172,9 @@ export default class CommandStatsData extends Vue {
       datacollection.datasets[0].data = data;
       this.$data.datacollection = datacollection;
     });
+  }
+  beforeDestroy() {
+    clearInterval(this.$data.timer);
   }
 }
 </script>

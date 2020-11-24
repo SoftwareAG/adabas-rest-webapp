@@ -38,8 +38,14 @@ export class AdabasConfig {
         console.log('Created configuration');
         this.status = {};
         return triggerCall('/adabas/config').then((x: any) => {
-            console.log("Trigger return" + JSON.stringify(x));
             this.status = x;
+            return x;
+        });
+    }
+    async readUser(): Promise<any> {
+        console.log('Read users');
+        this.status = {};
+        return triggerCall('/rest/access/User').then((x: any) => {
             return x;
         });
     }

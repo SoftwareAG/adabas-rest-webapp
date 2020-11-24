@@ -82,13 +82,22 @@ export default class HoldqueueList extends Vue {
         'User',
       ],
       holdqueues: [],
+      timer: '',
+      db: null,
     };
   }
   created(): void {
-    const db = store.getters.search(this.url);
-    db.holdQueue().then((response: any) => {
+    this.$data.db = store.getters.search(this.url);
+    this.$data.timer = setInterval(this.loadHoldQueue, 5000);
+    this.loadHoldQueue();
+  }
+  loadHoldQueue() {
+    this.$data.db.holdQueue().then((response: any) => {
       this.$data.holdqueues = response;
     });
+  }
+  beforeDestroy() {
+    clearInterval(this.$data.timer);
   }
 }
 </script>
