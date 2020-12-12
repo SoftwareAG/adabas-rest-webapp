@@ -33,7 +33,7 @@ export function Version(): string {
    if (process.env.NODE_ENV === 'development') {
       return 'dev';
    }
-   return 'v1.0.0';
+   return 'v1.0.1';
 }
 
 export const config = {
