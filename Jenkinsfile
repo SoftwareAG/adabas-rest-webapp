@@ -11,7 +11,7 @@ node('docker-builds') {
          [url: 'https://softwareag.com/Adabas/adabas-rest-webapp-mirror.git']
        ]])
     }
-    docker.image('node:14.5.0-alpine').inside {
+    docker.image('node:14.15.4-alpine').inside {
     withEnv([
         'HOME=.',
     ]){
