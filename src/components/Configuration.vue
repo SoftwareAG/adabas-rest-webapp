@@ -242,6 +242,7 @@
                 ><b-col>
                   <b-button
                     v-b-modal.modal-fileTransfer
+                    @click="showMsgOk('filetransfer')"
                     variant="outline-primary"
                     >Add</b-button
                   ></b-col
@@ -430,8 +431,8 @@ export default class Configuration extends Vue {
       c: null,
       fileTransferName: '',
       location: '',
-      dbid: 0,
-      file: 100,
+      dbid: '0' as string,
+      file: 100 as number,
       mapFileDisplay: false,
       modalType: '',
       modalTitle: 'Add Database',
@@ -494,39 +495,62 @@ export default class Configuration extends Vue {
   }
   del_mapping(location: string, file: number): void {
     console.log('Delete mapping : ' + location + ' ' + file);
-    this.$data.c.deleteMapping(location, file);
+    this.$data.config.Mapping.Database.forEach((element: any) => {
+      if (element.url === location && element.file === file) {
+        element.Deleted = true;
+      }
+    });
+    // this.$data.c.deleteMapping(location, file);
   }
   del_installation(location: string): void {
     console.log('Delete installation : ' + location);
-    this.$data.c.deleteInstallation(location);
+    this.$data.config.Module.Installation.forEach((element: any) => {
+      console.log('Installation -> ' + JSON.stringify(element));
+      if (element.Location === location) {
+        console.log('Remove -> ' + location);
+        element.Deleted = true;
+      }
+    });
+    // this.$data.c.deleteInstallation(location);
   }
   del_access(location: string): void {
     console.log('Delete access : ' + location);
-    var dbAccess = this.$data.config.DatabaseAccess.Database.filter(function(
-      db: any,
-    ) {
-      return db.url !== location;
+    this.$data.config.DatabaseAccess.Database.forEach((element: any) => {
+      if (element.url === location) {
+        element.Deleted = true;
+      }
     });
-    this.$data.config.DatabaseAccess.Database = dbAccess;
-    this.$data.c.deleteAccess(location);
+    //   this.$data.c.deleteAccess(location);
   }
   del_directories(location: string): void {
     console.log('Delete directories : ' + location);
-    this.$data.c.deleteDirectory(location);
-  }
-  del_metric(location: string): void {
-    console.log('Delete metrics : ' + location);
-    var dbAccess = this.$data.config.Metrics.Database.filter(function(db: any) {
-      return db.url !== location;
+    this.$data.config.Module.Directories.forEach((element: any) => {
+      if (element.location === location) {
+        element.Deleted = true;
+      }
     });
-    this.$data.config.Metrics.Database = dbAccess;
-    this.$data.c.deleteMetric(location);
+    // this.$data.c.deleteDirectory(location);
+  }
+  del_metric(url: string): void {
+    console.log('Delete metrics : ' + location);
+    this.$data.config.Metrics.Database.forEach((element: any) => {
+      if (element.url === url) {
+        element.Deleted = true;
+      }
+    });
+    // var dbAccess = this.$data.config.Metrics.Database.filter(function(db: any) {
+    //   return db.url !== location;
+    // });
+    // this.$data.config.Metrics.Database = dbAccess;
+    // this.$data.c.deleteMetric(location);
   }
   locationState() {
     return this.$data.location === '' ? false : true;
   }
   handleLocationOk() {
     console.log('handle location state check of ' + this.$data.location);
+    this.$data.modalType = 'installation';
+    this.handleOk();
   }
   dbidState() {
     return this.$data.dbid > 0 && this.$data.dbid < 64536 ? true : false;
@@ -562,9 +586,16 @@ export default class Configuration extends Vue {
   handleOk() {
     console.log('Handle ok show db modal ' + this.$data.modalType);
     switch (this.$data.modalType) {
+      case 'installation':
+        this.$data.config.Module.Installation.push({
+          changed: true,
+          deleted: false,
+          Location: this.$data.location,
+        });
+        break;
       case 'classic':
         if (this.$data.dbid > 0) {
-          var notFound = this.$data.config.DatabaseAccess.Database.every(
+          notFound = this.$data.config.DatabaseAccess.Database.every(
             (element: any) => {
               if (element.url == this.$data.dbid + '') {
                 return false;
@@ -577,6 +608,40 @@ export default class Configuration extends Vue {
           }
           this.$data.config.DatabaseAccess.Database.push({
             url: this.$data.dbid + '',
+            changed: true,
+            deleted: false,
+          });
+        }
+        break;
+      case 'filetransfer':
+        this.$data.config.Module.Directories.push({
+          location: this.$data.location,
+          name: this.$data.fileTransferName,
+          changed: true,
+          deleted: false,
+        });
+        break;
+      case 'map':
+        if (this.$data.dbid > 0) {
+          var notFound = this.$data.config.Mapping.Database.every(
+            (element: any) => {
+              if (
+                element.url == this.$data.dbid + '' &&
+                element.file == this.$data.file
+              ) {
+                return false;
+              }
+              return true;
+            },
+          );
+          if (!notFound) {
+            return;
+          }
+          this.$data.config.Mapping.Database.push({
+            url: this.$data.dbid + '',
+            file: Number(this.$data.file),
+            changed: true,
+            deleted: false,
           });
         }
         break;
@@ -599,6 +664,7 @@ export default class Configuration extends Vue {
           }
           this.$data.config.Metrics.Database.push({
             url: this.$data.dbid + '',
+            changed: true,
           });
         }
         break;
@@ -611,6 +677,9 @@ export default class Configuration extends Vue {
   }
   adaptChanges() {
     console.log('Apply changes');
+    return this.$data.c.putConfig(this.$data.config).then((result: any) => {
+      console.log('Storing ...');
+    });
   }
 }
 </script>

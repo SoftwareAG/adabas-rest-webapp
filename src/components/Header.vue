@@ -65,6 +65,7 @@
             >
           </b-nav-item-dropdown>
           <b-nav-item to="/configuration/">Configuration</b-nav-item>
+          <b-nav-item to="/log/">Log</b-nav-item>
           <b-nav-item v-on:click="logout"
             >Logout<br />&lt;{{ user }}&gt;</b-nav-item
           >

@@ -45,7 +45,14 @@ export class AdabasConfig {
     async readUser(): Promise<any> {
         console.log('Read users');
         this.status = {};
-        return triggerCall('/rest/access/User').then((x: any) => {
+        return triggerCall('/adabas/rest/access/User').then((x: any) => {
+            return x;
+        });
+    }
+    async readLog(): Promise<any> {
+        console.log('Read users');
+        this.status = {};
+        return triggerCall('/adabas/rest/log').then((x: any) => {
             return x;
         });
     }
@@ -136,6 +143,25 @@ export class AdabasConfig {
         try {
             return axios
                 .delete(config.Url() + "/adabas/config/metric&url=" + l, getConfig);
+        }
+        catch (error) {
+            if (error.response) {
+                if (error.response.status == 401 || error.response.status == 403) {
+                    userService.logout();
+                    location.reload(true);
+                }
+            }
+            throw error;
+        }
+    }
+    async putConfig(c: any): Promise<AxiosResponse<any>> {
+        const getConfig = {
+            headers: authHeader("application/json"),
+            useCredentails: true,
+        };
+        try {
+            return axios
+                .put(config.Url() + "/adabas/config", c, getConfig);
         }
         catch (error) {
             if (error.response) {

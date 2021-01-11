@@ -49,6 +49,7 @@ import NewEmployeeExample from '../examples/NewEmployeeExample.vue'
 import SortedExample from '../examples/SortedExample.vue'
 import DescriptorExample from '../examples/DescriptorExample.vue'
 import Configuration from '../components/Configuration.vue'
+import Log from '../components/Log.vue'
 
 Vue.use(Router)
 
@@ -206,6 +207,12 @@ export default new Router({
       name: 'Configuration',
       component: Configuration,
       meta: { title: 'Configuration' }
+    },
+    {
+      path: '/log',
+      name: 'Log',
+      component: Log,
+      meta: { title: 'Log' }
     },
     {
       path: '/about',
