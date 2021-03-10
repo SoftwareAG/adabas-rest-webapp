@@ -459,7 +459,11 @@ export default class Configuration extends Vue {
         },
       },
       originConfig: null,
-      user: null,
+      user: {
+        readPermission: "",
+        writePermission:"",
+        Users: [],
+      },
       originUser: null,
       instFields: [
         { key: 'Location', name: 'Installation' },
