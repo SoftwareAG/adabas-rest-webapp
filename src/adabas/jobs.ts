@@ -143,10 +143,21 @@ export async function insertJob(job: any): Promise<any> {
 // Load all jobs available in REST server. Return array
 // of all jobs.
 export async function loadJobs(): Promise<any> {
-    const response = await triggerCall("/scheduler/job");
+    const response = await triggerCall("/scheduler/jobs");
     const jobs = ([] as JobAdmin[]);
     response.JobDefinition.forEach((element: any) => {
         jobs.push(new JobAdmin(element));
     });
     return jobs;
+}
+
+// Load all jobs available in REST server. Return array
+// of all jobs.
+export async function loadExecutions(jobName: string): Promise<any> {
+    const response = await triggerCall("/scheduler/jobs/" + jobName + "/result");
+    const executions = ([] as any[]);
+    response.JobResults.forEach((element: any) => {
+        executions.push(element);
+    });
+    return executions;
 }

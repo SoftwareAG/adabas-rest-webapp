@@ -99,23 +99,16 @@
                   v-on:click="delExecution(row.item.Id)"
                   >Delete</b-button
                 >
-                <b-button
-                  variant="info"
-                  v-b-modal="'modal-log' + row.item.Id"
-                  class="mr-2"
-                  >Show log</b-button
-                >
-
-                <b-modal
-                  size="xl"
-                  :id="'modal-log' + row.item.Id"
-                  title="Job log"
-                  ok-only
-                >
-                  <pre class="my-4">{{ row.item.Log }}</pre>
-                </b-modal>
               </template>
             </b-table>
+          </b-col>
+        </b-row>
+        <b-row
+          ><b-col>
+            <b-badge pill variant="secondary">Log Output {{currentId}}:</b-badge>
+            <b-alert show variant="secondary">             
+              <pre>{{ log }}</pre>
+            </b-alert>
           </b-col>
         </b-row>
       </b-card-body>
@@ -125,13 +118,13 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
-import { JobAdmin } from '../adabas/jobs';
-import { userService } from '../user/service';
-import store from '../store/index';
-import CreateJob from './CreateJob.vue';
-import StatusBar from './StatusBar.vue';
-import Url from './Url.vue';
+import { Component, Prop, Vue } from "vue-property-decorator";
+import { JobAdmin, loadExecutions } from "../adabas/jobs";
+import { userService } from "../user/service";
+import store from "../store/index";
+import CreateJob from "./CreateJob.vue";
+import StatusBar from "./StatusBar.vue";
+import Url from "./Url.vue";
 
 @Component({
   components: {
@@ -146,26 +139,28 @@ export default class JobList extends Vue {
     return {
       selected: null,
       fields: [
-        { key: 'status.Job.Name', label: 'Name' },
-        { key: 'status.Job.User', label: 'User' },
-        { key: 'status.Job.Utility', label: 'Utility' },
-        { key: 'status.Status', label: 'Status' },
-        { key: 'status.Job.Description', label: 'Description' },
-        'info',
+        { key: "status.Job.Name", label: "Name" },
+        { key: "status.Job.User", label: "User" },
+        { key: "status.Job.Utility", label: "Utility" },
+        { key: "status.Status", label: "Status" },
+        { key: "status.Job.Description", label: "Description" },
+        "info",
       ],
-      execFields: ['Id', 'Scheduled', 'Ended', 'ExitCode', 'log'],
+      execFields: ["Id", "Scheduled", "Ended", "ExitCode", "log"],
       jobs: [] as JobAdmin[],
+      currentId: "",
       executions: [],
-      timer: '',
+      timer: "",
+      log: "",
     };
   }
   created(): void {
-    this.loadJobs();
-    this.$data.timer = setInterval(this.loadJobs, 5000);
+    this.retrieveJobs();
+    this.$data.timer = setInterval(this.retrieveJobs, 5000);
   }
-  loadJobs(): void {
+  retrieveJobs(): void {
     store
-      .dispatch('SYNC_ADMIN_JOBS')
+      .dispatch("SYNC_ADMIN_JOBS")
       .then((response: any) => {
         if (this.$data.selected != null) {
           const name = this.$data.selected.status.Job.Name;
@@ -179,15 +174,15 @@ export default class JobList extends Vue {
         this.$data.jobs = response;
       })
       .catch((error: any) => {
-        console.log('ERROR JOBLIST: ' + JSON.stringify(error));
+        console.log("ERROR JOBLIST: " + JSON.stringify(error));
         if (error.response) {
-          store.commit('SET_STATUS', JSON.stringify(error.response));
+          store.commit("SET_STATUS", JSON.stringify(error.response));
           if (error.response.status == 401 || error.response.status == 403) {
             userService.logout();
             location.reload(true);
           }
         } else {
-          store.commit('SET_STATUS', JSON.stringify(error));
+          store.commit("SET_STATUS", JSON.stringify(error));
           userService.logout();
           location.reload(true);
         }
@@ -198,37 +193,48 @@ export default class JobList extends Vue {
     if (items.length == 0) {
       return;
     }
-    this.$data.selected = items[0];
-    this.$data.executions = items[0].status.Executions;
-
+    this.$data.log = "";
+    loadExecutions(items[0].status.Job.Name).then((response: any) => {
+      this.$data.executions = [];
+      response.forEach((element: any) => {
+        this.$data.executions.push(element.JobResult);
+      });
+    });
     return;
   }
   onExecSelected(items: any): void {
     if (items.length == 0) {
       return;
     }
+    this.$data.currentId = items[0].Id;
+    this.$data.log = items[0].Log;
   }
   startJob(items: JobAdmin): void {
     items.start();
   }
   delJob(name: string): void {
     const jobToDelete = this.$data.jobs.find(
-      (j: JobAdmin) => j.name() === name,
+      (j: JobAdmin) => j.name() === name
     );
-    console.log('Job to delete: ' + name);
+    console.log("Job to delete: " + name);
     jobToDelete.delete();
   }
   exportJob(name: string): void {
     const jobToExport = this.$data.jobs.find(
-      (j: JobAdmin) => j.name() === name,
+      (j: JobAdmin) => j.name() === name
     );
     console.log(
-      'Job to export: ' + name + ' ' + JSON.stringify(jobToExport.status.Job),
+      "Job to export: " + name + " " + JSON.stringify(jobToExport.status.Job)
     );
   }
   delExecution(id: string): void {
-    console.log('Delete id ' + id + ' of ' + this.$data.selected.name());
+    console.log("Delete id " + id + " of " + this.$data.selected.name());
     this.$data.selected.delete_execution(id);
+  }
+  showLog(item: any): void {
+    console.log("Show log id " + JSON.stringify(item));
+    this.$data.currentId = item.ID;
+    this.$data.log = item.Log;
   }
   beforeDestroy(): void {
     clearInterval(this.$data.timer);
