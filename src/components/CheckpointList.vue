@@ -109,11 +109,11 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
-import Sidebar from './Sidebar.vue';
-import store from '../store/index';
-import StatusBar from './StatusBar.vue';
-import Url from './Url.vue';
+import { Component, Prop, Vue } from "vue-property-decorator";
+import Sidebar from "./Sidebar.vue";
+import store from "../store/index";
+import StatusBar from "./StatusBar.vue";
+import Url from "./Url.vue";
 
 @Component({
   components: {
@@ -134,15 +134,15 @@ export default class CheckpointList extends Vue {
     const maxDate = now;
 
     return {
-      filter: '',
-      filterOn: ['Details', 'Name'],
+      filter: "",
+      filterOn: ["Details", "Name"],
       min: minDate,
       max: maxDate,
       from: null,
       to: null,
       fromTime: null,
       toTime: null,
-      fields: ['Date', 'Details', 'Name', 'Session'],
+      fields: ["Date", "Details", "Name", "Session"],
       checkpoints: [],
     };
   }
@@ -158,8 +158,8 @@ export default class CheckpointList extends Vue {
     this.updateCheckpoints();
   }
   updateCheckpoints(): void {
-    let to = this.$data.to + '+' + this.$data.toTime;
-    let from = this.$data.from + '+' + this.$data.fromTime;
+    let to = this.$data.to + "+" + this.$data.toTime;
+    let from = this.$data.from + "+" + this.$data.fromTime;
     const db = store.getters.search(this.url);
     db.checkpoints(from, to).then((response: any) => {
       this.$data.checkpoints = response;
@@ -167,20 +167,20 @@ export default class CheckpointList extends Vue {
   }
   convertDate(currentdate: Date): string {
     return (
-      new String(currentdate.getFullYear()).padStart(4, '0') +
-      '-' +
-      new String(currentdate.getMonth() + 1).padStart(2, '0') +
-      '-' +
-      new String(currentdate.getDate()).padStart(2, '0')
+      new String(currentdate.getFullYear()).padStart(4, "0") +
+      "-" +
+      new String(currentdate.getMonth() + 1).padStart(2, "0") +
+      "-" +
+      new String(currentdate.getDate()).padStart(2, "0")
     );
   }
   convertTime(currentdate: Date): string {
     return (
-      new String(currentdate.getHours()).padStart(2, '0') +
-      ':' +
-      new String(currentdate.getMinutes()).padStart(2, '0') +
-      ':' +
-      new String(currentdate.getSeconds()).padStart(2, '0')
+      new String(currentdate.getHours()).padStart(2, "0") +
+      ":" +
+      new String(currentdate.getMinutes()).padStart(2, "0") +
+      ":" +
+      new String(currentdate.getSeconds()).padStart(2, "0")
     );
   }
   onContext(ctx: any): void {

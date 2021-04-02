@@ -97,7 +97,7 @@ export class JobAdmin {
         }
     }
     async delete_execution(id: string): Promise<AxiosResponse<any>> {
-        console.log("Starting ...");
+        console.log("Deleting execution " + id + "...");
         const getConfig = {
             headers: authHeader("application/json"),
             useCredentails: true,
@@ -153,8 +153,8 @@ export async function loadJobs(): Promise<any> {
 
 // Load all jobs available in REST server. Return array
 // of all jobs.
-export async function loadExecutions(jobName: string): Promise<any> {
-    const response = await triggerCall("/scheduler/jobs/" + jobName + "/result");
+export async function loadExecutions(jobName: string, from: Date, to: Date): Promise<any> {
+    const response = await triggerCall("/scheduler/jobs/" + jobName + "/result?end_time=" + to.toJSON() + "&start_time=" + from.toJSON());
     const executions = ([] as any[]);
     response.JobResults.forEach((element: any) => {
         executions.push(element);
