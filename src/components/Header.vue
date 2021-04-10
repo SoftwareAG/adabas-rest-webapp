@@ -40,6 +40,9 @@
           <b-nav-item :disabled="!isAdministrator" to="/databases"
             >Database Administration</b-nav-item
           >
+          <b-nav-item :disabled="!isAdministrator" to="/cluster"
+            >Database Cluster</b-nav-item
+          >
           <b-nav-item :disabled="!isAdministrator" to="/jobs"
             >Job list</b-nav-item
           >

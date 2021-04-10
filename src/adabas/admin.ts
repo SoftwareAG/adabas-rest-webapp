@@ -372,3 +372,9 @@ export async function loadDatabases(): Promise<any> {
     });
     return databases;
 }
+
+export async function loadCluster(): Promise<any> {
+    const response = await triggerCall("/adabas/cluster");
+    store.commit('SET_STATUS', 'OK');
+    return response;
+}

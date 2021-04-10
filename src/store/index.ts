@@ -24,7 +24,7 @@ import axios from 'axios';
 import { config } from './config';
 import router from '../router/index';
 import { userService } from '../user/service';
-import { AdabasAdmin, loadDatabases } from '@/adabas/admin';
+import { AdabasAdmin, loadDatabases, loadCluster } from '@/adabas/admin';
 import {  JobAdmin,loadJobs } from '@/adabas/jobs';
 
 Vue.use(Vuex)
@@ -45,6 +45,7 @@ export default new Vuex.Store({
     url: {
       query: "",
     },
+    cluster: {},
     status: { status: "No status", Dbid: "", },
     respData: {json: ""},
   },
@@ -58,6 +59,9 @@ export default new Vuex.Store({
       dbs.forEach((element: any, index: number) => {
         Vue.set(state.adminDatabases, index, element);
       });
+    },
+    SET_ADMIN_CLUSTER: (state, cls) => {
+      Vue.set(state.cluster, 'cluster', cls);
     },
     SET_ADMIN_JOBS: (state, jobs) => {
       jobs.forEach((element: any, index: number) => {
@@ -194,6 +198,13 @@ export default new Vuex.Store({
         context.commit('SET_ADMIN_DATABASES', databases);
         context.commit("SET_RESPONSE", JSON.stringify(databases));
         return databases;
+      });
+    },
+    SYNC_ADMIN_CLUSTER: async (context): Promise<any> => {
+      return loadCluster().then((cluster) => {
+        context.commit('SET_ADMIN_CLUSTER', cluster);
+        context.commit("SET_RESPONSE", JSON.stringify(cluster));
+        return cluster;
       });
     },
     SYNC_ADMIN_JOBS: async (context): Promise<any> => {
