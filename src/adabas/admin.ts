@@ -285,6 +285,14 @@ export class AdabasAdmin {
                         Area: element, Size: size, InUse: high.inuse,
                         High: high.high, Time: high.time, Percent: p
                     });
+                    if ((element == "APU")&&(response.HighWater.APU.APUs.length>1)) {
+                        response.HighWater.APU.APUs.forEach((apu:any)=>{
+                            highwater.push({
+                                Area: apu.Name, Size: "-", InUse: apu.HighWater.inuse,
+                                High: apu.HighWater.high, Time: apu.HighWater.time, Percent: 0
+                            })
+                        })
+                    }
                 }
                 else {
                     console.log("Unknown " + element);
