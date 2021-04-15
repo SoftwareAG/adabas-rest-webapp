@@ -33,7 +33,7 @@
         >
           <b-form-input
             v-model="dbid"
-            type="number"
+            type="text"
             :state="dbidState()"
             aria-describedby="input-live-help input-live-feedback"
             id="nested-dbid"

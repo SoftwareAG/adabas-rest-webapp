@@ -46,9 +46,8 @@
           <b-nav-item :disabled="!isAdministrator" to="/jobs"
             >Job list</b-nav-item
           >
-        </b-navbar-nav>
-        <b-navbar-nav class="ml-auto" right>
-          <b-nav-item target="_blank" href="/api/">Swagger API</b-nav-item>
+          <b-nav-item to="/configuration/">Configuration</b-nav-item>
+          <b-nav-item to="/log/">RESTful Log</b-nav-item>
           <b-nav-item-dropdown text="Examples" right>
             <b-dropdown-item to="/example_description"
               >Description</b-dropdown-item
@@ -67,8 +66,9 @@
               >Descriptor read</b-dropdown-item
             >
           </b-nav-item-dropdown>
-          <b-nav-item to="/configuration/">Configuration</b-nav-item>
-          <b-nav-item to="/log/">Log</b-nav-item>
+          <b-nav-item target="_blank" href="/api/">Swagger API</b-nav-item>
+        </b-navbar-nav>
+        <b-navbar-nav class="ml-auto" right>
           <b-nav-item v-on:click="logout"
             >Logout<br />&lt;{{ user }}&gt;</b-nav-item
           >

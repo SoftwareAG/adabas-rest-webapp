@@ -4,22 +4,22 @@ schemes:
   - https
   - ws
   - wss
-swagger: '2.0'
+swagger: "2.0"
 info:
   description: Adabas RESTful server
   title: Adabas RESTful server
   contact:
     name: Software AG Support
-    url: 'https://empower.softwareag.com/'
+    url: "https://empower.softwareag.com/"
     email: empower@softwareag.com
   license:
     name: Software AG
-    url: 'http://documentation.softwareag.com/legal/general_license.txt'
-  version: 7.0.0.0.01072020
-host: 'localhost:8120'
+    url: "http://documentation.softwareag.com/legal/general_license.txt"
+  version: 7.1.0.0.20032021
+host: "localhost:8130"
 basePath: /
 paths:
-  '/login':
+  "/login":
     get:
       security:
         - BasicAuth: []
@@ -30,14 +30,14 @@ paths:
         - Environment
       operationId: getLoginSession
       responses:
-        '200':
-          description: 'Successful login'
+        "200":
+          description: "Successful login"
           schema:
             $ref: "#/definitions/AuthorizationToken"
         default:
           description: Error authorization
           schema:
-            $ref: '#/definitions/Error'
+            $ref: "#/definitions/Error"
     put:
       security:
         - BasicAuth: []
@@ -48,14 +48,14 @@ paths:
         - Environment
       operationId: loginSession
       responses:
-        '200':
-          description: 'Successful login'
+        "200":
+          description: "Successful login"
           schema:
             $ref: "#/definitions/AuthorizationToken"
         default:
           description: Error authorization
           schema:
-            $ref: '#/definitions/Error'
+            $ref: "#/definitions/Error"
     post:
       security:
         - BasicAuth: []
@@ -66,19 +66,19 @@ paths:
         - Environment
       operationId: pushLoginSession
       responses:
-        '200':
-          description: 'Successful login'
+        "200":
+          description: "Successful login"
           schema:
             $ref: "#/definitions/AuthorizationToken"
         default:
           description: Error authorization
           schema:
-            $ref: '#/definitions/Error'
-  '/logout':
+            $ref: "#/definitions/Error"
+  "/logout":
     get:
       security:
         - BasicAuth: []
-        - hasRole: [ user ]
+        - hasRole: [user]
       description: Remove the session
       consumes:
         - application/json
@@ -90,17 +90,39 @@ paths:
         - Environment
       operationId: removeSession
       responses:
-        '200':
-          description: 'Successful response, session is invalidated'
-        '400':
+        "200":
+          description: "Successful response, session is invalidated"
+        "400":
           description: Environment evaluation error
           schema:
-            $ref: '#/definitions/Error'
-  '/shutdown/{hash}':
+            $ref: "#/definitions/Error"
+  "/rest/logoff":
+    get:
+      security:
+        - BasicAuth: []
+        - hasRole: [user]
+      description: Remove the session
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      tags:
+        - Environment
+      operationId: removeSessionCompat
+      responses:
+        "200":
+          description: "Successful response, session is invalidated"
+        "400":
+          description: Environment evaluation error
+          schema:
+            $ref: "#/definitions/Error"
+  "/shutdown/{hash}":
     put:
       security:
-        - BasicAuth: [ ]
-        - hasRole: [ admin ]
+        - BasicAuth: []
+        - hasRole: [admin]
       description: Init shutdown procedure
       consumes:
         - application/json
@@ -118,18 +140,18 @@ paths:
           in: path
           required: true
       responses:
-        '200':
-          description: 'Successful response, if shutdown procedure valid'
+        "200":
+          description: "Successful response, if shutdown procedure valid"
           schema:
-            $ref: '#/definitions/StatusResponse'
-        '401':
+            $ref: "#/definitions/StatusResponse"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-        '404':
+        "404":
           description: Error shutdown hash invalid
           schema:
-            $ref: '#/definitions/Error'
+            $ref: "#/definitions/Error"
   /env:
     get:
       security: []
@@ -144,19 +166,19 @@ paths:
         - Environment
       operationId: getEnvironments
       responses:
-        '200':
-          description: 'Successful response, with a list of Adabas environment and versions'
+        "200":
+          description: "Successful response, with a list of Adabas environment and versions"
           schema:
-            $ref: '#/definitions/Environments'
-        '400':
+            $ref: "#/definitions/Environments"
+        "400":
           description: Environment evaluation error
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-  /rest/env:
+  /adabas/rest/env:
     get:
       security: []
       description: Retrieves the list of environments
@@ -170,17 +192,17 @@ paths:
         - Environment
       operationId: getVersions
       responses:
-        '200':
-          description: 'Successful response, with a list of Adabas environment and versions'
+        "200":
+          description: "Successful response, with a list of Adabas environment and versions"
           schema:
-            $ref: '#/definitions/Environments'
-        '400':
+            $ref: "#/definitions/Environments"
+        "400":
           description: Environment evaluation error
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
   /version:
     get:
@@ -196,14 +218,14 @@ paths:
         - Environment
       operationId: getVersion
       responses:
-        '200':
-          description: 'Successful response, with a list of internal versions'
+        "200":
+          description: "Successful response, with a list of internal versions"
           schema:
-            $ref: '#/definitions/Versions'
-        '400':
+            $ref: "#/definitions/Versions"
+        "400":
           description: Error application not running correctly
           schema:
-            $ref: '#/definitions/Error'
+            $ref: "#/definitions/Error"
   /adabas/version:
     get:
       security: []
@@ -218,20 +240,20 @@ paths:
         - Environment
       operationId: getAdabasVersion
       responses:
-        '200':
-          description: 'Successful response, with a list of internal versions'
+        "200":
+          description: "Successful response, with a list of internal versions"
           schema:
-            $ref: '#/definitions/Versions'
-        '400':
+            $ref: "#/definitions/Versions"
+        "400":
           description: Error application not running correctly
           schema:
-            $ref: '#/definitions/Error'
+            $ref: "#/definitions/Error"
   /adabas/config:
     get:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
-      description: Common information 
+        - hasRole: [admin]
+      description: Get adabas configuration
       consumes:
         - application/json
         - application/xml
@@ -242,22 +264,82 @@ paths:
         - Environment
       operationId: getAdabasConfig
       responses:
-        '200':
+        "200":
           description: OK
-        '400':
+          schema:
+            $ref: "#/definitions/Config"
+        "400":
           description: Database error evaluating list
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
+          description: Role access denied
+    put:
+      security:
+        - BasicAuth: []
+        - hasRole: [admin]
+      description: Store configuration
+      consumes:
+        - application/json
+        - application/xml
+        - text/plain
+      produces:
+        - application/json
+        - application/xml
+      tags:
+        - Environment
+      operationId: setAdabasConfig
+      parameters:
+        - description: Configuration content
+          name: data
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/Config"
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Database error evaluating list
+          schema:
+            $ref: "#/definitions/Error"
+        "401":
+          description: Authorization error
+        "403":
+          description: Role access denied
+    post:
+      security:
+        - BasicAuth: []
+        - hasRole: [admin]
+      description: Store configuration
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      tags:
+        - Environment
+      operationId: storeAdabasConfig
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Database error evaluating list
+          schema:
+            $ref: "#/definitions/Error"
+        "401":
+          description: Authorization error
+        "403":
           description: Role access denied
   /adabas/config/server:
     get:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
-      description: Defines the current Adabas Map repositories 
+        - hasRole: [admin]
+      description: Defines the current Adabas Map repositories
       consumes:
         - application/json
         - application/xml
@@ -268,25 +350,117 @@ paths:
         - Environment
       operationId: getServerConfig
       responses:
-        '200':
+        "200":
           description: OK
           schema:
-            $ref: '#/definitions/Server'
-        '400':
+            $ref: "#/definitions/Server"
+        "400":
           description: Database error evaluating list
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
+          description: Role access denied
+  /adabas/config/classic:
+    get:
+      security:
+        - BasicAuth: []
+        - hasRole: [admin]
+      description: Defines the Adabas direct access
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      tags:
+        - Environment
+      operationId: getClassicConfig
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: "#/definitions/ClassicAccess"
+        "400":
+          description: Database error evaluating list
+          schema:
+            $ref: "#/definitions/Error"
+        "401":
+          description: Authorization error
+        "403":
+          description: Role access denied
+    post:
+      security:
+        - BasicAuth: []
+        - hasRole: [admin]
+      description: Add an entry for the Adabas direct access
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      tags:
+        - Environment
+      operationId: pushClassicConfig
+      parameters:
+        - type: string
+          description: Database URL
+          name: url
+          in: query
+        - type: boolean
+          description: Global classic database access parameter
+          name: global
+          in: query
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Database error evaluating list
+          schema:
+            $ref: "#/definitions/Error"
+        "401":
+          description: Authorization error
+        "403":
+          description: Role access denied
+    delete:
+      security:
+        - BasicAuth: []
+        - hasRole: [admin]
+      description: delete entry in configuration
+      consumes:
+        - application/json
+      produces:
+        - application/json
+        - application/xml
+      tags:
+        - Environment
+      parameters:
+        - type: string
+          description: Database URL
+          name: url
+          in: query
+          required: true
+      operationId: deleteClassicConfig
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Database error evaluating list
+          schema:
+            $ref: "#/definitions/Error"
+        "401":
+          description: Authorization error
+        "403":
           description: Role access denied
 
   /adabas/config/mapping:
     get:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
-      description: Defines the current Adabas Map repositories 
+        - hasRole: [admin]
+      description: Defines the current Adabas Map repositories
       consumes:
         - application/json
         - application/xml
@@ -297,54 +471,91 @@ paths:
         - Environment
       operationId: getMappingConfig
       responses:
-        '200':
+        "200":
           description: OK
           schema:
-            $ref: '#/definitions/MappingConfig'
-        '400':
+            $ref: "#/definitions/MappingConfig"
+        "400":
           description: Database error evaluating list
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
 
-    put:
+    post:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
+        - hasRole: [admin]
       description: add configuration in Adabas Map repositories
       consumes:
         - application/json
       produces:
         - application/json
         - application/xml
+      tags:
+        - Environment
+      operationId: addMappingConfig
+      parameters:
+        - type: string
+          description: Database URL
+          name: url
+          in: query
+          required: true
+        - type: integer
+          description: Database file number
+          name: file
+          in: query
+          required: true
       responses:
-        '200':
+        "200":
           description: OK
-        '400':
+        "400":
           description: Database error evaluating list
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
 
     delete:
+      security:
+        - BasicAuth: []
+        - hasRole: [admin]
       description: delete entry in configuration
+      tags:
+        - Environment
+      operationId: deleteMappingConfig
+      parameters:
+        - type: string
+          description: Database URL
+          name: url
+          in: query
+          required: true
+        - type: integer
+          description: Database file number
+          name: file
+          in: query
+          required: true
       responses:
-        '200':
+        "200":
           description: OK
-
-
+        "400":
+          description: Database error evaluating list
+          schema:
+            $ref: "#/definitions/Error"
+        "401":
+          description: Authorization error
+        "403":
+          description: Role access denied
   /adabas/config/module:
     get:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
-      description: Defines the current Adabas Module section 
+        - hasRole: [admin]
+      description: Defines the current Adabas Module section
       consumes:
         - application/json
         - application/xml
@@ -355,24 +566,100 @@ paths:
         - Environment
       operationId: getModuleConfig
       responses:
-        '200':
+        "200":
           description: OK
           schema:
-            $ref: '#/definitions/Module'
-        '400':
+            $ref: "#/definitions/Module"
+        "400":
           description: Database error evaluating list
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
+    put:
+      security:
+        - BasicAuth: []
+        - hasRole: [admin]
+      description: Set the ADADATADIR
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      tags:
+        - Environment
+      operationId: setAdadataDir
+      parameters:
+        - type: string
+          description: Adabas Database DATADIR location
+          name: adadatadir
+          in: query
+          required: true
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Database configuration setting fail
+          schema:
+            $ref: "#/definitions/Error"
+        "401":
+          description: Authorization error
+        "403":
+          description: Role access denied
+  /adabas/license:
+    post:
+      security:
+        - BasicAuth: []
+        - hasRole: [admin]
+      description: Upload license
+      consumes:
+        - application/octet-stream
+        - multipart/form-data
+      produces:
+        - application/json
+      tags:
+        - Environment
+      parameters:
+        - type: string
+          description: Upload SAG environment destination
+          name: sag
+          in: query
+          required: true
+        - type: string
+          description: Upload name of license file
+          name: name
+          in: query
+          required: true
+        - type: file
+          description: Upload license content of field
+          name: uploadLicense
+          in: formData
+          required: true
+      operationId: uploadLicense
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Database error evaluating list
+          schema:
+            $ref: "#/definitions/Error"
+        "401":
+          description: Authorization error
+        "403":
+          description: Role access denied
+        "404":
+          description: Location not available/unknown
+          schema:
+            $ref: "#/definitions/Error"
   /adabas/config/module/installation:
     get:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
-      description: Defines the current Adabas Module section 
+        - hasRole: [admin]
+      description: Defines the current Adabas Module section
       consumes:
         - application/json
         - application/xml
@@ -383,63 +670,256 @@ paths:
         - Environment
       operationId: getInstallationConfig
       responses:
-        '200':
+        "200":
           description: OK
           schema:
-            $ref: '#/definitions/Installation'
-        '400':
+            $ref: "#/definitions/Installation"
+        "400":
           description: Database error evaluating list
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
     post:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
-      description: Upload and activate new license file
+        - hasRole: [admin]
+      description: Add installation location
       consumes:
-        - application/octet-stream
-        - multipart/form-data
+        - application/json
+        - application/xml
       produces:
         - application/json
+        - application/xml
       tags:
         - Environment
-      operationId: uploadLicense
+      operationId: addInstallationConfig
       parameters:
         - type: string
-          description: Installation the license should be added to
+          description: Installation location added to
           name: installation
           in: query
-        - type: file
-          description: Upload license file
-          name: licenseFile
-          in: formData
           required: true
       responses:
-        '200':
-          description: 'Successful response, with download license file.'
-          schema:
-            $ref: '#/definitions/StatusResponse'
-        '400':
+        "200":
+          description: "Successful response, with added the installation."
+        "400":
           description: Environment evaluation error
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-        '404':
+        "404":
           description: Location not available/unknown
           schema:
-            $ref: '#/definitions/Error'
+            $ref: "#/definitions/Error"
+    delete:
+      security:
+        - BasicAuth: []
+        - hasRole: [admin]
+      description: Delete the installation location
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      tags:
+        - Environment
+      operationId: deleteInstallationConfig
+      parameters:
+        - type: string
+          description: Remove the installation location
+          name: installation
+          in: query
+          required: true
+      responses:
+        "200":
+          description: "Successful response, with download license file."
+          schema:
+            $ref: "#/definitions/StatusResponse"
+        "400":
+          description: Environment evaluation error
+          schema:
+            $ref: "#/definitions/Error"
+        "401":
+          description: Authorization error
+        "403":
+          description: Role access denied
+        "404":
+          description: Location not available/unknown
+          schema:
+            $ref: "#/definitions/Error"
+  /adabas/config/module/directories:
+    get:
+      security:
+        - BasicAuth: []
+        - hasRole: [admin]
+      description: Read upload/download directories
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      tags:
+        - Environment
+      operationId: getDirectoriesConfig
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: "#/definitions/Directories"
+        "400":
+          description: Error evaluating list
+          schema:
+            $ref: "#/definitions/Error"
+        "401":
+          description: Authorization error
+        "403":
+          description: Role access denied
+    post:
+      security:
+        - BasicAuth: []
+        - hasRole: [admin]
+      description: Add directory location
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      tags:
+        - Environment
+      operationId: addDirectoryConfig
+      parameters:
+        - type: string
+          description: Directory location added to
+          name: location
+          in: query
+          required: true
+        - type: string
+          description: Name of upload/download location
+          name: name
+          in: query
+          required: true
+      responses:
+        "200":
+          description: "Successful response, with added the directory."
+        "400":
+          description: Environment evaluation error
+          schema:
+            $ref: "#/definitions/Error"
+        "401":
+          description: Authorization error
+        "403":
+          description: Role access denied
+        "404":
+          description: Location not available/unknown
+          schema:
+            $ref: "#/definitions/Error"
+    delete:
+      security:
+        - BasicAuth: []
+        - hasRole: [admin]
+      description: Delete the directory location
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      tags:
+        - Environment
+      operationId: deleteDirectoryConfig
+      parameters:
+        - type: string
+          description: Remove the directory location
+          name: name
+          in: query
+          required: true
+      responses:
+        "200":
+          description: "Successful response, deleting the directory."
+          schema:
+            $ref: "#/definitions/StatusResponse"
+        "400":
+          description: Environment evaluation error
+          schema:
+            $ref: "#/definitions/Error"
+        "401":
+          description: Authorization error
+        "403":
+          description: Role access denied
+        "404":
+          description: Location not available/unknown
+          schema:
+            $ref: "#/definitions/Error"
+  /adabas/rest/log:
+    get:
+      security:
+        - BasicAuth: []
+        - hasRole: [admin]
+      description: Retrieve Rest server output
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      tags:
+        - Environment
+      operationId: getRestServerLog
+      responses:
+        "200":
+          description: "Successful response, with Adabas Rest server Log"
+          schema:
+            $ref: "#/definitions/NucleusLog"
+        "400":
+          description: Server log not available/unknown
+          schema:
+            $ref: "#/definitions/Error"
+        "401":
+          description: Authorization error
+        "403":
+          description: Role access denied
+  /adabas/cluster:
+    get:
+      security:
+        - BasicAuth: []
+        - hasRole: [admin]
+      description: Retrieve the current status of Adabas cluster
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      tags:
+        - OnlineOffline
+      operationId: getCluster
+      responses:
+        "200":
+          description: "Successful response, with status of Adabas cluster."
+          schema:
+            $ref: "#/definitions/Cluster"
+        "400":
+          description: Database error evaluating cluster
+          schema:
+            $ref: "#/definitions/Error"
+        "401":
+          description: Authorization error
+        "403":
+          description: Role access denied
   /adabas/database:
     get:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
+        - hasRole: [admin]
       description: Retrieves a list of databases known by Adabas Interface.
       consumes:
         - application/json
@@ -451,22 +931,22 @@ paths:
         - OnlineOffline
       operationId: getDatabases
       responses:
-        '200':
-          description: 'Successful response, with list of known databases.'
+        "200":
+          description: "Successful response, with list of known databases."
           schema:
-            $ref: '#/definitions/Databases'
-        '400':
+            $ref: "#/definitions/Databases"
+        "400":
           description: Database error evaluating list
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
     post:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
+        - hasRole: [admin]
       description: Create a new Adabas database
       consumes:
         - application/json
@@ -481,25 +961,25 @@ paths:
         - name: database
           in: body
           schema:
-            $ref: '#/definitions/Database'
+            $ref: "#/definitions/Database"
       responses:
-        '200':
-          description: 'Successful response, with new Adabas databases created schema:'
+        "200":
+          description: "Successful response, with new Adabas databases created schema:"
           schema:
-            $ref: '#/definitions/StatusResponse'
-        '400':
+            $ref: "#/definitions/StatusResponse"
+        "400":
           description: Error creating Adabas database
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-  '/adabas/database/{dbid_operation}':
+  "/adabas/database/{dbid_operation}":
     get:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
+        - hasRole: [admin]
       description: Retrieve the current status of database with the given dbid
       consumes:
         - application/json
@@ -519,26 +999,26 @@ paths:
           in: path
           required: true
       responses:
-        '200':
-          description: 'Successful response, with database status'
+        "200":
+          description: "Successful response, with database status"
           schema:
-            $ref: '#/definitions/DatabaseStatus'
-        '202':
-          description: 'Successful response, with database status'
+            $ref: "#/definitions/DatabaseStatus"
+        "202":
+          description: "Successful response, with database status"
           schema:
-            $ref: '#/definitions/StatusResponse'
-        '400':
+            $ref: "#/definitions/StatusResponse"
+        "400":
           description: Database evaluation error
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
     put:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
+        - hasRole: [admin]
       description: Change resource of the database
       consumes:
         - application/json
@@ -561,26 +1041,26 @@ paths:
           in: query
           required: true
       responses:
-        '200':
-          description: 'Successful response, with database status'
+        "200":
+          description: "Successful response, with database status"
           schema:
-            $ref: '#/definitions/DatabaseStatus'
-        '202':
-          description: 'Successful response, with database message'
+            $ref: "#/definitions/DatabaseStatus"
+        "202":
+          description: "Successful response, with database message"
           schema:
-            $ref: '#/definitions/StatusResponse'
-        '400':
+            $ref: "#/definitions/StatusResponse"
+        "400":
           description: Database evaluation error
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
     post:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
+        - hasRole: [admin]
       description: Initiate operations on the given dbid
       consumes:
         - application/json
@@ -605,26 +1085,26 @@ paths:
           name: etsync
           in: query
       responses:
-        '200':
-          description: 'Successful response, with database status'
+        "200":
+          description: "Successful response, with database status"
           schema:
-            $ref: '#/definitions/DatabaseStatus'
-        '202':
-          description: 'Successful response, with database status'
+            $ref: "#/definitions/DatabaseStatus"
+        "202":
+          description: "Successful response, with database status"
           schema:
-            $ref: '#/definitions/StatusResponse'
-        '400':
+            $ref: "#/definitions/StatusResponse"
+        "400":
           description: Database evaluation error
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
     delete:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
+        - hasRole: [admin]
       description: Delete the Adabas database
       consumes:
         - application/json
@@ -642,23 +1122,23 @@ paths:
           in: path
           required: true
       responses:
-        '200':
-          description: 'Successful response, a Adabas database is deleted'
+        "200":
+          description: "Successful response, a Adabas database is deleted"
           schema:
-            $ref: '#/definitions/StatusResponse'
-        '400':
+            $ref: "#/definitions/StatusResponse"
+        "400":
           description: Error deleting the database
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-  '/adabas/database/{dbid}/actstats':
+  "/adabas/database/{dbid}/actstats":
     get:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
+        - hasRole: [admin]
       description: Retrieve Adabas activity statistics
       consumes:
         - application/json
@@ -670,25 +1150,25 @@ paths:
         - Online
       operationId: getDatabaseActStats
       parameters:
-        - $ref: '#/parameters/dbidParam'
+        - $ref: "#/parameters/dbidParam"
       responses:
-        '200':
-          description: 'Successful response, with Adabas Activity statistics'
+        "200":
+          description: "Successful response, with Adabas Activity statistics"
           schema:
-            $ref: '#/definitions/ActivityStats'
-        '400':
+            $ref: "#/definitions/ActivityStats"
+        "400":
           description: Database not available/unknown
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-  '/adabas/database/{dbid}/bpstats':
+  "/adabas/database/{dbid}/bpstats":
     get:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
+        - hasRole: [admin]
       description: Retrieve Adabas buffer pool statistics
       consumes:
         - application/json
@@ -700,25 +1180,25 @@ paths:
         - Online
       operationId: getDatabaseBPStats
       parameters:
-        - $ref: '#/parameters/dbidParam'
+        - $ref: "#/parameters/dbidParam"
       responses:
-        '200':
-          description: 'Successful response, with Adabas Buffer Pool statistics'
+        "200":
+          description: "Successful response, with Adabas Buffer Pool statistics"
           schema:
-            $ref: '#/definitions/BufferPoolStats'
-        '400':
+            $ref: "#/definitions/BufferPoolStats"
+        "400":
           description: Database not available/unknown
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-  '/adabas/database/{dbid}/checkpoints':
+  "/adabas/database/{dbid}/checkpoints":
     get:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
+        - hasRole: [admin]
       description: >-
         Retrieve the Adabas Checkpoint list out of the database with the given
         dbid
@@ -732,7 +1212,7 @@ paths:
         - Online
       operationId: getDatabaseCheckpoints
       parameters:
-        - $ref: '#/parameters/dbidParam'
+        - $ref: "#/parameters/dbidParam"
         - type: string
           description: Timestamp of first checkpoint entry
           name: start_time
@@ -742,22 +1222,22 @@ paths:
           name: end_time
           in: query
       responses:
-        '200':
-          description: 'Successful response, with database Checkpoints'
+        "200":
+          description: "Successful response, with database Checkpoints"
           schema:
-            $ref: '#/definitions/DatabaseCheckpoints'
-        '400':
+            $ref: "#/definitions/DatabaseCheckpoints"
+        "400":
           description: Database not available
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
     delete:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
+        - hasRole: [admin]
       description: Delete Adabas Checkpoints out of the database with the given dbid
       consumes:
         - application/json
@@ -769,7 +1249,7 @@ paths:
         - Online
       operationId: deleteDatabaseCheckpoints
       parameters:
-        - $ref: '#/parameters/dbidParam'
+        - $ref: "#/parameters/dbidParam"
         - type: string
           description: Timestamp of first checkpoint entry
           name: start_time
@@ -779,23 +1259,23 @@ paths:
           name: end_time
           in: query
       responses:
-        '200':
-          description: 'Successful response, when database Checkpoints are deleted'
+        "200":
+          description: "Successful response, when database Checkpoints are deleted"
           schema:
-            $ref: '#/definitions/StatusResponse'
-        '400':
+            $ref: "#/definitions/StatusResponse"
+        "400":
           description: Database not available
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-  '/adabas/database/{dbid}/commandqueue':
+  "/adabas/database/{dbid}/commandqueue":
     get:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
+        - hasRole: [admin]
       description: Retrieve a list of user queue entries
       consumes:
         - application/json
@@ -807,26 +1287,26 @@ paths:
         - Online
       operationId: getDatabaseCommandQueue
       parameters:
-        - $ref: '#/parameters/dbidParam'
-        - $ref: '#/parameters/rfc3339Param'
+        - $ref: "#/parameters/dbidParam"
+        - $ref: "#/parameters/rfc3339Param"
       responses:
-        '200':
-          description: 'Successful response, with database command queue entries'
+        "200":
+          description: "Successful response, with database command queue entries"
           schema:
-            $ref: '#/definitions/CommandQueue'
-        '400':
+            $ref: "#/definitions/CommandQueue"
+        "400":
           description: Database not available/unknown
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-  '/adabas/database/{dbid}/commandstats':
+  "/adabas/database/{dbid}/commandstats":
     get:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
+        - hasRole: [admin]
       description: Retrieve Adabas command statistics
       consumes:
         - application/json
@@ -838,25 +1318,25 @@ paths:
         - Online
       operationId: getDatabaseCommandStats
       parameters:
-        - $ref: '#/parameters/dbidParam'
+        - $ref: "#/parameters/dbidParam"
       responses:
-        '200':
-          description: 'Successful response, with Adabas command statistics'
+        "200":
+          description: "Successful response, with Adabas command statistics"
           schema:
-            $ref: '#/definitions/CommandStats'
-        '400':
+            $ref: "#/definitions/CommandStats"
+        "400":
           description: Database not available/unknown
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-  '/adabas/database/{dbid}/container':
+  "/adabas/database/{dbid}/container":
     get:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
+        - hasRole: [admin]
       description: Retrieve Adabas containers
       consumes:
         - application/json
@@ -868,24 +1348,24 @@ paths:
         - OnlineOffline
       operationId: getDatabaseContainer
       parameters:
-        - $ref: '#/parameters/dbidParam'
+        - $ref: "#/parameters/dbidParam"
       responses:
-        '200':
-          description: 'Successful response, with Adabas database containers'
+        "200":
+          description: "Successful response, with Adabas database containers"
           schema:
-            $ref: '#/definitions/ContainerFst'
-        '400':
+            $ref: "#/definitions/ContainerFst"
+        "400":
           description: Database not available/unknown
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
     post:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
+        - hasRole: [admin]
       description: Add a container to Adabas
       consumes:
         - application/json
@@ -897,29 +1377,29 @@ paths:
         - OnlineOffline
       operationId: addAdabasContainer
       parameters:
-        - $ref: '#/parameters/dbidParam'
+        - $ref: "#/parameters/dbidParam"
         - name: database
           in: body
           schema:
-            $ref: '#/definitions/ContainerInfo'
+            $ref: "#/definitions/ContainerInfo"
       responses:
-        '200':
-          description: 'Successful response, container added'
+        "200":
+          description: "Successful response, container added"
           schema:
-            $ref: '#/definitions/StatusResponse'
-        '400':
+            $ref: "#/definitions/StatusResponse"
+        "400":
           description: Error changing the parameter
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-  '/adabas/database/{dbid}/container/${container_type}':
+  "/adabas/database/{dbid}/container/${container_type}":
     delete:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
+        - hasRole: [admin]
       description: Retrieve Adabas containers
       consumes:
         - application/json
@@ -931,30 +1411,30 @@ paths:
         - Offline
       operationId: removeDatabaseContainer
       parameters:
-        - $ref: '#/parameters/dbidParam'
+        - $ref: "#/parameters/dbidParam"
         - type: string
-          description: 'Container type, may be ASSO or DATA'
+          description: "Container type, may be ASSO or DATA"
           name: container_type
           in: path
           required: true
       responses:
-        '200':
-          description: 'Successful response,  Adabas database container is removed'
+        "200":
+          description: "Successful response,  Adabas database container is removed"
           schema:
-            $ref: '#/definitions/StatusResponse'
-        '400':
+            $ref: "#/definitions/StatusResponse"
+        "400":
           description: Database not available/unknown
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-  '/adabas/database/{dbid}/fields/{file}':
+  "/adabas/database/{dbid}/fields/{file}":
     get:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
+        - hasRole: [admin]
       description: Retrieves Adabas FDT information for a file
       consumes:
         - application/json
@@ -966,7 +1446,7 @@ paths:
         - OnlineOffline
       operationId: getFieldDefinitionTable
       parameters:
-        - $ref: '#/parameters/dbidParam'
+        - $ref: "#/parameters/dbidParam"
         - type: number
           description: >-
             File number and operation seprated by ':' Possible operations are -
@@ -974,24 +1454,24 @@ paths:
           name: file
           in: path
           required: true
-        - $ref: '#/parameters/rfc3339Param'
+        - $ref: "#/parameters/rfc3339Param"
       responses:
-        '200':
-          description: 'Successful response, with a FCB representation of the Adabas FCB'
+        "200":
+          description: "Successful response, with a FCB representation of the Adabas FCB"
           schema:
-            $ref: '#/definitions/Fdt'
-        '400':
+            $ref: "#/definitions/Fdt"
+        "400":
           description: Error receiving file information
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
     post:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
+        - hasRole: [admin]
       description: Modify Adabas FDT information for a file
       consumes:
         - application/json
@@ -1003,30 +1483,30 @@ paths:
         - OnlineOffline
       operationId: modifyFieldDefinitionTable
       parameters:
-        - $ref: '#/parameters/dbidParam'
-        - $ref: '#/parameters/fileParam'
+        - $ref: "#/parameters/dbidParam"
+        - $ref: "#/parameters/fileParam"
         - type: string
           description: Add fields to the FDT
           name: addfields
           in: query
           required: true
       responses:
-        '200':
-          description: 'Successful response, with a FCB representation of the Adabas FCB'
+        "200":
+          description: "Successful response, with a FCB representation of the Adabas FCB"
           schema:
-            $ref: '#/definitions/StatusResponse'
-        '400':
+            $ref: "#/definitions/StatusResponse"
+        "400":
           description: Error receiving file information
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
     delete:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
+        - hasRole: [admin]
       description: Drop a list of fields in an Adabas file
       consumes:
         - application/json
@@ -1038,31 +1518,31 @@ paths:
         - OnlineOffline
       operationId: dropFields
       parameters:
-        - $ref: '#/parameters/dbidParam'
-        - $ref: '#/parameters/fileParam'
+        - $ref: "#/parameters/dbidParam"
+        - $ref: "#/parameters/fileParam"
         - type: string
           description: List of fields to be deleted
           name: fields
           in: query
           required: true
       responses:
-        '200':
-          description: 'Successful response, with a FCB representation of the Adabas FCB'
+        "200":
+          description: "Successful response, with a FCB representation of the Adabas FCB"
           schema:
-            $ref: '#/definitions/StatusResponse'
-        '400':
+            $ref: "#/definitions/StatusResponse"
+        "400":
           description: Error receiving file information
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-  '/adabas/database/{dbid}/file':
+  "/adabas/database/{dbid}/file":
     get:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
+        - hasRole: [admin]
       description: Retrieves a list of files defined in the database
       consumes:
         - application/json
@@ -1074,24 +1554,24 @@ paths:
         - OnlineOffline
       operationId: getDatabaseFiles
       parameters:
-        - $ref: '#/parameters/dbidParam'
+        - $ref: "#/parameters/dbidParam"
       responses:
-        '200':
-          description: 'Successful response, with a representation of the Tax Filing.'
+        "200":
+          description: "Successful response, with a representation of the Tax Filing."
           schema:
-            $ref: '#/definitions/Files'
-        '400':
+            $ref: "#/definitions/Files"
+        "400":
           description: Database not available/unknown
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
     post:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
+        - hasRole: [admin]
       description: Create a new Adabas file
       consumes:
         - application/json
@@ -1103,29 +1583,29 @@ paths:
         - Online
       operationId: postAdabasFile
       parameters:
-        - $ref: '#/parameters/dbidParam'
+        - $ref: "#/parameters/dbidParam"
         - name: fdufdt
           in: body
           schema:
-            $ref: '#/definitions/FduFdt'
+            $ref: "#/definitions/FduFdt"
       responses:
-        '200':
-          description: 'Successful response, with new Adabas file created'
+        "200":
+          description: "Successful response, with new Adabas file created"
           schema:
-            $ref: '#/definitions/StatusResponse'
-        '400':
+            $ref: "#/definitions/StatusResponse"
+        "400":
           description: Error creating Adabas file
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-  '/adabas/database/{dbid}/file/{file_operation}':
+  "/adabas/database/{dbid}/file/{file_operation}":
     get:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
+        - hasRole: [admin]
       description: Retrieves Adabas FCB information for a file
       consumes:
         - application/json
@@ -1137,7 +1617,7 @@ paths:
         - OnlineOffline
       operationId: getDatabaseFile
       parameters:
-        - $ref: '#/parameters/dbidParam'
+        - $ref: "#/parameters/dbidParam"
         - type: string
           description: >-
             File number and operation separated by ':' Possible operations are -
@@ -1153,26 +1633,26 @@ paths:
           description: Used for operation renumber
           name: number
           in: query
-        - $ref: '#/parameters/rfc3339Param'
+        - $ref: "#/parameters/rfc3339Param"
       responses:
-        '200':
-          description: 'Successful response, with a FCB representation of the Adabas FCB'
+        "200":
+          description: "Successful response, with a FCB representation of the Adabas FCB"
           schema:
-            $ref: '#/definitions/Fcb'
-        '202':
-          description: 'Operation done'
-        '400':
+            $ref: "#/definitions/Fcb"
+        "202":
+          description: "Operation done"
+        "400":
           description: Error receiving file information
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
     put:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
+        - hasRole: [admin]
       description: Adapt a  Adabas file parameter
       consumes:
         - application/json
@@ -1184,7 +1664,7 @@ paths:
         - Online
       operationId: putAdabasFileParameter
       parameters:
-        - $ref: '#/parameters/dbidParam'
+        - $ref: "#/parameters/dbidParam"
         - type: string
           description: >-
             File number and operation, separated with a :. Possible operation
@@ -1219,22 +1699,22 @@ paths:
           name: spannedrecords
           in: query
       responses:
-        '200':
-          description: 'Successful response, with new Adabas file created'
+        "200":
+          description: "Successful response, with new Adabas file created"
           schema:
-            $ref: '#/definitions/StatusResponse'
-        '400':
+            $ref: "#/definitions/StatusResponse"
+        "400":
           description: Error creating Adabas file
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
     post:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
+        - hasRole: [admin]
       description: Create a new Adabas file
       consumes:
         - application/json
@@ -1246,33 +1726,33 @@ paths:
         - Online
       operationId: createAdabasFile
       parameters:
-        - $ref: '#/parameters/dbidParam'
+        - $ref: "#/parameters/dbidParam"
         - type: string
-          description: 'File number, the file number in the body is ignored'
+          description: "File number, the file number in the body is ignored"
           name: file_operation
           in: path
           required: true
         - name: fdufdt
           in: body
           schema:
-            $ref: '#/definitions/FduFdt'
+            $ref: "#/definitions/FduFdt"
       responses:
-        '200':
-          description: 'Successful response, with new Adabas file created'
+        "200":
+          description: "Successful response, with new Adabas file created"
           schema:
-            $ref: '#/definitions/StatusResponse'
-        '400':
+            $ref: "#/definitions/StatusResponse"
+        "400":
           description: Error creating Adabas file
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
     delete:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
+        - hasRole: [admin]
       description: Delete the file
       consumes:
         - application/json
@@ -1284,30 +1764,30 @@ paths:
         - OnlineOffline
       operationId: deleteFile
       parameters:
-        - $ref: '#/parameters/dbidParam'
+        - $ref: "#/parameters/dbidParam"
         - type: number
-          description: 'File number, no operation possible'
+          description: "File number, no operation possible"
           name: file_operation
           in: path
           required: true
       responses:
-        '200':
-          description: 'Successful response, a Adabas file is deleted'
+        "200":
+          description: "Successful response, a Adabas file is deleted"
           schema:
-            $ref: '#/definitions/StatusResponse'
-        '400':
+            $ref: "#/definitions/StatusResponse"
+        "400":
           description: Error deleting the file
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-  '/adabas/database/{dbid}/gcb':
+  "/adabas/database/{dbid}/gcb":
     get:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
+        - hasRole: [admin]
       description: Retrieve the current GCB of the database with the given dbid
       consumes:
         - application/json
@@ -1319,26 +1799,26 @@ paths:
         - OnlineOffline
       operationId: getDatabaseGcb2
       parameters:
-        - $ref: '#/parameters/dbidParam'
-        - $ref: '#/parameters/rfc3339Param'
+        - $ref: "#/parameters/dbidParam"
+        - $ref: "#/parameters/rfc3339Param"
       responses:
-        '200':
-          description: 'Successful response, with database GCB'
+        "200":
+          description: "Successful response, with database GCB"
           schema:
-            $ref: '#/definitions/DatabaseGcb'
-        '400':
+            $ref: "#/definitions/DatabaseGcb"
+        "400":
           description: Database not available/unknown
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-  '/adabas/database/{dbid}/GCB':
+  "/adabas/database/{dbid}/GCB":
     get:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
+        - hasRole: [admin]
       description: Retrieve the current GCB of the database with the given dbid
       consumes:
         - application/json
@@ -1350,26 +1830,26 @@ paths:
         - OnlineOffline
       operationId: getDatabaseGcb
       parameters:
-        - $ref: '#/parameters/dbidParam'
-        - $ref: '#/parameters/rfc3339Param'
+        - $ref: "#/parameters/dbidParam"
+        - $ref: "#/parameters/rfc3339Param"
       responses:
-        '200':
-          description: 'Successful response, with database GCB'
+        "200":
+          description: "Successful response, with database GCB"
           schema:
-            $ref: '#/definitions/DatabaseGcb'
-        '400':
+            $ref: "#/definitions/DatabaseGcb"
+        "400":
           description: Database not available/unknown
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-  '/adabas/database/{dbid}/holdqueue':
+  "/adabas/database/{dbid}/holdqueue":
     get:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
+        - hasRole: [admin]
       description: Retrieve a list of hold queue entries
       consumes:
         - application/json
@@ -1381,26 +1861,26 @@ paths:
         - Online
       operationId: getDatabaseHoldQueue
       parameters:
-        - $ref: '#/parameters/dbidParam'
-        - $ref: '#/parameters/rfc3339Param'
+        - $ref: "#/parameters/dbidParam"
+        - $ref: "#/parameters/rfc3339Param"
       responses:
-        '200':
-          description: 'Successful response, with database hold queue entries'
+        "200":
+          description: "Successful response, with database hold queue entries"
           schema:
-            $ref: '#/definitions/HoldQueue'
-        '400':
+            $ref: "#/definitions/HoldQueue"
+        "400":
           description: Database not available/unknown
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-  '/adabas/database/{dbid}/hwm':
+  "/adabas/database/{dbid}/hwm":
     get:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
+        - hasRole: [admin]
       description: Retrieve Adabas High water mark
       consumes:
         - application/json
@@ -1412,26 +1892,26 @@ paths:
         - Online
       operationId: getDatabaseHighWater
       parameters:
-        - $ref: '#/parameters/dbidParam'
-        - $ref: '#/parameters/rfc3339Param'
+        - $ref: "#/parameters/dbidParam"
+        - $ref: "#/parameters/rfc3339Param"
       responses:
-        '200':
-          description: 'Successful response, with Adabas High Water Mark statistics'
+        "200":
+          description: "Successful response, with Adabas High Water Mark statistics"
           schema:
-            $ref: '#/definitions/HWM'
-        '400':
+            $ref: "#/definitions/HWM"
+        "400":
           description: Database not available/unknown
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-  '/adabas/database/{dbid}/nuclog':
+  "/adabas/database/{dbid}/nuclog":
     get:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
+        - hasRole: [admin]
       description: Retrieve Adabas nucleus output
       consumes:
         - application/json
@@ -1443,25 +1923,25 @@ paths:
         - OnlineOffline
       operationId: getDatabaseNucleusLog
       parameters:
-        - $ref: '#/parameters/dbidParam'
+        - $ref: "#/parameters/dbidParam"
       responses:
-        '200':
-          description: 'Successful response, with Adabas Nucleus Log'
+        "200":
+          description: "Successful response, with Adabas Nucleus Log"
           schema:
-            $ref: '#/definitions/NucleusLog'
-        '400':
+            $ref: "#/definitions/NucleusLog"
+        "400":
           description: Database not available/unknown
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-  '/adabas/database/{dbid}/parameter':
+  "/adabas/database/{dbid}/parameter":
     get:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
+        - hasRole: [admin]
       description: Retrieve Adabas parameters
       consumes:
         - application/json
@@ -1473,7 +1953,7 @@ paths:
         - OnlineOffline
       operationId: getDatabaseParameter
       parameters:
-        - $ref: '#/parameters/dbidParam'
+        - $ref: "#/parameters/dbidParam"
         - enum:
             - dynamic
             - DYNAMIC
@@ -1485,23 +1965,24 @@ paths:
           in: query
           required: true
       responses:
-        '200':
-          description: 'Successful response, with Adabas database parameters'
+        "200":
+          description: "Successful response, with Adabas database parameters"
           schema:
-            $ref: '#/definitions/Parameter'
-        '400':
+            $ref: "#/definitions/Parameter"
+        "400":
           description: Database not available/unknown
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
     put:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
-      description: Change Adabas parameter, Adabas parameter can even be given as request
+        - hasRole: [admin]
+      description:
+        Change Adabas parameter, Adabas parameter can even be given as request
         parameter
       consumes:
         - application/json
@@ -1513,7 +1994,7 @@ paths:
         - OnlineOffline
       operationId: putAdabasParameter
       parameters:
-        - $ref: '#/parameters/dbidParam'
+        - $ref: "#/parameters/dbidParam"
         - type: string
           name: AR
           in: query
@@ -1617,25 +2098,25 @@ paths:
           name: ADATCPCONNECTIONS
           in: query
         - type: integer
-          name: SSL_PORT
+          name: SSLPORT
           in: query
         - type: string
-          name: SSL_CERTFILE
+          name: SSLCERTFILE
           in: query
         - type: string
-          name: SSL_KEYFILE
+          name: SSLKEYFILE
           in: query
         - type: integer
-          name: SSL_VERIFY
+          name: SSLVERIFY
           in: query
         - type: string
-          name: SSL_CAFILE
+          name: SSLCAFILE
           in: query
         - type: string
-          name: SSL_CADIRECTORY
+          name: SSLCADIRECTORY
           in: query
         - type: string
-          name: SSL_PASSWORD
+          name: SSLPASSWORD
           in: query
         - enum:
             - dynamic
@@ -1648,23 +2129,23 @@ paths:
           in: query
           required: true
       responses:
-        '200':
-          description: 'Successful response, parameter changed'
+        "200":
+          description: "Successful response, parameter changed"
           schema:
-            $ref: '#/definitions/StatusResponse'
-        '400':
+            $ref: "#/definitions/StatusResponse"
+        "400":
           description: Error changing the parameter
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
     post:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
-      description: 
+        - hasRole: [admin]
+      description:
         Change Adabas parameter, Adabas parameter can even be given as request
         parameter
       consumes:
@@ -1677,7 +2158,7 @@ paths:
         - OnlineOffline
       operationId: postAdabasParameter
       parameters:
-        - $ref: '#/parameters/dbidParam'
+        - $ref: "#/parameters/dbidParam"
         - enum:
             - dynamic
             - DYNAMIC
@@ -1693,23 +2174,23 @@ paths:
           schema:
             type: object
       responses:
-        '200':
-          description: 'Successful response, parameter changed'
+        "200":
+          description: "Successful response, parameter changed"
           schema:
-            $ref: '#/definitions/StatusResponse'
-        '400':
+            $ref: "#/definitions/StatusResponse"
+        "400":
           description: Error changing the parameter
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-  '/adabas/database/{dbid}/parameterinfo':
+  "/adabas/database/{dbid}/parameterinfo":
     get:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
+        - hasRole: [admin]
       description: Retrieve Adabas parameter metadata information
       consumes:
         - application/json
@@ -1721,25 +2202,25 @@ paths:
         - OnlineOffline
       operationId: getDatabaseParameterInfo
       parameters:
-        - $ref: '#/parameters/dbidParam'
+        - $ref: "#/parameters/dbidParam"
       responses:
-        '200':
-          description: 'Successful response, with Adabas database parameters'
+        "200":
+          description: "Successful response, with Adabas database parameters"
           schema:
-            $ref: '#/definitions/ParameterInfos'
-        '400':
+            $ref: "#/definitions/ParameterInfos"
+        "400":
           description: Database not available/unknown
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-  '/adabas/database/{dbid}/threadtable':
+  "/adabas/database/{dbid}/threadtable":
     get:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
+        - hasRole: [admin]
       description: Retrieve Adabas Thread Table
       consumes:
         - application/json
@@ -1751,25 +2232,25 @@ paths:
         - Online
       operationId: getDatabaseThreadTable
       parameters:
-        - $ref: '#/parameters/dbidParam'
+        - $ref: "#/parameters/dbidParam"
       responses:
-        '200':
-          description: 'Successful response, with Adabas Thread table'
+        "200":
+          description: "Successful response, with Adabas Thread table"
           schema:
-            $ref: '#/definitions/ThreadTable'
-        '400':
+            $ref: "#/definitions/ThreadTable"
+        "400":
           description: Database not available/unknown
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-  '/adabas/database/{dbid}/ucb':
+  "/adabas/database/{dbid}/ucb":
     get:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
+        - hasRole: [admin]
       description: Retrieves Adabas UCB entries
       consumes:
         - application/json
@@ -1781,26 +2262,26 @@ paths:
         - OnlineOffline
       operationId: getUCB
       parameters:
-        - $ref: '#/parameters/dbidParam'
-        - $ref: '#/parameters/rfc3339Param'
+        - $ref: "#/parameters/dbidParam"
+        - $ref: "#/parameters/rfc3339Param"
       responses:
-        '200':
-          description: 'Successful response, with a list of UCB entries'
+        "200":
+          description: "Successful response, with a list of UCB entries"
           schema:
-            $ref: '#/definitions/UCB'
-        '400':
+            $ref: "#/definitions/UCB"
+        "400":
           description: Error receiving file information
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-  '/adabas/database/{dbid}/ucb/{ucbid}':
+  "/adabas/database/{dbid}/ucb/{ucbid}":
     delete:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
+        - hasRole: [admin]
       description: Delete an Adabas UCB entry
       consumes:
         - application/json
@@ -1812,30 +2293,30 @@ paths:
         - OnlineOffline
       operationId: deleteUCB
       parameters:
-        - $ref: '#/parameters/dbidParam'
+        - $ref: "#/parameters/dbidParam"
         - type: integer
           description: UCB entry id
           name: ucbid
           in: path
           required: true
       responses:
-        '200':
-          description: 'Successful response, UCB entry is deleted.'
+        "200":
+          description: "Successful response, UCB entry is deleted."
           schema:
-            $ref: '#/definitions/StatusResponse'
-        '400':
+            $ref: "#/definitions/StatusResponse"
+        "400":
           description: Error receiving file information
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-  '/adabas/database/{dbid}/userqueue':
+  "/adabas/database/{dbid}/userqueue":
     get:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
+        - hasRole: [admin]
       description: Retrieve a list of user queue entries
       consumes:
         - application/json
@@ -1847,26 +2328,26 @@ paths:
         - Online
       operationId: getDatabaseUserQueue
       parameters:
-        - $ref: '#/parameters/dbidParam'
-        - $ref: '#/parameters/rfc3339Param'
+        - $ref: "#/parameters/dbidParam"
+        - $ref: "#/parameters/rfc3339Param"
       responses:
-        '200':
-          description: 'Successful response, with database user queue entries'
+        "200":
+          description: "Successful response, with database user queue entries"
           schema:
-            $ref: '#/definitions/UserQueue'
-        '400':
+            $ref: "#/definitions/UserQueue"
+        "400":
           description: Database not available or offline
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-  '/adabas/database/{dbid}/userqueue/{queueid}':
+  "/adabas/database/{dbid}/userqueue/{queueid}":
     get:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
+        - hasRole: [admin]
       description: Provide User queue details of an specific user queue element
       consumes:
         - application/json
@@ -1878,30 +2359,30 @@ paths:
         - Online
       operationId: getUserQueueDetail
       parameters:
-        - $ref: '#/parameters/dbidParam'
+        - $ref: "#/parameters/dbidParam"
         - type: number
           description: User Queue ID
           name: queueid
           in: path
           required: true
-        - $ref: '#/parameters/rfc3339Param'
+        - $ref: "#/parameters/rfc3339Param"
       responses:
-        '200':
-          description: 'Successful response, a User queue detailed are received'
+        "200":
+          description: "Successful response, a User queue detailed are received"
           schema:
-            $ref: '#/definitions/UserQueueDetail'
-        '400':
+            $ref: "#/definitions/UserQueueDetail"
+        "400":
           description: Error finding user queue entry
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
     delete:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
+        - hasRole: [admin]
       description: Stop the User Queue element
       consumes:
         - application/json
@@ -1913,28 +2394,28 @@ paths:
         - Online
       operationId: stopUserQueueEntry
       parameters:
-        - $ref: '#/parameters/dbidParam'
+        - $ref: "#/parameters/dbidParam"
         - type: number
           description: User Queue ID
           name: queueid
           in: path
           required: true
       responses:
-        '200':
-          description: 'Successful response, a User queue is stopped'
-        '400':
+        "200":
+          description: "Successful response, a User queue is stopped"
+        "400":
           description: Error stopping the database user queue entry
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
   /adabas/env:
     get:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
+        - hasRole: [admin]
       description: Retrieves a list of Adabas version installations used
       consumes:
         - application/json
@@ -1946,23 +2427,23 @@ paths:
         - OnlineOffline
       operationId: getDatabasesInstallation
       responses:
-        '200':
-          description: 'Successful response, with list of known databases.'
+        "200":
+          description: "Successful response, with list of known databases."
           schema:
-            $ref: '#/definitions/AdabasEnvironment'
-        '400':
+            $ref: "#/definitions/AdabasEnvironment"
+        "400":
           description: Database error evaluating list
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-  '/binary/db/{dbid}/{file}/{isn}/{field}':
+  "/binary/db/{dbid}/{file}/{isn}/{field}":
     get:
       security:
         - BasicAuth: []
-        - hasRole: [ user ]
+        - hasRole: [user]
       description: Retrieves a lob of a specific ISN of an field
       consumes:
         - application/json
@@ -2001,30 +2482,30 @@ paths:
           description: Specific the data MIME type
           name: mimetype
           in: query
-        - $ref: '#/parameters/searchParam'
+        - $ref: "#/parameters/searchParam"
       responses:
-        '200':
-          description: 'Successful response, retrieve the field information.'
+        "200":
+          description: "Successful response, retrieve the field information."
           schema:
             type: file
-        '401':
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: The requested data was forbidden.
-        '404':
+        "404":
           description: Could not read the specified field.
           schema:
-            $ref: '#/definitions/Error'
+            $ref: "#/definitions/Error"
     put:
       security:
         - BasicAuth: []
-        - hasRole: [ user ]
+        - hasRole: [user]
       description: Set a lob at a specific ISN of an field in a Map
       consumes:
         - application/octet-stream
         - multipart/form-data
       tags:
-        - MapDatabaseAccess
+        - ClassicDatabaseAccess
       operationId: updateLob
       parameters:
         - type: integer
@@ -2057,23 +2538,23 @@ paths:
           in: formData
           required: true
       responses:
-        '200':
-          description: 'Successful response, database record is updated.'
+        "200":
+          description: "Successful response, database record is updated."
           schema:
-            $ref: '#/definitions/StoreResponse'
-        '401':
+            $ref: "#/definitions/StoreResponse"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-        '404':
+        "404":
           description: Could not read the specified field.
           schema:
-            $ref: '#/definitions/Error'
-  '/binary/map/{name}/{isn}/{field}':
+            $ref: "#/definitions/Error"
+  "/binary/map/{name}/{isn}/{field}":
     get:
       security:
         - BasicAuth: []
-        - hasRole: [ user ]
+        - hasRole: [user]
       description: Retrieves a lob of a specific ISN of an field in a Map
       produces:
         - application/octet-stream
@@ -2081,7 +2562,7 @@ paths:
         - MapDatabaseAccess
       operationId: getLobByMap
       parameters:
-        - $ref: '#/parameters/mapParam'
+        - $ref: "#/parameters/mapParam"
         - type: string
           description: Specific ISN number
           name: isn
@@ -2096,24 +2577,24 @@ paths:
           description: Specific the data MIME type
           name: mimetype
           in: query
-        - $ref: '#/parameters/searchParam'
+        - $ref: "#/parameters/searchParam"
       responses:
-        '200':
-          description: 'Successful response, retrieve the field information.'
+        "200":
+          description: "Successful response, retrieve the field information."
           schema:
             type: file
-        '401':
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-        '404':
+        "404":
           description: Could not read the specified field.
           schema:
-            $ref: '#/definitions/Error'
+            $ref: "#/definitions/Error"
     put:
       security:
         - BasicAuth: []
-        - hasRole: [ user ]
+        - hasRole: [user]
       description: Set a lob at a specific ISN of an field in a Map
       consumes:
         - application/octet-stream
@@ -2143,23 +2624,23 @@ paths:
           in: formData
           required: true
       responses:
-        '200':
-          description: 'Successful response, database record is updated.'
+        "200":
+          description: "Successful response, database record is updated."
           schema:
-            $ref: '#/definitions/StoreResponse'
-        '401':
+            $ref: "#/definitions/StoreResponse"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-        '404':
+        "404":
           description: Could not read the specified field.
           schema:
-            $ref: '#/definitions/Error'
-  '/file/access/{location}':
+            $ref: "#/definitions/Error"
+  "/file/access/{location}":
     get:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
+        - hasRole: [admin]
       description: Download a file out of file location
       produces:
         - application/octet-stream
@@ -2167,32 +2648,32 @@ paths:
         - Browser
       operationId: downloadFile
       parameters:
-        - $ref: '#/parameters/locationParam'
-        - $ref: '#/parameters/fileReferenceParam'
+        - $ref: "#/parameters/locationParam"
+        - $ref: "#/parameters/fileReferenceParam"
       responses:
-        '200':
-          description: 'Successful response, with download binary file.'
+        "200":
+          description: "Successful response, with download binary file."
           schema:
             type: file
-        '400':
+        "400":
           description: Environment evaluation error
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-        '404':
+        "404":
           description: Location not available/unknown
           schema:
-            $ref: '#/definitions/Error'
+            $ref: "#/definitions/Error"
     put:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
+        - hasRole: [admin]
       description: Create a new directory
       consumes:
-#        - multipart/form-data
+        #        - multipart/form-data
         - application/json
         - application/xml
         - plain/text
@@ -2203,34 +2684,34 @@ paths:
         - Browser
       operationId: createDirectory
       parameters:
-        - $ref: '#/parameters/locationParam'
-        - $ref: '#/parameters/fileReferenceParam'
-#        - type: file
-#          description: Upload file
-#          name: uploadFile
-#          in: formData
-#          required: false
+        - $ref: "#/parameters/locationParam"
+        - $ref: "#/parameters/fileReferenceParam"
+      #        - type: file
+      #          description: Upload file
+      #          name: uploadFile
+      #          in: formData
+      #          required: false
       responses:
-        '200':
-          description: 'Successful response, if the directory is created.'
+        "200":
+          description: "Successful response, if the directory is created."
           schema:
-            $ref: '#/definitions/StatusResponse'
-        '400':
+            $ref: "#/definitions/StatusResponse"
+        "400":
           description: Environment evaluation error
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-        '404':
+        "404":
           description: Location not available/unknown
           schema:
-            $ref: '#/definitions/Error'
+            $ref: "#/definitions/Error"
     post:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
+        - hasRole: [admin]
       description: Upload a new file to the given location
       consumes:
         - application/octet-stream
@@ -2243,34 +2724,34 @@ paths:
         - Browser
       operationId: uploadFile
       parameters:
-        - $ref: '#/parameters/locationParam'
-        - $ref: '#/parameters/fileReferenceParam'
+        - $ref: "#/parameters/locationParam"
+        - $ref: "#/parameters/fileReferenceParam"
         - type: file
           description: Upload file
           name: uploadFile
           in: formData
           required: true
       responses:
-        '200':
-          description: 'Successful response, with download binary file.'
+        "200":
+          description: "Successful response, with download binary file."
           schema:
-            $ref: '#/definitions/StatusResponse'
-        '400':
+            $ref: "#/definitions/StatusResponse"
+        "400":
           description: Environment evaluation error
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-        '404':
+        "404":
           description: Location not available/unknown
           schema:
-            $ref: '#/definitions/Error'
+            $ref: "#/definitions/Error"
     delete:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
+        - hasRole: [admin]
       description: Delete the file on the given location
       consumes:
         - application/json
@@ -2282,30 +2763,30 @@ paths:
         - Browser
       operationId: deleteFileLocation
       parameters:
-        - $ref: '#/parameters/locationParam'
-        - $ref: '#/parameters/fileReferenceParam'
+        - $ref: "#/parameters/locationParam"
+        - $ref: "#/parameters/fileReferenceParam"
       responses:
-        '200':
-          description: 'Successful response, if delete of file done.'
+        "200":
+          description: "Successful response, if delete of file done."
           schema:
-            $ref: '#/definitions/StatusResponse'
-        '400':
+            $ref: "#/definitions/StatusResponse"
+        "400":
           description: Environment evaluation error
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-        '404':
+        "404":
           description: Location not available/unknown
           schema:
-            $ref: '#/definitions/Error'
+            $ref: "#/definitions/Error"
   /file/browse:
     get:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
+        - hasRole: [admin]
       description: Retrieves a list of Browseable locations
       consumes:
         - application/json
@@ -2317,27 +2798,27 @@ paths:
         - Browser
       operationId: browseList
       responses:
-        '200':
-          description: 'Successful response, with list of known databases.'
+        "200":
+          description: "Successful response, with list of known databases."
           schema:
-            $ref: '#/definitions/Directories'
-        '400':
+            $ref: "#/definitions/Directories"
+        "400":
           description: Environment evaluation error
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-        '404':
+        "404":
           description: Database not available/unknown
           schema:
-            $ref: '#/definitions/Error'
-  '/file/browse/{location}':
+            $ref: "#/definitions/Error"
+  "/file/browse/{location}":
     get:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
+        - hasRole: [admin]
       description: Retrieves a list of files in the defined location.
       consumes:
         - application/json
@@ -2349,30 +2830,30 @@ paths:
         - Browser
       operationId: browse
       parameters:
-        - $ref: '#/parameters/locationParam'
-        - $ref: '#/parameters/fileReferenceParam'
+        - $ref: "#/parameters/locationParam"
+        - $ref: "#/parameters/fileReferenceParam"
       responses:
-        '200':
-          description: 'Successful response, with list of known databases.'
+        "200":
+          description: "Successful response, with list of known databases."
           schema:
-            $ref: '#/definitions/FileLocation'
-        '400':
+            $ref: "#/definitions/FileLocation"
+        "400":
           description: Environment evaluation error
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-        '404':
+        "404":
           description: Database not available/unknown
           schema:
-            $ref: '#/definitions/Error'
-  '/image/db/{dbid}/{file}/{isn}/{field}':
+            $ref: "#/definitions/Error"
+  "/image/db/{dbid}/{file}/{isn}/{field}":
     get:
       security:
         - BasicAuth: []
-        - hasRole: [ user ]
+        - hasRole: [user]
       description: Retrieves a field of a specific ISN of a Map definition
       produces:
         - image/jpeg
@@ -2406,28 +2887,28 @@ paths:
           name: field
           in: path
           required: true
-        - $ref: '#/parameters/searchParam'
+        - $ref: "#/parameters/searchParam"
       responses:
-        '200':
-          description: 'Successful response, retrieve the field information.'
+        "200":
+          description: "Successful response, retrieve the field information."
           schema:
             type: file
-        '401':
+        "401":
           description: Unauthorized access
           headers:
             WWW_Authenticate:
               type: string
-        '403':
+        "403":
           description: The requested data was forbidden.
-        '404':
+        "404":
           description: Could not read the specified field.
           schema:
-            $ref: '#/definitions/Error'
-  '/image/map/{name}/{isn}/{field}':
+            $ref: "#/definitions/Error"
+  "/image/map/{name}/{isn}/{field}":
     get:
       security:
         - BasicAuth: []
-        - hasRole: [ user ]
+        - hasRole: [user]
       description: Retrieves a field of a specific ISN of a Map definition
       produces:
         - image/jpeg
@@ -2452,24 +2933,24 @@ paths:
           name: field
           in: path
           required: true
-        - $ref: '#/parameters/searchParam'
+        - $ref: "#/parameters/searchParam"
       responses:
-        '200':
-          description: 'Successful response, retrieve the field information.'
+        "200":
+          description: "Successful response, retrieve the field information."
           schema:
             type: file
-        '401':
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-        '404':
+        "404":
           description: Could not read the specified field.
           schema:
-            $ref: '#/definitions/Error'
+            $ref: "#/definitions/Error"
     put:
       security:
         - BasicAuth: []
-        - hasRole: [ user ]
+        - hasRole: [user]
       description: Upload a LOB date to the given database field
       consumes:
         - application/octet-stream
@@ -2503,27 +2984,27 @@ paths:
           in: formData
           required: true
       responses:
-        '200':
-          description: 'Successful response, with upload binary data.'
+        "200":
+          description: "Successful response, with upload binary data."
           schema:
-            $ref: '#/definitions/StatusResponse'
-        '400':
+            $ref: "#/definitions/StatusResponse"
+        "400":
           description: Environment evaluation error
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-        '404':
+        "404":
           description: Location not available/unknown
           schema:
-            $ref: '#/definitions/Error'
+            $ref: "#/definitions/Error"
   /rest/db:
     get:
       security:
         - BasicAuth: []
-        - hasRole: [ user ]  
+        - hasRole: [user]
       description: Retrieves a list of known databases.
       consumes:
         - application/json
@@ -2535,10 +3016,10 @@ paths:
         - ClassicDatabaseAccess
       operationId: getOnlineDatabases
       responses:
-        '200':
-          description: 'Successful response, with list of known databases.'
+        "200":
+          description: "Successful response, with list of known databases."
           schema:
-            $ref: '#/definitions/OnlineDatabases'
+            $ref: "#/definitions/OnlineDatabases"
           headers:
             X-Rest-Token:
               type: string
@@ -2547,31 +3028,31 @@ paths:
           examples:
             application/json:
               Databases:
-                - url: '23(tcpip://pctkn7:0)'
-                - url: '24(tcpip://pctkn7:0)'
-                - url: '25(tcpip://pctkn7:0)'
+                - url: "23(tcpip://pctkn7:0)"
+                - url: "24(tcpip://pctkn7:0)"
+                - url: "25(tcpip://pctkn7:0)"
             application/xml:
               Databases:
-                - url: '23(tcpip://pctkn7:0)'
-                - url: '24(tcpip://pctkn7:0)'
-                - url: '25(tcpip://pctkn7:0)'
-        '401':
+                - url: "23(tcpip://pctkn7:0)"
+                - url: "24(tcpip://pctkn7:0)"
+                - url: "25(tcpip://pctkn7:0)"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-        '404':
+        "404":
           description: Error requesting database list.
           schema:
-            $ref: '#/definitions/Error'
+            $ref: "#/definitions/Error"
         default:
           description: Unexpected error
           schema:
-            $ref: '#/definitions/Error'  
-  '/rest/db/{dbid}':
+            $ref: "#/definitions/Error"
+  "/rest/db/{dbid}":
     get:
       security:
         - BasicAuth: []
-        - hasRole: [ user ]
+        - hasRole: [user]
       description: Retrieves a list of files contained in the given database
       consumes:
         - application/json
@@ -2593,29 +3074,29 @@ paths:
           name: reference
           in: query
       responses:
-        '200':
-          description: 'Successful response, with a list of known files in the database'
+        "200":
+          description: "Successful response, with a list of known files in the database"
           schema:
-            $ref: '#/definitions/DbFiles'
+            $ref: "#/definitions/DbFiles"
           examples:
             Files:
               File:
                 - 8
                 - 9
                 - 11
-        '401':
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: The requested data was forbidden.
-        '404':
+        "404":
           description: Error retrieving database list
           schema:
-            $ref: '#/definitions/Error'
-  '/rest/db/{dbid}/{file}':
+            $ref: "#/definitions/Error"
+  "/rest/db/{dbid}/{file}":
     get:
       security:
         - BasicAuth: []
-        - hasRole: [ user ]
+        - hasRole: [user]
       description: Get database records of a given database and file
       consumes:
         - application/json
@@ -2637,39 +3118,39 @@ paths:
           name: file
           in: path
           required: true
-        - $ref: '#/parameters/fieldsParam'
-        - $ref: '#/parameters/startParam'
-        - $ref: '#/parameters/limitParam'
-        - $ref: '#/parameters/sortParam'
-        - $ref: '#/parameters/searchParam'
+        - $ref: "#/parameters/fieldsParam"
+        - $ref: "#/parameters/startParam"
+        - $ref: "#/parameters/limitParam"
+        - $ref: "#/parameters/sortParam"
+        - $ref: "#/parameters/searchParam"
         - type: string
           description: Remote node reference
           name: reference
           in: query
-        - $ref: '#/parameters/compactParam'
-        - $ref: '#/parameters/flattenParam'
-        - $ref: '#/parameters/descriptorParam'
+        - $ref: "#/parameters/compactParam"
+        - $ref: "#/parameters/flattenParam"
+        - $ref: "#/parameters/descriptorParam"
         - type: boolean
           description: Use XML notation namespace
           name: xmlnotation
           in: query
       responses:
-        '200':
-          description: 'Successful response, with a representation of the data.'
+        "200":
+          description: "Successful response, with a representation of the data."
           schema:
-            $ref: '#/definitions/Response'
-        '401':
+            $ref: "#/definitions/Response"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: The requested data was forbidden.
-        '404':
+        "404":
           description: The requested data was not found.
           schema:
-            $ref: '#/definitions/Error'
+            $ref: "#/definitions/Error"
     put:
       security:
         - BasicAuth: []
-        - hasRole: [ user ]
+        - hasRole: [user]
       description: Update record data
       consumes:
         - application/json
@@ -2701,24 +3182,24 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/Records'
+            $ref: "#/definitions/Records"
       responses:
-        '200':
-          description: 'Successful response, database record is updated.'
+        "200":
+          description: "Successful response, database record is updated."
           schema:
-            $ref: '#/definitions/StoreResponse'
-        '401':
+            $ref: "#/definitions/StoreResponse"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: The requested data was forbidden.
-        '404':
+        "404":
           description: Could not update database record.
           schema:
-            $ref: '#/definitions/Error'
+            $ref: "#/definitions/Error"
     post:
       security:
         - BasicAuth: []
-        - hasRole: [ user ]
+        - hasRole: [user]
       description: Insert database record
       consumes:
         - application/json
@@ -2750,25 +3231,25 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/Records'
+            $ref: "#/definitions/Records"
       responses:
-        '200':
-          description: 'Successful response, database record inserted.'
+        "200":
+          description: "Successful response, database record inserted."
           schema:
-            $ref: '#/definitions/StoreResponse'
-        '401':
+            $ref: "#/definitions/StoreResponse"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: The requested data was forbidden.
-        '404':
+        "404":
           description: Error inserting database record.
           schema:
-            $ref: '#/definitions/Error'
-  '/rest/db/{dbid}/{file}/{isn}':
+            $ref: "#/definitions/Error"
+  "/rest/db/{dbid}/{file}/{isn}":
     get:
       security:
         - BasicAuth: []
-        - hasRole: [ user ]
+        - hasRole: [user]
       description: Retrieve database record(s) of a given ISN
       consumes:
         - application/json
@@ -2799,37 +3280,37 @@ paths:
           description: Remote node reference
           name: reference
           in: query
-        - $ref: '#/parameters/fieldsParam'
-        - $ref: '#/parameters/startParam'
-        - $ref: '#/parameters/limitParam'
-        - $ref: '#/parameters/sortParam'
-        - $ref: '#/parameters/searchParam'
-        - $ref: '#/parameters/compactParam'
-        - $ref: '#/parameters/flattenParam'
-        - $ref: '#/parameters/descriptorParam'
+        - $ref: "#/parameters/fieldsParam"
+        - $ref: "#/parameters/startParam"
+        - $ref: "#/parameters/limitParam"
+        - $ref: "#/parameters/sortParam"
+        - $ref: "#/parameters/searchParam"
+        - $ref: "#/parameters/compactParam"
+        - $ref: "#/parameters/flattenParam"
+        - $ref: "#/parameters/descriptorParam"
         - type: boolean
           description: Use XML notation namespace
           name: xmlnotation
           in: query
       responses:
-        '200':
+        "200":
           description: >-
             Successful response, with a representation of the database record of
             given ISN.
           schema:
-            $ref: '#/definitions/Response'
-        '401':
+            $ref: "#/definitions/Response"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: The requested data was forbidden.
-        '404':
+        "404":
           description: The requested database record cannot be returned.
           schema:
-            $ref: '#/definitions/Error'
+            $ref: "#/definitions/Error"
     put:
       security:
         - BasicAuth: []
-        - hasRole: [ user ]
+        - hasRole: [user]
       description: Update database record of a given ISN.
       consumes:
         - application/json
@@ -2866,24 +3347,24 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/Records'
+            $ref: "#/definitions/Records"
       responses:
-        '200':
-          description: 'Successful response, database record updated.'
+        "200":
+          description: "Successful response, database record updated."
           schema:
-            $ref: '#/definitions/StoreResponse'
-        '401':
+            $ref: "#/definitions/StoreResponse"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: The requested data was forbidden.
-        '404':
+        "404":
           description: The requested database record could not be updated.
           schema:
-            $ref: '#/definitions/Error'
+            $ref: "#/definitions/Error"
     post:
       security:
         - BasicAuth: []
-        - hasRole: [ user ]
+        - hasRole: [user]
       description: Insert database record at given ISN.
       consumes:
         - application/json
@@ -2920,24 +3401,24 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/Records'
+            $ref: "#/definitions/Records"
       responses:
-        '200':
-          description: 'Successful response, database record inserted.'
+        "200":
+          description: "Successful response, database record inserted."
           schema:
-            $ref: '#/definitions/StoreResponse'
-        '401':
+            $ref: "#/definitions/StoreResponse"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: The requested data was forbidden.
-        '404':
+        "404":
           description: Insert could not be done.
           schema:
-            $ref: '#/definitions/Error'
+            $ref: "#/definitions/Error"
     delete:
       security:
         - BasicAuth: []
-        - hasRole: [ user ]
+        - hasRole: [user]
       description: Delete a specific ISN
       consumes:
         - application/json
@@ -2969,23 +3450,23 @@ paths:
           name: reference
           in: query
       responses:
-        '200':
-          description: 'Successful response, the record is deleted.'
+        "200":
+          description: "Successful response, the record is deleted."
           schema:
-            $ref: '#/definitions/Status'
-        '401':
+            $ref: "#/definitions/Info"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: The requested data was forbidden.
-        '404':
+        "404":
           description: Delete of the request was not finished.
           schema:
-            $ref: '#/definitions/Error'
-  '/rest/db/{dbid}/{file}/{isn}/{field}':
+            $ref: "#/definitions/Error"
+  "/rest/db/{dbid}/{file}/{isn}/{field}":
     get:
       security:
         - BasicAuth: []
-        - hasRole: [ user ]
+        - hasRole: [user]
       description: Retrieve a specific database record field data.
       consumes:
         - application/json
@@ -3021,34 +3502,34 @@ paths:
           name: field
           in: path
           required: true
-        - $ref: '#/parameters/startParam'
-        - $ref: '#/parameters/limitParam'
-        - $ref: '#/parameters/sortParam'
-        - $ref: '#/parameters/searchParam'
-        - $ref: '#/parameters/compactParam'
-        - $ref: '#/parameters/flattenParam'
-        - $ref: '#/parameters/descriptorParam'
+        - $ref: "#/parameters/startParam"
+        - $ref: "#/parameters/limitParam"
+        - $ref: "#/parameters/sortParam"
+        - $ref: "#/parameters/searchParam"
+        - $ref: "#/parameters/compactParam"
+        - $ref: "#/parameters/flattenParam"
+        - $ref: "#/parameters/descriptorParam"
         - type: boolean
           description: Use XML notation namespace
           name: xmlnotation
           in: query
       responses:
-        '200':
-          description: 'Successful response, with database data of the request field.'
+        "200":
+          description: "Successful response, with database data of the request field."
           schema:
-            $ref: '#/definitions/Response'
-        '401':
+            $ref: "#/definitions/Response"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: The requested data was forbidden.
-        '404':
+        "404":
           description: The requested database record field could not be returned.
           schema:
-            $ref: '#/definitions/Error'
+            $ref: "#/definitions/Error"
     put:
       security:
         - BasicAuth: []
-        - hasRole: [ user ]
+        - hasRole: [user]
       description: Update database record field
       consumes:
         - application/json
@@ -3089,25 +3570,25 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/Records'
+            $ref: "#/definitions/Records"
       responses:
-        '200':
-          description: 'Successful response, database record updated.'
+        "200":
+          description: "Successful response, database record updated."
           schema:
-            $ref: '#/definitions/Response'
-        '401':
+            $ref: "#/definitions/Response"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: The requested data was forbidden.
-        '404':
+        "404":
           description: The requested database record could not be  updated
           schema:
-            $ref: '#/definitions/Error'
+            $ref: "#/definitions/Error"
   /rest/map:
     get:
       security:
         - BasicAuth: []
-        - hasRole: [ user ]
+        - hasRole: [user]
       description: Retrieves a list of available maps
       consumes:
         - application/json
@@ -3119,28 +3600,28 @@ paths:
         - MapDatabaseAccess
       operationId: getMaps
       responses:
-        '200':
-          description: 'Successful response, with the list of available maps.'
+        "200":
+          description: "Successful response, with the list of available maps."
           schema:
-            $ref: '#/definitions/Maps'
+            $ref: "#/definitions/Maps"
           examples:
             application/json:
               Maps:
                 - EMPLOYEE-FDT
                 - EMPLOYEES-NAT
                 - EMPLOYEES-NAT-DDM
-        '401':
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-        '404':
+        "404":
           description: Error requesting the list of maps.
           schema:
-            $ref: '#/definitions/Error'
+            $ref: "#/definitions/Error"
     post:
       security:
         - BasicAuth: []
-        - hasRole: [ user ]
+        - hasRole: [user]
       description: Store send records into Map definition
       consumes:
         - multipart/form-data
@@ -3151,28 +3632,28 @@ paths:
         - MapDatabaseAccess
       operationId: insertMapFileRecords
       parameters:
-         - in: formData
-           name: data
-           type: file
-           description: The file to upload.
+        - in: formData
+          name: data
+          type: file
+          description: The file to upload.
       responses:
-        '200':
-          description: 'Successful response, send record is stored.'
+        "200":
+          description: "Successful response, send record is stored."
           schema:
-            $ref: '#/definitions/StoreResponse'
-        '401':
+            $ref: "#/definitions/StoreResponse"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-        '404':
+        "404":
           description: Error storing the record.
           schema:
-            $ref: '#/definitions/Error'
-  '/rest/map/{name}':
+            $ref: "#/definitions/Error"
+  "/rest/map/{name}":
     get:
       security:
         - BasicAuth: []
-        - hasRole: [ user ]
+        - hasRole: [user]
       description: Retrieves all records of a Map definition
       consumes:
         - application/json
@@ -3184,36 +3665,36 @@ paths:
         - MapDatabaseAccess
       operationId: getMapRecords
       parameters:
-        - $ref: '#/parameters/mapParam'
-        - $ref: '#/parameters/fieldsParam'
-        - $ref: '#/parameters/startParam'
-        - $ref: '#/parameters/limitParam'
-        - $ref: '#/parameters/sortParam'
-        - $ref: '#/parameters/searchParam'
-        - $ref: '#/parameters/compactParam'
-        - $ref: '#/parameters/flattenParam'
-        - $ref: '#/parameters/descriptorParam'
+        - $ref: "#/parameters/mapParam"
+        - $ref: "#/parameters/fieldsParam"
+        - $ref: "#/parameters/startParam"
+        - $ref: "#/parameters/limitParam"
+        - $ref: "#/parameters/sortParam"
+        - $ref: "#/parameters/searchParam"
+        - $ref: "#/parameters/compactParam"
+        - $ref: "#/parameters/flattenParam"
+        - $ref: "#/parameters/descriptorParam"
         - type: boolean
           description: Use XML notation namespace
           name: xmlnotation
           in: query
       responses:
-        '200':
-          description: 'Successful response, with a number of records of the map.'
+        "200":
+          description: "Successful response, with a number of records of the map."
           schema:
-            $ref: '#/definitions/Response'
-        '401':
+            $ref: "#/definitions/Response"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-        '404':
+        "404":
           description: The requested map was not found.
           schema:
-            $ref: '#/definitions/Error'
+            $ref: "#/definitions/Error"
     put:
       security:
         - BasicAuth: []
-        - hasRole: [ user ]
+        - hasRole: [user]
       description: Update send records into a Map definition
       consumes:
         - application/json
@@ -3226,30 +3707,30 @@ paths:
         - MapDatabaseAccess
       operationId: updateMapRecords
       parameters:
-        - $ref: '#/parameters/mapParam'
+        - $ref: "#/parameters/mapParam"
         - description: Data content
           name: data
           in: body
           required: true
           schema:
-            $ref: '#/definitions/Records'
+            $ref: "#/definitions/Records"
       responses:
-        '200':
-          description: 'Successful response, send record is stored.'
+        "200":
+          description: "Successful response, send record is stored."
           schema:
-            $ref: '#/definitions/StoreResponse'
-        '401':
+            $ref: "#/definitions/StoreResponse"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-        '404':
+        "404":
           description: Error storing the record.
           schema:
-            $ref: '#/definitions/Error'
+            $ref: "#/definitions/Error"
     post:
       security:
         - BasicAuth: []
-        - hasRole: [ user ]
+        - hasRole: [user]
       description: Store send records into Map definition
       consumes:
         - application/json
@@ -3262,31 +3743,31 @@ paths:
         - MapDatabaseAccess
       operationId: insertMapRecords
       parameters:
-        - $ref: '#/parameters/mapParam'
+        - $ref: "#/parameters/mapParam"
         - description: Data content
           name: data
           in: body
           required: true
           schema:
-            $ref: '#/definitions/Records'
+            $ref: "#/definitions/Records"
       responses:
-        '200':
-          description: 'Successful response, send record is stored.'
+        "200":
+          description: "Successful response, send record is stored."
           schema:
-            $ref: '#/definitions/StoreResponse'
-        '401':
+            $ref: "#/definitions/StoreResponse"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-        '404':
+        "404":
           description: Error storing the record.
           schema:
-            $ref: '#/definitions/Error'
-  '/rest/map/{name}/{isn}':
+            $ref: "#/definitions/Error"
+  "/rest/map/{name}/{isn}":
     get:
       security:
         - BasicAuth: []
-        - hasRole: [ user ]
+        - hasRole: [user]
       description: Retrieves all records of specific ISN in a Map definition
       consumes:
         - application/json
@@ -3298,41 +3779,41 @@ paths:
         - MapDatabaseAccess
       operationId: getIsnSpecificRecord
       parameters:
-        - $ref: '#/parameters/mapParam'
+        - $ref: "#/parameters/mapParam"
         - type: string
           description: Specific ISN number or "*" for all ISN
           name: isn
           in: path
           required: true
-        - $ref: '#/parameters/fieldsParam'
-        - $ref: '#/parameters/startParam'
-        - $ref: '#/parameters/limitParam'
-        - $ref: '#/parameters/sortParam'
-        - $ref: '#/parameters/searchParam'
-        - $ref: '#/parameters/compactParam'
-        - $ref: '#/parameters/flattenParam'
-        - $ref: '#/parameters/descriptorParam'
+        - $ref: "#/parameters/fieldsParam"
+        - $ref: "#/parameters/startParam"
+        - $ref: "#/parameters/limitParam"
+        - $ref: "#/parameters/sortParam"
+        - $ref: "#/parameters/searchParam"
+        - $ref: "#/parameters/compactParam"
+        - $ref: "#/parameters/flattenParam"
+        - $ref: "#/parameters/descriptorParam"
         - type: boolean
           description: Use XML notation namespace
           name: xmlnotation
           in: query
       responses:
-        '200':
-          description: 'Successful response, read of the data.'
+        "200":
+          description: "Successful response, read of the data."
           schema:
-            $ref: '#/definitions/Response'
-        '401':
+            $ref: "#/definitions/Response"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-        '404':
+        "404":
           description: Error reading a specific ISN
           schema:
-            $ref: '#/definitions/Error'
+            $ref: "#/definitions/Error"
     put:
       security:
         - BasicAuth: []
-        - hasRole: [ user ]
+        - hasRole: [user]
       description: Update a record of a Map definition
       consumes:
         - application/json
@@ -3345,21 +3826,21 @@ paths:
         - MapDatabaseAccess
       operationId: putIsnSpecificRecord
       parameters:
-        - $ref: '#/parameters/mapParam'
+        - $ref: "#/parameters/mapParam"
         - type: string
           description: Specific ISN number or "*" for all ISN
           name: isn
           in: path
           required: true
-        - $ref: '#/parameters/fieldsParam'
-        - $ref: '#/parameters/startParam'
-        - $ref: '#/parameters/limitParam'
-        - $ref: '#/parameters/sortParam'
-        - $ref: '#/parameters/searchParam'
-        - $ref: '#/parameters/compactParam'
-        - $ref: '#/parameters/flattenParam'
-        - $ref: '#/parameters/descriptorParam'
-        - $ref: '#/parameters/exchangeParam'
+        - $ref: "#/parameters/fieldsParam"
+        - $ref: "#/parameters/startParam"
+        - $ref: "#/parameters/limitParam"
+        - $ref: "#/parameters/sortParam"
+        - $ref: "#/parameters/searchParam"
+        - $ref: "#/parameters/compactParam"
+        - $ref: "#/parameters/flattenParam"
+        - $ref: "#/parameters/descriptorParam"
+        - $ref: "#/parameters/exchangeParam"
         - type: boolean
           description: Use XML notation namespace
           name: xmlnotation
@@ -3369,24 +3850,24 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/Records'
+            $ref: "#/definitions/Records"
       responses:
-        '200':
-          description: 'Successful response, Update a specific record.'
+        "200":
+          description: "Successful response, Update a specific record."
           schema:
-            $ref: '#/definitions/StoreResponse'
-        '401':
+            $ref: "#/definitions/StoreResponse"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-        '404':
+        "404":
           description: The requested update cannot be done.
           schema:
-            $ref: '#/definitions/Error'
+            $ref: "#/definitions/Error"
     post:
       security:
         - BasicAuth: []
-        - hasRole: [ user ]
+        - hasRole: [user]
       description: Insert a new records of a Map definition
       consumes:
         - application/json
@@ -3399,7 +3880,7 @@ paths:
         - MapDatabaseAccess
       operationId: postIsnSpecificRecord
       parameters:
-        - $ref: '#/parameters/mapParam'
+        - $ref: "#/parameters/mapParam"
         - type: string
           description: Specific ISN number or "*" for all ISN
           name: isn
@@ -3410,24 +3891,24 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/Records'
+            $ref: "#/definitions/Records"
       responses:
-        '200':
-          description: 'Successful response, new record is inserted.'
+        "200":
+          description: "Successful response, new record is inserted."
           schema:
-            $ref: '#/definitions/StoreResponse'
-        '401':
+            $ref: "#/definitions/StoreResponse"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-        '404':
+        "404":
           description: The new record could not be inserted.
           schema:
-            $ref: '#/definitions/Error'
+            $ref: "#/definitions/Error"
     delete:
       security:
         - BasicAuth: []
-        - hasRole: [ user ]
+        - hasRole: [user]
       description: Delete a record of Map definition
       consumes:
         - application/json
@@ -3439,30 +3920,30 @@ paths:
         - MapDatabaseAccess
       operationId: deleteIsnSpecificRecord
       parameters:
-        - $ref: '#/parameters/mapParam'
+        - $ref: "#/parameters/mapParam"
         - type: string
           description: Specific ISN number or "*" for all ISN
           name: isn
           in: path
           required: true
       responses:
-        '200':
-          description: 'Successful response, map record deleted.'
+        "200":
+          description: "Successful response, map record deleted."
           schema:
-            $ref: '#/definitions/Response'
-        '401':
+            $ref: "#/definitions/Response"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-        '404':
+        "404":
           description: Error deleting the record.
           schema:
-            $ref: '#/definitions/Error'
-  '/rest/map/{name}/{isn}/{field}':
+            $ref: "#/definitions/Error"
+  "/rest/map/{name}/{isn}/{field}":
     get:
       security:
         - BasicAuth: []
-        - hasRole: [ user ]
+        - hasRole: [user]
       description: Retrieves a field of a specific ISN of a Map definition
       consumes:
         - application/json
@@ -3474,7 +3955,7 @@ paths:
         - MapDatabaseAccess
       operationId: getMapRecordsFields
       parameters:
-        - $ref: '#/parameters/mapParam'
+        - $ref: "#/parameters/mapParam"
         - type: string
           description: Specific ISN number or "*" for all ISN
           name: isn
@@ -3485,35 +3966,35 @@ paths:
           name: field
           in: path
           required: true
-        - $ref: '#/parameters/startParam'
-        - $ref: '#/parameters/limitParam'
-        - $ref: '#/parameters/sortParam'
-        - $ref: '#/parameters/searchParam'
-        - $ref: '#/parameters/compactParam'
-        - $ref: '#/parameters/flattenParam'
-        - $ref: '#/parameters/descriptorParam'
+        - $ref: "#/parameters/startParam"
+        - $ref: "#/parameters/limitParam"
+        - $ref: "#/parameters/sortParam"
+        - $ref: "#/parameters/searchParam"
+        - $ref: "#/parameters/compactParam"
+        - $ref: "#/parameters/flattenParam"
+        - $ref: "#/parameters/descriptorParam"
         - type: boolean
           description: Use XML notation namespace
           name: xmlnotation
           in: query
       responses:
-        '200':
-          description: 'Successful response, retrieve the field information.'
+        "200":
+          description: "Successful response, retrieve the field information."
           schema:
-            $ref: '#/definitions/Response'
-        '401':
+            $ref: "#/definitions/Response"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-        '404':
+        "404":
           description: Could not read the specified field.
           schema:
-            $ref: '#/definitions/Error'
-  '/rest/metadata/map/{name}':
+            $ref: "#/definitions/Error"
+  "/rest/metadata/map/{name}":
     get:
       security:
         - BasicAuth: []
-        - hasRole: [ user ]
+        - hasRole: [user]
       description: Retrieves metadata of a Map definition
       consumes:
         - application/json
@@ -3525,25 +4006,25 @@ paths:
         - MapDatabaseAccess
       operationId: getMapMetadata
       parameters:
-        - $ref: '#/parameters/mapParam'
+        - $ref: "#/parameters/mapParam"
       responses:
-        '200':
-          description: 'Successful response, retrieve the map metadata.'
+        "200":
+          description: "Successful response, retrieve the map metadata."
           schema:
-            $ref: '#/definitions/mapping'
-        '401':
+            $ref: "#/definitions/mapping"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-        '404':
+        "404":
           description: Could not read or don't found the specified map metadata.
           schema:
-            $ref: '#/definitions/Error'
+            $ref: "#/definitions/Error"
   /rest/fields/{dbid}/{file}:
     get:
       security:
         - BasicAuth: []
-        - hasRole: [ user ]
+        - hasRole: [user]
       description: Retrieves all fields of an Adabas file
       consumes:
         - application/json
@@ -3555,26 +4036,26 @@ paths:
         - ClassicDatabaseAccess
       operationId: getFields
       parameters:
-        - $ref: '#/parameters/dbidParam'
-        - $ref: '#/parameters/fileParam'
+        - $ref: "#/parameters/dbidParam"
+        - $ref: "#/parameters/fileParam"
       responses:
-        '200':
-          description: 'Successful response, with the list of fields in Adabas file.'
+        "200":
+          description: "Successful response, with the list of fields in Adabas file."
           schema:
-            $ref: '#/definitions/Fields'
-        '401':
+            $ref: "#/definitions/Fields"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-        '404':
+        "404":
           description: Error requesting the list of maps.
           schema:
-            $ref: '#/definitions/Error'
+            $ref: "#/definitions/Error"
   /scheduler/job:
     get:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
+        - hasRole: [admin]
       description: Retrieves a list of jobs known by Adabas Interface.
       consumes:
         - application/json
@@ -3584,22 +4065,31 @@ paths:
         - application/xml
       tags:
         - Scheduler
+      parameters:
+        - type: string
+          description: Timestamp of first job entry
+          name: start_time
+          in: query
+        - type: string
+          description: Timestamp of last job entry
+          name: end_time
+          in: query
       operationId: getJobs
       responses:
-        '200':
-          description: 'Successful response, with list of known databases.'
+        "200":
+          description: "Successful response, with list of known databases."
           schema:
-            $ref: '#/definitions/JobsList'
-        '401':
+            $ref: "#/definitions/JobsList"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-        '404':
+        "404":
           description: Database not available/unknown
     post:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
+        - hasRole: [admin]
       description: Create a new Job database
       consumes:
         - application/json
@@ -3615,29 +4105,55 @@ paths:
         - name: job
           in: body
           schema:
-            $ref: '#/definitions/JobParameter'
+            $ref: "#/definitions/JobParameter"
       responses:
-        '200':
-          description: 'Successful response, with new Adabas databases created'
+        "200":
+          description: "Successful response, with new Adabas databases created"
           schema:
-            $ref: '#/definitions/StatusResponse'
-        '400':
+            $ref: "#/definitions/StatusResponse"
+        "400":
           description: Environment evaluation error
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-        '404':
+        "404":
           description: Error creating Adabas database
           schema:
-            $ref: '#/definitions/Error'
-  '/scheduler/job/{jobName}':
+            $ref: "#/definitions/Error"
+  /scheduler/jobs:
     get:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
+        - hasRole: [admin]
+      description: Retrieves a list of active job names known by Adabas Interface.
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      tags:
+        - Scheduler
+      operationId: getJobsIndex
+      responses:
+        "200":
+          description: "Successful response, with list of known databases."
+          schema:
+            $ref: "#/definitions/JobsArray"
+        "401":
+          description: Authorization error
+        "403":
+          description: Role access denied
+        "404":
+          description: Database not available/unknown
+  "/scheduler/job/{jobName}":
+    get:
+      security:
+        - BasicAuth: []
+        - hasRole: [admin]
       description: Retrieves a job definition
       consumes:
         - application/json
@@ -3655,26 +4171,26 @@ paths:
           in: path
           required: true
       responses:
-        '200':
-          description: 'Successful response, with list of known databases.'
+        "200":
+          description: "Successful response, with list of known databases."
           schema:
-            $ref: '#/definitions/JobParameter'
-        '400':
+            $ref: "#/definitions/JobParameter"
+        "400":
           description: Environment evaluation error
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-        '404':
+        "404":
           description: Database not available/unknown
           schema:
-            $ref: '#/definitions/Error'
+            $ref: "#/definitions/Error"
     put:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
+        - hasRole: [admin]
       description: Schedule a already defined Job
       consumes:
         - application/json
@@ -3692,26 +4208,26 @@ paths:
           in: path
           required: true
       responses:
-        '200':
-          description: 'Successful response, with new Adabas databases created '
+        "200":
+          description: "Successful response, with new Adabas databases created "
           schema:
-            $ref: '#/definitions/JobStatusResponse'
-        '400':
+            $ref: "#/definitions/JobStatusResponse"
+        "400":
           description: Environment evaluation error
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-        '404':
+        "404":
           description: Error creating Adabas database
           schema:
-            $ref: '#/definitions/Error'
+            $ref: "#/definitions/Error"
     delete:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
+        - hasRole: [admin]
       description: Delete a job definition
       consumes:
         - application/json
@@ -3727,27 +4243,137 @@ paths:
           in: path
           required: true
       responses:
-        '200':
+        "200":
           description: Successfully delete the job.
           schema:
-            $ref: '#/definitions/JobStatusResponse'
-        '400':
+            $ref: "#/definitions/JobStatusResponse"
+        "400":
           description: Environment evaluation error
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-        '404':
+        "404":
           description: Job not available/unknown
           schema:
-            $ref: '#/definitions/Error'
-  '/scheduler/job/{jobName}/full':
+            $ref: "#/definitions/Error"
+  "/scheduler/jobs/{jobName}":
     get:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
+        - hasRole: [admin]
+      description: Retrieves a job definition
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      tags:
+        - Scheduler
+      operationId: getJobName
+      parameters:
+        - type: string
+          description: Job Name to be requested
+          name: jobName
+          in: path
+          required: true
+      responses:
+        "200":
+          description: "Successful response, with list of known databases."
+          schema:
+            $ref: "#/definitions/JobParameter"
+        "400":
+          description: Environment evaluation error
+          schema:
+            $ref: "#/definitions/Error"
+        "401":
+          description: Authorization error
+        "403":
+          description: Role access denied
+        "404":
+          description: Database not available/unknown
+          schema:
+            $ref: "#/definitions/Error"
+    put:
+      security:
+        - BasicAuth: []
+        - hasRole: [admin]
+      description: Schedule a already defined Job
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      tags:
+        - Scheduler
+      operationId: scheduleJobs
+      parameters:
+        - type: string
+          description: Job Name to be requested
+          name: jobName
+          in: path
+          required: true
+      responses:
+        "200":
+          description: "Successful response, with new Adabas databases created "
+          schema:
+            $ref: "#/definitions/JobStatusResponse"
+        "400":
+          description: Environment evaluation error
+          schema:
+            $ref: "#/definitions/Error"
+        "401":
+          description: Authorization error
+        "403":
+          description: Role access denied
+        "404":
+          description: Error creating Adabas database
+          schema:
+            $ref: "#/definitions/Error"
+    delete:
+      security:
+        - BasicAuth: []
+        - hasRole: [admin]
+      description: Delete a job definition
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      tags:
+        - Scheduler
+      operationId: deleteJobs
+      parameters:
+        - type: string
+          description: Job Name to be requested
+          name: jobName
+          in: path
+          required: true
+      responses:
+        "200":
+          description: Successfully delete the job.
+          schema:
+            $ref: "#/definitions/JobStatusResponse"
+        "400":
+          description: Environment evaluation error
+          schema:
+            $ref: "#/definitions/Error"
+        "401":
+          description: Authorization error
+        "403":
+          description: Role access denied
+        "404":
+          description: Job not available/unknown
+          schema:
+            $ref: "#/definitions/Error"
+  "/scheduler/jobs/{jobName}/full":
+    get:
+      security:
+        - BasicAuth: []
+        - hasRole: [admin]
       description: Retrieves a full job definition
       consumes:
         - application/json
@@ -3765,27 +4391,27 @@ paths:
           in: path
           required: true
       responses:
-        '200':
-          description: 'Successful response, with list of known databases.'
+        "200":
+          description: "Successful response, with list of known databases."
           schema:
-            $ref: '#/definitions/JobDefinition'
-        '400':
+            $ref: "#/definitions/JobDefinition"
+        "400":
           description: Environment evaluation error
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-        '404':
+        "404":
           description: Database not available/unknown
           schema:
-            $ref: '#/definitions/Error'
-  '/scheduler/job/{jobName}/result':
+            $ref: "#/definitions/Error"
+  "/scheduler/jobs/{jobName}/result":
     get:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
+        - hasRole: [admin]
       description: Retrieves all job results
       consumes:
         - application/json
@@ -3802,71 +4428,37 @@ paths:
           name: jobName
           in: path
           required: true
-        - $ref: '#/parameters/rfc3339Param'
+        - $ref: "#/parameters/rfc3339Param"
+        - type: string
+          description: Timestamp of first execution entry
+          name: start_time
+          in: query
+        - type: string
+          description: Timestamp of last execution entry
+          name: end_time
+          in: query
       responses:
-        '200':
-          description: 'Successful response, with list of known databases.'
+        "200":
+          description: "Successful response, with list of job name executions."
           schema:
-            $ref: '#/definitions/JobResult'
-        '400':
+            $ref: "#/definitions/JobResults"
+        "400":
           description: Environment evaluation error
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-        '404':
+        "404":
           description: Database not available or unknown
           schema:
-            $ref: '#/definitions/Error'
-  '/scheduler/job/{jobName}/result/{jobId}':
-    get:
-      security:
-        - BasicAuth: []
-        - hasRole: [ admin ]
-      description: Retrieves a specific job result
-      consumes:
-        - application/json
-        - application/xml
-      produces:
-        - application/json
-        - application/xml
-      tags:
-        - Scheduler
-      operationId: getJobResult
-      parameters:
-        - type: string
-          description: Job name to be requested
-          name: jobName
-          in: path
-          required: true
-        - type: string
-          description: Job id of execution result to be requested
-          name: jobId
-          in: path
-          required: true
-      responses:
-        '200':
-          description: 'Successful response, with a specific job id.'
-          schema:
-            $ref: '#/definitions/JobResult'
-        '400':
-          description: Environment evaluation error
-          schema:
-            $ref: '#/definitions/Error'
-        '401':
-          description: Authorization error
-        '403':
-          description: Role access denied
-        '404':
-          description: Database not available/unknown
-          schema:
-            $ref: '#/definitions/Error'
+            $ref: "#/definitions/Error"
+  "/scheduler/job/{jobName}/result/{jobId}":
     delete:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
+        - hasRole: [admin]
       description: Delete a specific job result
       consumes:
         - application/json
@@ -3889,27 +4481,112 @@ paths:
           in: path
           required: true
       responses:
-        '200':
-          description: 'Successful response, job result is deleted.'
+        "200":
+          description: "Successful response, job result is deleted."
           schema:
-            $ref: '#/definitions/JobStatusResponse'
-        '400':
+            $ref: "#/definitions/JobStatusResponse"
+        "400":
           description: Environment evaluation error
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-        '404':
+        "404":
           description: Database not available/unknown
           schema:
-            $ref: '#/definitions/Error'
-  '/scheduler/execution':
+            $ref: "#/definitions/Error"
+  "/scheduler/jobs/{jobName}/result/{jobId}":
     get:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
+        - hasRole: [admin]
+      description: Retrieves a specific job result
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      tags:
+        - Scheduler
+      operationId: getJobResult
+      parameters:
+        - type: string
+          description: Job name to be requested
+          name: jobName
+          in: path
+          required: true
+        - type: string
+          description: Job id of execution result to be requested
+          name: jobId
+          in: path
+          required: true
+      responses:
+        "200":
+          description: "Successful response, with a specific job id."
+          schema:
+            $ref: "#/definitions/JobResult"
+        "400":
+          description: Environment evaluation error
+          schema:
+            $ref: "#/definitions/Error"
+        "401":
+          description: Authorization error
+        "403":
+          description: Role access denied
+        "404":
+          description: Database not available/unknown
+          schema:
+            $ref: "#/definitions/Error"
+    delete:
+      security:
+        - BasicAuth: []
+        - hasRole: [admin]
+      description: Delete a specific job result
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      tags:
+        - Scheduler
+      operationId: deleteJobsResult
+      parameters:
+        - type: string
+          description: Job name to be requested
+          name: jobName
+          in: path
+          required: true
+        - type: string
+          description: Job id of execution result to be requested
+          name: jobId
+          in: path
+          required: true
+      responses:
+        "200":
+          description: "Successful response, job result is deleted."
+          schema:
+            $ref: "#/definitions/JobStatusResponse"
+        "400":
+          description: Environment evaluation error
+          schema:
+            $ref: "#/definitions/Error"
+        "401":
+          description: Authorization error
+        "403":
+          description: Role access denied
+        "404":
+          description: Database not available/unknown
+          schema:
+            $ref: "#/definitions/Error"
+  "/scheduler/execution":
+    get:
+      security:
+        - BasicAuth: []
+        - hasRole: [admin]
       description: Retrieves a specific job result
       consumes:
         - application/json
@@ -3929,28 +4606,36 @@ paths:
           description: End time to
           name: to
           in: query
+        - type: string
+          description: Timestamp of first job execution entry
+          name: start_time
+          in: query
+        - type: string
+          description: Timestamp of last job execution entry
+          name: end_time
+          in: query
       responses:
-        '200':
-          description: 'Successful response, with a specific job id.'
+        "200":
+          description: "Successful response, with a specific job id."
           schema:
-            $ref: '#/definitions/JobResult'
-        '400':
+            $ref: "#/definitions/JobResult"
+        "400":
           description: Environment evaluation error
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-        '404':
+        "404":
           description: Database not available/unknown
           schema:
-            $ref: '#/definitions/Error'
-  '/scheduler/results':
+            $ref: "#/definitions/Error"
+  "/scheduler/results":
     get:
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
+        - hasRole: [admin]
       description: Retrieves a specific job result
       consumes:
         - application/json
@@ -3971,57 +4656,30 @@ paths:
           name: to
           in: query
       responses:
-        '200':
-          description: 'Successful response, with a specific job id.'
+        "200":
+          description: "Successful response, with a specific job id."
           schema:
-            $ref: '#/definitions/JobResult'
-        '400':
+            $ref: "#/definitions/JobResult"
+        "400":
           description: Environment evaluation error
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-        '404':
+        "404":
           description: Database not available/unknown
           schema:
-            $ref: '#/definitions/Error'
-  /stream/{length}:
-    get:
-      summary: Count down the number of seconds
-      description: Count down the seconds remaining
-      operationId: elapse
-      parameters:
-        - name: length
-          in: path
-          description: How many seconds to count down
-          required: true
-          type: integer
-          minimum: 2
-          maximum: 30
-      responses:
-        200:
-            description: Secondly update on remaining time
-            # This is the best representation there is in Swagger 2.0 to
-            # say that this endpoint has a streaming response.
-            # In this implementation, it will be newline delimited JSON
-            # bodies, of the `Mark` type defined below
-            schema:
-              type: string
-              format: binary
-        '401':
-          description: Authorization error
-        '403':
-          description: Role access denied
-  '/rest/access/{role}':
+            $ref: "#/definitions/Error"
+  "/adabas/rest/access/{role}":
     get:
       summary: Retrieve current user list
       description: Retrieve the list of users who are allowed to access data
       operationId: access
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
+        - hasRole: [admin]
       tags:
         - Configuration
       parameters:
@@ -4038,29 +4696,29 @@ paths:
             - administrator
             - ADMINISTRATOR
       responses:
-        '200':
-          description: 'Successful response, with a specific job id.'
+        "200":
+          description: "Successful response, with a specific job id."
           schema:
-            $ref: '#/definitions/Users'
-        '400':
+            $ref: "#/definitions/Users"
+        "400":
           description: Environment evaluation error
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-        '404':
+        "404":
           description: Database not available/unknown
           schema:
-            $ref: '#/definitions/Error'
+            $ref: "#/definitions/Error"
     post:
       summary: Add new user in current user list
       description: Insert user in the list of users who are allowed to access data
       operationId: addAccess
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
+        - hasRole: [admin]
       tags:
         - Configuration
       parameters:
@@ -4082,27 +4740,27 @@ paths:
           required: true
           type: string
       responses:
-        '200':
-          description: 'Successful response, with a added user.'
-        '400':
+        "200":
+          description: "Successful response, with a added user."
+        "400":
           description: Environment evaluation error
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-        '404':
+        "404":
           description: Database not available/unknown
           schema:
-            $ref: '#/definitions/Error'
+            $ref: "#/definitions/Error"
     delete:
       summary: Delete user of current user list
       description: Delete user in the list of users who are allowed to access data
       operationId: delAccess
       security:
         - BasicAuth: []
-        - hasRole: [ admin ]
+        - hasRole: [admin]
       tags:
         - Configuration
       parameters:
@@ -4124,20 +4782,20 @@ paths:
           required: true
           type: string
       responses:
-        '200':
-          description: 'Successful response, with a user deleted.'
-        '400':
+        "200":
+          description: "Successful response, with a user deleted."
+        "400":
           description: Environment evaluation error
           schema:
-            $ref: '#/definitions/Error'
-        '401':
+            $ref: "#/definitions/Error"
+        "401":
           description: Authorization error
-        '403':
+        "403":
           description: Role access denied
-        '404':
+        "404":
           description: Database not available/unknown
           schema:
-            $ref: '#/definitions/Error'
+            $ref: "#/definitions/Error"
 definitions:
   Server:
     type: object
@@ -4163,7 +4821,7 @@ definitions:
               type: integer
             type:
               type: string
-  MappingConfig:
+  ClassicAccess:
     type: object
     properties:
       Mapping:
@@ -4175,8 +4833,8 @@ definitions:
               url:
                 type: string
           ClassicGlobal:
-              type: boolean
-              x-omitempty: false
+            type: boolean
+            x-omitempty: false
           ClassicAccess:
             type: array
             items:
@@ -4187,6 +4845,12 @@ definitions:
                   properties:
                     url:
                       type: string
+  MappingConfig:
+    type: object
+    properties:
+      Mapping:
+        type: object
+        properties:
           Repository:
             type: array
             items:
@@ -4245,13 +4909,34 @@ definitions:
               type: integer
             Version:
               type: string
+            Active:
+              type: boolean
+              x-omitempty: false
   Users:
     type: object
     properties:
       Users:
         type: array
         items:
-          type: string
+          type: object
+          properties:
+            name:
+              type: string
+            readPermission:
+              type: string
+              x-omitempty: false
+            writePermission:
+              type: string
+              x-omitempty: false
+            administrator:
+              type: boolean
+              x-omitempty: false
+      readPermission:
+        type: string
+        x-omitempty: false
+      writePermission:
+        type: string
+        x-omitempty: false
   AuthorizationToken:
     type: object
     properties:
@@ -4261,15 +4946,17 @@ definitions:
         type: boolean
         x-omitempty: false
   principal:
-    type: object 
-    properties: 
-      UUID: 
+    type: object
+    properties:
+      UUID:
         type: string
-      name: 
+      name:
+        type: string
+      remote:
         type: string
       roles:
-        type: array 
-        items: 
+        type: array
+        items:
           type: string
       session:
         type: object
@@ -4328,7 +5015,7 @@ definitions:
           EnvironmentList:
             type: array
             items:
-              $ref: '#/definitions/AdabasInstallation'
+              $ref: "#/definitions/AdabasInstallation"
   AdabasInstallation:
     type: object
     properties:
@@ -4429,7 +5116,7 @@ definitions:
           Commands:
             type: array
             items:
-              $ref: '#/definitions/CommandQueueEntry'
+              $ref: "#/definitions/CommandQueueEntry"
       NumberCQEntriesInUse:
         type: integer
       NumberCQEntriesShown:
@@ -4446,20 +5133,17 @@ definitions:
         type: string
       CommandUser:
         type: string
-      EtFlags:
+      Status:
         type: string
         x-omitempty: false
       File:
         type: integer
         x-omitempty: false
-      Flags:
-        type: string
-        x-omitempty: false
       Isn:
         type: integer
         x-omitempty: false
       User:
-        $ref: '#/definitions/UserInformation'
+        $ref: "#/definitions/UserInformation"
   CommandStats:
     type: object
     properties:
@@ -4469,7 +5153,7 @@ definitions:
           Commands:
             type: array
             items:
-              $ref: '#/definitions/CommandItems'
+              $ref: "#/definitions/CommandItems"
   Container:
     type: object
     properties:
@@ -4488,11 +5172,11 @@ definitions:
           ContainerList:
             type: array
             items:
-              $ref: '#/definitions/ContainerInfo'
+              $ref: "#/definitions/ContainerInfo"
           FreeSpaceTable:
             type: array
             items:
-              $ref: '#/definitions/FreeSpaceTable'
+              $ref: "#/definitions/FreeSpaceTable"
   ContainerInfo:
     type: object
     properties:
@@ -4535,7 +5219,7 @@ definitions:
       ContainerList:
         type: array
         items:
-          $ref: '#/definitions/Container'
+          $ref: "#/definitions/Container"
       Dbid:
         type: integer
       LoadDemo:
@@ -4552,7 +5236,7 @@ definitions:
       Checkpoints:
         type: array
         items:
-          $ref: '#/definitions/Checkpoint'
+          $ref: "#/definitions/Checkpoint"
   DatabaseGcb:
     type: object
     properties:
@@ -4625,7 +5309,7 @@ definitions:
           WORKExtents:
             type: array
             items:
-              $ref: '#/definitions/WORKExtents'
+              $ref: "#/definitions/WORKExtents"
           WORKPart1Size:
             type: integer
           WideEncoding:
@@ -4661,7 +5345,7 @@ definitions:
       Database:
         type: array
         items:
-          $ref: '#/definitions/DatabaseInformation'
+          $ref: "#/definitions/DatabaseInformation"
   DbFiles:
     type: object
     title: Files
@@ -4676,7 +5360,7 @@ definitions:
       Directories:
         type: array
         items:
-          $ref: '#/definitions/Directory'
+          $ref: "#/definitions/Directory"
       system:
         type: string
   Directory:
@@ -4728,7 +5412,7 @@ definitions:
           ACextents:
             type: array
             items:
-              $ref: '#/definitions/FcbExtents'
+              $ref: "#/definitions/FcbExtents"
           AdamByteKeys:
             type: array
             items:
@@ -4744,7 +5428,7 @@ definitions:
           DSextents:
             type: array
             items:
-              $ref: '#/definitions/FcbExtents'
+              $ref: "#/definitions/FcbExtents"
           FDTOffsetAdam:
             type: integer
           FdtLength:
@@ -4790,7 +5474,7 @@ definitions:
           NIextents:
             type: array
             items:
-              $ref: '#/definitions/FcbExtents'
+              $ref: "#/definitions/FcbExtents"
           Name:
             type: string
           Number:
@@ -4830,7 +5514,7 @@ definitions:
           UIextents:
             type: array
             items:
-              $ref: '#/definitions/FcbExtents'
+              $ref: "#/definitions/FcbExtents"
   FcbExtents:
     type: object
     properties:
@@ -4853,15 +5537,15 @@ definitions:
           Descriptors:
             type: array
             items:
-              $ref: '#/definitions/Field'
+              $ref: "#/definitions/Field"
           Fields:
             type: array
             items:
-              $ref: '#/definitions/Field'
+              $ref: "#/definitions/Field"
           Referentials:
             type: array
             items:
-              $ref: '#/definitions/Field'
+              $ref: "#/definitions/Field"
           Time:
             type: string
             format: date-time
@@ -4982,7 +5666,7 @@ definitions:
       SubFields:
         type: array
         items:
-          $ref: '#/definitions/SubField'
+          $ref: "#/definitions/SubField"
         x-nullable: true
       Type:
         type: string
@@ -5024,7 +5708,7 @@ definitions:
       Content:
         type: array
         items:
-          $ref: '#/definitions/File'
+          $ref: "#/definitions/File"
       Location:
         type: string
       Reference:
@@ -5037,7 +5721,7 @@ definitions:
       Files:
         type: array
         items:
-          $ref: '#/definitions/FileInfo'
+          $ref: "#/definitions/FileInfo"
   FreeSpaceTable:
     type: object
     properties:
@@ -5055,59 +5739,68 @@ definitions:
       HighWater:
         type: object
         properties:
+          APU:
+            type: object
+            properties:
+              Size:
+                type: number
+              APUs:
+                type: array
+                items:
+                  $ref: "#/definitions/APU"
           AttachedBufferHighWaterMark:
-            $ref: '#/definitions/HighWaterEntries'
+            $ref: "#/definitions/HighWaterEntries"
           AttachedBufferSize:
             type: integer
           APUHighWaterMark:
-            $ref: '#/definitions/HighWaterEntries'
+            $ref: "#/definitions/HighWaterEntries"
           APUSize:
             type: integer
           BufferpoolHighWaterMark:
-            $ref: '#/definitions/HighWaterEntries'
+            $ref: "#/definitions/HighWaterEntries"
           BufferpoolSize:
             type: integer
           ClientQueueHighWaterMark:
-            $ref: '#/definitions/HighWaterEntries'
+            $ref: "#/definitions/HighWaterEntries"
           ClientQueueSize:
             type: integer
           CommandQueueHighWaterMark:
-            $ref: '#/definitions/HighWaterEntries'
+            $ref: "#/definitions/HighWaterEntries"
           CommandQueueSize:
             type: integer
           ComplexSearchHighWaterMark:
-            $ref: '#/definitions/HighWaterEntries'
+            $ref: "#/definitions/HighWaterEntries"
           GroupCommitHighWaterMark:
-            $ref: '#/definitions/HighWaterEntries'
+            $ref: "#/definitions/HighWaterEntries"
           GroupCommitSize:
             type: integer
           HQUserLimitHighWaterMark:
-            $ref: '#/definitions/HighWaterEntries'
+            $ref: "#/definitions/HighWaterEntries"
           HQUserLimitSize:
             type: integer
           HoldQueueHighWaterMark:
-            $ref: '#/definitions/HighWaterEntries'
+            $ref: "#/definitions/HighWaterEntries"
           HoldQueueSize:
             type: integer
           IsnSortHighWaterMark:
-            $ref: '#/definitions/HighWaterEntries'
+            $ref: "#/definitions/HighWaterEntries"
           LABXHighWaterMark:
-            $ref: '#/definitions/HighWaterEntries'
+            $ref: "#/definitions/HighWaterEntries"
           LABXSize:
             type: integer
           LPXAHighWaterMark:
-            $ref: '#/definitions/HighWaterEntries'
+            $ref: "#/definitions/HighWaterEntries"
           LPXASize:
             type: integer
           LWOHighWaterMark:
-            $ref: '#/definitions/HighWaterEntries'
+            $ref: "#/definitions/HighWaterEntries"
           LWOSize:
             type: integer
           NucleusStartTime:
             type: string
             format: date-time
           ProtectionAreaActiveHighWaterMark:
-            $ref: '#/definitions/HighWaterEntries'
+            $ref: "#/definitions/HighWaterEntries"
           ProtectionAreaActiveSize:
             type: integer
           ProtectionAreaSize:
@@ -5117,17 +5810,17 @@ definitions:
           ThreadSize:
             type: integer
           ThreadsHighWaterMark:
-            $ref: '#/definitions/HighWaterEntries'
+            $ref: "#/definitions/HighWaterEntries"
           TransactionTimeHighWaterMark:
-            $ref: '#/definitions/HighWaterEntries'
+            $ref: "#/definitions/HighWaterEntries"
           TransactionTimeSize:
             type: integer
           UserQueueHighWaterMark:
-            $ref: '#/definitions/HighWaterEntries'
+            $ref: "#/definitions/HighWaterEntries"
           UserQueueSize:
             type: integer
           WorkpoolHighWaterMark:
-            $ref: '#/definitions/HighWaterEntries'
+            $ref: "#/definitions/HighWaterEntries"
           WorkpoolSize:
             type: integer
   Handler:
@@ -5137,6 +5830,13 @@ definitions:
         type: string
       Version:
         type: string
+  APU:
+    type: object
+    properties:
+      Name:
+        type: string
+      HighWater:
+        $ref: "#/definitions/HighWaterEntries"      
   HighWaterEntries:
     type: object
     required:
@@ -5160,7 +5860,7 @@ definitions:
       HoldQueue:
         type: array
         items:
-          $ref: '#/definitions/HoldQueueEntry'
+          $ref: "#/definitions/HoldQueueEntry"
   HoldQueueEntry:
     type: object
     properties:
@@ -5171,7 +5871,7 @@ definitions:
       Hid:
         type: array
         items:
-          $ref: '#/definitions/UserInformation'
+          $ref: "#/definitions/UserInformation"
       HqCommid:
         type: integer
       Isn:
@@ -5207,15 +5907,22 @@ definitions:
         type: string
       Utility:
         type: string
+  JobInformation:
+    type: object
+    properties:
+      Job:
+        $ref: "#/definitions/Job"
+      Status:
+        type: string
   JobDefinition:
     type: object
     properties:
       Executions:
         type: array
         items:
-          $ref: '#/definitions/Executions'
+          $ref: "#/definitions/Executions"
       Job:
-        $ref: '#/definitions/Job'
+        $ref: "#/definitions/Job"
       Status:
         type: string
   JobDescription:
@@ -5251,7 +5958,14 @@ definitions:
     type: object
     properties:
       Job:
-        $ref: '#/definitions/JobDescription'
+        $ref: "#/definitions/JobDescription"
+  JobResults:
+    type: object
+    properties:
+      JobResults:
+        type: array
+        items:
+          $ref: "#/definitions/JobResult"       
   JobResult:
     type: object
     properties:
@@ -5293,13 +6007,20 @@ definitions:
             type: string
           Name:
             type: string
+  JobsArray:
+    type: object
+    properties:
+      JobDefinition:
+        type: array
+        items:
+          $ref: "#/definitions/JobInformation"
   JobsList:
     type: object
     properties:
       JobDefinition:
         type: array
         items:
-          $ref: '#/definitions/JobDefinition'
+          $ref: "#/definitions/JobDefinition"
   Map:
     type: string
   Maps:
@@ -5309,66 +6030,66 @@ definitions:
       Maps:
         type: array
         items:
-          $ref: '#/definitions/Map'
+          $ref: "#/definitions/Map"
   MapField:
     type: object
     properties:
-          name:
+      name:
+        type: string
+        properties:
+          format:
             type: string
-            properties:
-             format:
-               type: string
-               xml:
-                 attribute: true
-          shortName:
+            xml:
+              attribute: true
+      shortName:
+        type: string
+        properties:
+          format:
             type: string
-            properties:
-              format:
-                type: string
-                xml:
-                  attribute: true
-          contentType:
+            xml:
+              attribute: true
+      contentType:
+        type: string
+        properties:
+          format:
             type: string
-            properties:
-              format:
-                type: string
-                xml:
-                  attribute: true
-          charset:
+            xml:
+              attribute: true
+      charset:
+        type: string
+        properties:
+          format:
             type: string
-            properties:
-              format:
-                type: string
-                xml:
-                  attribute: true
-          file:
+            xml:
+              attribute: true
+      file:
+        type: integer
+        properties:
+          format:
             type: integer
-            properties:
-              format:
-                type: integer
-                xml:
-                  attribute: true
-          formatType:
+            xml:
+              attribute: true
+      formatType:
+        type: string
+        properties:
+          format:
             type: string
-            properties:
-              format:
-                type: string
-                xml:
-                  attribute: true
-          length:
+            xml:
+              attribute: true
+      length:
+        type: integer
+        properties:
+          format:
             type: integer
-            properties:
-              format:
-                type: integer
-                xml:
-                  attribute: true
-          fieldType:
+            xml:
+              attribute: true
+      fieldType:
+        type: string
+        properties:
+          format:
             type: string
-            properties:
-              format:
-                type: string
-                xml:
-                  attribute: true
+            xml:
+              attribute: true
   mappingLocation:
     type: object
     properties:
@@ -5390,13 +6111,13 @@ definitions:
           isn:
             type: integer
           definition:
-              $ref: '#/definitions/mappingLocation'            
+            $ref: "#/definitions/mappingLocation"
           data:
-              $ref: '#/definitions/mappingLocation'            
+            $ref: "#/definitions/mappingLocation"
           fields:
             type: array
             items:
-              $ref: '#/definitions/MapField'
+              $ref: "#/definitions/MapField"
       format:
         xml:
           namespace: http://www.softwareag.com/adabas/map
@@ -5421,7 +6142,7 @@ definitions:
       Databases:
         type: array
         items:
-          $ref: '#/definitions/OnlineDatabase'
+          $ref: "#/definitions/OnlineDatabase"
   Parameter:
     type: object
     properties:
@@ -5457,6 +6178,9 @@ definitions:
           - APU_UNITS
           - APU_WORKERS
           - APU_RECVS
+          - SSLPORT
+          - SSLCADIRECTORY
+          - SSLCAFILE
         properties:
           ADATCP:
             type: string
@@ -5542,25 +6266,25 @@ definitions:
           RPL_TOTAL:
             type: integer
             x-isnullable: false
-          SSL_PORT:
+          SSLPORT:
             type: integer
             x-isnullable: false
-          SSL_CERTFILE:
+          SSLCERTFILE:
             type: string
             x-isnullable: false
-          SSL_KEYFILE:
+          SSLKEYFILE:
             type: string
             x-isnullable: false
-          SSL_VERIFY:
+          SSLVERIFY:
             type: integer
             x-isnullable: false
-          SSL_CAFILE:
+          SSLCAFILE:
             type: string
             x-isnullable: false
-          SSL_CADIRECTORY:
+          SSLCADIRECTORY:
             type: string
             x-isnullable: false
-          SSL_PASSWORD:
+          SSLPASSWORD:
             type: string
             x-isnullable: false
           TNAA:
@@ -5620,7 +6344,7 @@ definitions:
           Parameter:
             type: array
             items:
-              $ref: '#/definitions/ParameterInfo'
+              $ref: "#/definitions/ParameterInfo"
   Records:
     type: object
     properties:
@@ -5662,6 +6386,11 @@ definitions:
         type: array
         items:
           type: integer
+  Info:
+    type: object
+    properties:
+      Info:
+        type: string
   Status:
     type: object
     properties:
@@ -5715,7 +6444,7 @@ definitions:
       Threads:
         type: array
         items:
-          $ref: '#/definitions/Thread'
+          $ref: "#/definitions/Thread"
   UCB:
     type: object
     properties:
@@ -5727,7 +6456,7 @@ definitions:
           UCB:
             type: array
             items:
-              $ref: '#/definitions/UCBEntry'
+              $ref: "#/definitions/UCBEntry"
   UCBEntry:
     type: object
     properties:
@@ -5747,7 +6476,7 @@ definitions:
         items:
           type: object
           properties:
-            UcbFile: 
+            UcbFile:
               type: integer
   UserInformation:
     type: object
@@ -5770,7 +6499,7 @@ definitions:
           UserQueueEntry:
             type: array
             items:
-              $ref: '#/definitions/UserQueueEntry'
+              $ref: "#/definitions/UserQueueEntry"
   UserQueueDetail:
     type: object
     properties:
@@ -5803,7 +6532,7 @@ definitions:
           DetailEntry:
             type: array
             items:
-              $ref: '#/definitions/UserQueueEntry'
+              $ref: "#/definitions/UserQueueEntry"
       files:
         type: array
         items:
@@ -5816,7 +6545,7 @@ definitions:
       Flags:
         type: string
       Uid:
-        $ref: '#/definitions/UserInformation'
+        $ref: "#/definitions/UserInformation"
       UqId:
         type: integer
       User:
@@ -5827,7 +6556,7 @@ definitions:
       Handler:
         type: array
         items:
-          $ref: '#/definitions/Handler'
+          $ref: "#/definitions/Handler"
       Product:
         type: string
       Version:
@@ -5852,24 +6581,184 @@ definitions:
   Fields:
     type: array
     items:
-      $ref: '#/definitions/FieldItem'
+      $ref: "#/definitions/FieldItem"
   FieldItem:
     type: object
     properties:
-       level:
+      level:
         type: integer
-       value:
+      value:
         type: string
-       format:
+      format:
         type: string
-       length:
+      length:
         type: integer
-       options:
+      options:
         type: string
-       identifier:
+      identifier:
         type: string
-       label:
+      label:
         type: string
+  Config:
+    type: object
+    properties:
+      StructureLevel:
+        type: integer
+      Version:
+        type: string
+      Server:
+        type: object
+        properties:
+          Service:
+            type: array
+            items:
+              type: object
+              properties:
+                port:
+                  type: number
+                type:
+                  type: string
+          LogLocation:
+            type: object
+            properties:
+              directory:
+                type: string
+              level:
+                type: string
+          Content:
+            type: string
+      JobStore:
+        type: object
+        properties:
+          config:
+            type: string
+      Mapping:
+        type: object
+        properties:
+          Directory:
+            type: string
+          Database:
+            type: array
+            items:
+              $ref: "#/definitions/DatabaseConfig"
+      DatabaseAccess:
+        type: object
+        properties:
+          Global:
+            type: boolean
+            x-omitempty: false
+          Database:
+            type: array
+            items:
+              $ref: "#/definitions/DatabaseConfig"
+      Module:
+        type: object
+        properties:
+          AdabasData:
+            type: string
+          Installation:
+            type: array
+            items: 
+              type: object
+              properties:
+                Location:
+                  type: string
+                Version:
+                  type: string
+                StructureLevel:
+                  type: integer
+                Active:
+                  type: boolean
+                  x-omitempty: false
+          Directories:
+            type: array
+            items: 
+              type: object
+              properties:
+                name:
+                  type: string
+                location:
+                  type: string
+      Metrics:
+        type: object
+        properties:
+          Database:
+            type: array
+            items:
+              $ref: "#/definitions/DatabaseConfig"
+  DatabaseConfig:
+    type: object
+    properties:
+      url:
+        type: string
+      file:
+        type: number
+      changed:
+        type: boolean
+        default: false
+      deleted:
+        type: boolean
+        default: false
+  Cluster:
+    type: object
+    properties:
+      View:
+        type: object
+        properties:
+          StateID:
+            $ref: "#/definitions/ClusterGtid"
+          LastCommitted:
+            $ref: "#/definitions/ClusterGtid"
+          Status:
+            type: string
+          Updated:
+            type: number
+            x-omitempty: false
+          NumberOfMembers:
+            type: number
+            x-omitempty: false
+          IndexOfNode:
+            type: number
+            x-omitempty: false
+          IndexOfPrimaryNode:
+            type: number
+            x-omitempty: false
+          LocalSendQueue:
+            type: number
+            x-omitempty: false
+          LocalSendQueueMax:
+            type: number
+          LocalRecvQueue:
+            type: number
+            x-omitempty: false
+          LocalRecvQueueMax:
+            type: number
+      Members:
+        type: array
+        items:
+          $ref: "#/definitions/ClusterMember"
+  ClusterGtid:
+    type: object
+    properties: 
+      StateID:
+        type: string
+      SeqNo:
+        type: number
+        x-omitempty: false
+  ClusterMember:
+    type: object
+    properties: 
+      BaseId:
+        type: string
+      BaseName:
+        type: string
+      BaseIncoming:
+        type: string
+      LastCommitted:
+        type: number
+        x-omitempty: false
+      Status:
+        type: string      
 parameters:
   mapParam:
     type: string
@@ -5897,7 +6786,7 @@ parameters:
     required: true
   fieldsParam:
     type: string
-    default: '*'
+    default: "*"
     description: A comma separated list of fields which should be in the result
     name: fields
     in: query
@@ -5976,13 +6865,13 @@ securityDefinitions:
     # This scheme uses the header: "Authorization: Bearer {base64 encoded string representing a JWT}"
     # Alternatively, the query param: "access_token" may be used.
     #
-    # In our scenario, we must use the query param version in order to avoid 
+    # In our scenario, we must use the query param version in order to avoid
     # passing several headers with key 'Authorization'
     type: oauth2
     # The flow and URLs in spec are for documentary purpose: go-swagger does not implement OAuth workflows
     flow: accessCode
-    authorizationUrl: 'https://dummy.oauth.net/auth'
-    tokenUrl: 'https://dumy.oauth.net/token'
+    authorizationUrl: "https://dummy.oauth.net/auth"
+    tokenUrl: "https://dumy.oauth.net/token"
     # Required scopes are passed by the runtime to the authorizer
     scopes:
       admin: scope of registered administrators
@@ -5990,6 +6879,8 @@ securityDefinitions:
 tags:
   - description: Adabas Administration information
     name: Environment
+  - description: Handling the user in the RESTful server
+    name: Users
   - description: Adabas Online usage only
     name: Online
   - description: Adabas offline usage only

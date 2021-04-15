@@ -35,7 +35,6 @@ interface AdabasConfigType {
 export class AdabasConfig {
     private status: any;
     async read(): Promise<any> {
-        console.log('Created configuration');
         this.status = {};
         return triggerCall('/adabas/config').then((x: any) => {
             this.status = x;
@@ -43,14 +42,12 @@ export class AdabasConfig {
         });
     }
     async readUser(): Promise<any> {
-        console.log('Read users');
         this.status = {};
         return triggerCall('/adabas/rest/access/User').then((x: any) => {
             return x;
         });
     }
     async readLog(): Promise<any> {
-        console.log('Read users');
         this.status = {};
         return triggerCall('/adabas/rest/log').then((x: any) => {
             return x;

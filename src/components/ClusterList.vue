@@ -24,36 +24,50 @@
         <b-container fluid>
           <b-row>
             <b-col>
-              This page provide access to the list of Adabas database cluster to be
-              administrate through this Adabas RESTful server.
+              This page provide access to the list of Adabas database cluster to
+              be administrate through this Adabas RESTful server.
             </b-col>
           </b-row>
           <b-row>
             <b-col><Url url="/adabas/cluster" /> </b-col>
           </b-row>
           <b-row>
-              <b-col class="text-right">State ID</b-col><b-col>UUID: {{ cluster.View.StateID.StateID }}</b-col>
+            <b-col class="text-right">State ID</b-col
+            ><b-col>UUID: {{ cluster.View.StateID.StateID }}</b-col>
           </b-row>
           <b-row>
-              <b-col class="text-right"></b-col><b-col>Sequence No: {{ cluster.View.StateID.SeqNo }}</b-col>
+            <b-col class="text-right"></b-col
+            ><b-col>Sequence No: {{ cluster.View.StateID.SeqNo }}</b-col>
           </b-row>
           <b-row>
-              <b-col class="text-right">Last Committed</b-col><b-col>UUID: {{ cluster.View.LastCommitted.StateID }}</b-col>
+            <b-col class="text-right">Last Committed</b-col
+            ><b-col>UUID: {{ cluster.View.LastCommitted.StateID }}</b-col>
           </b-row>
           <b-row>
-              <b-col class="text-right"></b-col><b-col>Sequence No: {{ cluster.View.LastCommitted.SeqNo }}</b-col>
+            <b-col class="text-right"></b-col
+            ><b-col>Sequence No: {{ cluster.View.LastCommitted.SeqNo }}</b-col>
           </b-row>
           <b-row>
-              <b-col class="text-right">Number of Members</b-col><b-col>{{ cluster.View.NumberOfMembers }}</b-col>
+            <b-col class="text-right">Number of Members</b-col
+            ><b-col>{{ cluster.View.NumberOfMembers }}</b-col>
           </b-row>
           <b-row>
-              <b-col class="text-right">Status</b-col><b-col>{{ cluster.View.Status }}</b-col>
+            <b-col class="text-right">Status</b-col
+            ><b-col>{{ cluster.View.Status }}</b-col>
           </b-row>
           <b-row>
-              <b-col class="text-right">Local send</b-col><b-col>{{ cluster.View.LocalSendQueue }} / {{ cluster.View.LocalSendQueueMax }}</b-col>
+            <b-col class="text-right">Local send</b-col
+            ><b-col
+              >{{ cluster.View.LocalSendQueue }} /
+              {{ cluster.View.LocalSendQueueMax }}</b-col
+            >
           </b-row>
           <b-row>
-              <b-col class="text-right">Local receive</b-col><b-col>{{ cluster.View.LocalRecvQueue }} / {{ cluster.View.LocalRecvQueueMax }}</b-col>
+            <b-col class="text-right">Local receive</b-col
+            ><b-col
+              >{{ cluster.View.LocalRecvQueue }} /
+              {{ cluster.View.LocalRecvQueueMax }}</b-col
+            >
           </b-row>
           <b-row>
             <b-col>
@@ -85,14 +99,14 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
-import { AdabasAdmin } from '../adabas/admin';
-import { userService } from '../user/service';
-import { BIconXCircle } from 'bootstrap-vue';
-import store from '../store/index';
-import StatusBar from './StatusBar.vue';
-import Url from './Url.vue';
-import router from '../router/index';
+import { Component, Prop, Vue } from "vue-property-decorator";
+import { AdabasAdmin } from "../adabas/admin";
+import { userService } from "../user/service";
+import { BIconXCircle } from "bootstrap-vue";
+import store from "../store/index";
+import StatusBar from "./StatusBar.vue";
+import Url from "./Url.vue";
+import router from "../router/index";
 
 @Component({
   components: {
@@ -107,17 +121,21 @@ export default class ClusterList extends Vue {
     return {
       perPage: 10,
       currentPage: 1,
-      filter: '',
+      filter: "",
       filterOn: [],
       fields: [
-        { label: 'Name', key: 'BaseName' },
-        { label: 'Status', key: 'Status' },
-        { label: 'Remote Access', key: 'BaseIncoming' },
-        { label: 'ID', key: 'BaseId' },
+        { label: "Name", key: "BaseName" },
+        { label: "Status", key: "Status" },
+        { label: "Remote Access", key: "BaseIncoming" },
+        { label: "ID", key: "BaseId" },
       ],
-      cluster: {members:[]},
-      timer: '',
-      jsonString: '<No data received>',
+      cluster: {
+        members: [],
+        View: { StateID: "", Status: "No cluster", NumberOfMembers: 0, 
+        LastCommitted: 0 },
+      },
+      timer: "",
+      jsonString: "<No data received>",
     };
   }
   created() {
@@ -130,33 +148,33 @@ export default class ClusterList extends Vue {
    */
   loadCluster(): void {
     store
-      .dispatch('SYNC_ADMIN_CLUSTER')
+      .dispatch("SYNC_ADMIN_CLUSTER")
       .then((response: any) => {
         this.$data.cluster = response;
         this.$data.jsonString = JSON.stringify(response);
-        store.commit('SET_STATUS', 'Database list received...');
+        store.commit("SET_STATUS", "Database list received...");
       })
       .catch((error: any) => {
-        console.log('ERROR DBLIST: ' + JSON.stringify(error));
+        // console.log('ERROR DBLIST: ' + JSON.stringify(error));
         if (error.response) {
-          store.commit('SET_STATUS', JSON.stringify(error.response));
+          store.commit("SET_STATUS", JSON.stringify(error.response));
           if (error.response.status == 401 || error.response.status == 403) {
             userService.logout();
             location.reload(true);
           }
         } else {
-          store.commit('SET_STATUS', JSON.stringify(error));
+          store.commit("SET_STATUS", JSON.stringify(error));
           userService.logout();
           location.reload(true);
         }
-        throw error;
+        // throw error;
       });
   }
- onRowSelected(items: any): void {
+  onRowSelected(items: any): void {
     if (items.length == 0) {
       return;
     }
-    this.$router.push({ path: '/information/' + items[0].status.Dbid });
+    this.$router.push({ path: "/information/" + items[0].status.Dbid });
     return;
   }
   beforeDestroy(): void {
