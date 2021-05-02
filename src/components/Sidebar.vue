@@ -37,6 +37,9 @@
         <b-nav-item :disabled="!active()" :to="'/threadtable/' + url"
           >Thread table</b-nav-item
         >
+        <b-nav-item :disabled="!active()" :to="'/adatcp/' + url"
+          >TCP connections</b-nav-item
+        >
         <b-nav-item :disabled="!active()" :to="'/activity/' + url"
           >Activity</b-nav-item
         >

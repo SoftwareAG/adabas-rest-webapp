@@ -229,6 +229,13 @@
                       >
                         Thread Table
                       </b-dropdown-item>
+                      <b-dropdown-item
+                        size="sm"
+                        :to="'/adatcp/' + row.item.status.Dbid"
+                        class="mr-2"
+                      >
+                        TCP connection
+                      </b-dropdown-item>
                     </b-dropdown>
                     <b-dropdown
                       size="sm"

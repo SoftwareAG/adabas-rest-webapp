@@ -33,6 +33,7 @@ import Commandqueue from '../admin_views/Commandqueue.vue'
 import Holdqueue from '../admin_views/Holdqueue.vue'
 import Parameters from '../admin_views/Parameters.vue'
 import Highwater from '../admin_views/Highwater.vue'
+import Adatcp from '../admin_views/Adatcp.vue'
 import NucLog from '../admin_views/NucLog.vue'
 import Threadtable from '../admin_views/Threadtable.vue'
 import UCB from '../admin_views/UCB.vue'
@@ -131,6 +132,11 @@ export default new Router({
       path: '/highwater/:url',
       name: 'Database High Watermark',
       component: Highwater, props: true
+    },
+    {
+      path: '/adatcp/:url',
+      name: 'Database ADATCP Connections',
+      component: Adatcp, props: true
     },
     {
       path: '/activity/:url',

@@ -261,6 +261,10 @@ export class AdabasAdmin {
         return f;
     }
     // Retrieve current Adabas Highwater mark information
+    async adatcp(): Promise<any> {
+        return triggerCall("/adabas/database/" + this.status.Dbid + "/tcp");
+    }
+    // Retrieve current Adabas Highwater mark information
     async highWaterMark(): Promise<any> {
         const response = await triggerCall("/adabas/database/" + this.status.Dbid + "/hwm");
         const highwater = ([] as any[]);
