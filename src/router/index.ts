@@ -42,6 +42,7 @@ import Bufferpool from '../admin_views/Bufferpool.vue'
 import Commandstats from '../admin_views/Commandstats.vue'
 import DatabaseInfo from '../admin_views/DatabaseInfo.vue'
 import Cluster from '../admin_views/Cluster.vue'
+import DatabaseCluster from '../admin_views/DatabaseCluster.vue'
 import Jobs from '../admin_views/Jobs.vue'
 import Checkpoints from '../admin_views/Checkpoints.vue'
 import Description from '../examples/Description.vue'
@@ -92,6 +93,11 @@ export default new Router({
       path: '/cluster',
       name: 'Cluster',
       component: Cluster
+    },
+    {
+      path: '/cluster/:url',
+      name: 'Database Cluster',
+      component: DatabaseCluster
     },
     {
       path: '/information/:url',

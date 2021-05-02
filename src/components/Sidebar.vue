@@ -46,6 +46,9 @@
         <b-nav-item :disabled="!active()" :to="'/checkpoints/' + url"
           >Checkpoints</b-nav-item
         >
+        <b-nav-item :disabled="!active()" :to="'/cluster/' + url"
+          >Cluster</b-nav-item
+        >
         <b-nav-text>Queues</b-nav-text>
         <b-nav-item :disabled="!active()" :to="'/userqueue/' + url"
           >User queue</b-nav-item

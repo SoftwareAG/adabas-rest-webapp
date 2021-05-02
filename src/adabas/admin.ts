@@ -162,6 +162,9 @@ export class AdabasAdmin {
     information(): Promise<any> {
         return triggerCall("/adabas/database/" + this.status.Dbid + "/gcb");
     }
+    cluster(): Promise<any> {
+        return triggerCall("/adabas/database/" + this.status.Dbid + "/cluster");
+    }
     // Delete the given Adabas file number (all data is removed as well)!!
     async deleteFile(file: number): Promise<any> {
         const getConfig = {

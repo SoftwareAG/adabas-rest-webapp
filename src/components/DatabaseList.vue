@@ -236,6 +236,13 @@
                       >
                         TCP connection
                       </b-dropdown-item>
+                      <b-dropdown-item
+                        size="sm"
+                        :to="'/cluster/' + row.item.status.Dbid"
+                        class="mr-2"
+                      >
+                        Cluster
+                      </b-dropdown-item>
                     </b-dropdown>
                     <b-dropdown
                       size="sm"
