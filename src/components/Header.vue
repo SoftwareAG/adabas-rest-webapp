@@ -37,14 +37,16 @@
             >
             <b-dropdown-item to="/modify">Modify record</b-dropdown-item>
           </b-nav-item-dropdown>
-          <b-nav-item :disabled="!isAdministrator" to="/databases"
-            >Database Administration</b-nav-item
+          <b-nav-item-dropdown text="Database Administration" right>
+          <b-dropdown-item :disabled="!isAdministrator" to="/databases"
+            >List of Databases</b-dropdown-item
           >
-          <b-nav-item :disabled="!isAdministrator" to="/cluster"
-            >Database Cluster</b-nav-item
+          <b-dropdown-item :disabled="!isAdministrator" to="/cluster"
+            >Database Cluster</b-dropdown-item
           >
+          </b-nav-item-dropdown>
           <b-nav-item :disabled="!isAdministrator" to="/jobs"
-            >Job list</b-nav-item
+            >List of tasks</b-nav-item
           >
           <b-nav-item to="/configuration/">Configuration</b-nav-item>
           <b-nav-item to="/log/">RESTful Log</b-nav-item>
