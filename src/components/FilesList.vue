@@ -109,6 +109,13 @@
                       variant="info"
                       v-on:click="infoRenumberFile(row.item)"
                       class="mr-2"
+                      >Add LOB file</b-dropdown-item
+                    >
+                    <b-dropdown-item
+                      size="sm"
+                      variant="info"
+                      v-on:click="infoAddLob(row.item)"
+                      class="mr-2"
                       >Renumber</b-dropdown-item
                     >
                     <b-dropdown-item
@@ -117,6 +124,13 @@
                       v-on:click="refreshFile(row.item)"
                       class="mr-2"
                       >Refresh</b-dropdown-item
+                    >
+                    <b-dropdown-item
+                      size="sm"
+                      variant="info"
+                      v-on:click="infoRenameFile(row.item)"
+                      class="mr-2"
+                      >Rename</b-dropdown-item
                     >
                   </b-dropdown>
                 </template>
@@ -195,19 +209,39 @@
       no-stacking
     >
       <p>Renumber Adabas file {{ currentFile }}</p>
-      <b-form-input v-model="newNr"></b-form-input>
+      <b-form-input v-model.number="newNr"></b-form-input>
+    </b-modal>
+        <b-modal
+      id="modal-addlob"
+      size="lg"
+      title="Add Large Object File for Adabas File"
+      @ok="addLobFile"
+      no-stacking
+    >
+      <p>Add Large Object LOB file for Adabas file {{ currentFile }}</p>
+      <b-form-input v-model.number="newNr"></b-form-input>
+    </b-modal>
+            <b-modal
+      id="modal-rename"
+      size="lg"
+      title="Rename Adabas File"
+      @ok="renameFile"
+      no-stacking
+    >
+      <p>Rename Adabas file {{ currentFile }}</p>
+      <b-form-input v-model.trim="newName"></b-form-input>
     </b-modal>
     <StatusBar />
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
-import Sidebar from './Sidebar.vue';
-import store from '../store/index';
-import StatusBar from './StatusBar.vue';
-import CreateFile from './CreateFile.vue';
-import Url from './Url.vue';
+import { Component, Prop, Vue } from "vue-property-decorator";
+import Sidebar from "./Sidebar.vue";
+import store from "../store/index";
+import StatusBar from "./StatusBar.vue";
+import CreateFile from "./CreateFile.vue";
+import Url from "./Url.vue";
 
 @Component({
   components: {
@@ -222,69 +256,69 @@ export default class FilesList extends Vue {
   data() {
     return {
       db: null,
-      newName: '',
+      newName: "",
       newNr: 500,
       currentFile: 0,
       perPage: 10,
       currentPage: 1,
-      fields: ['FileNr', 'Name', 'RecordCount', 'IsLob', 'IsLobRoot', 'action'],
+      fields: ["FileNr", "Name", "RecordCount", "IsLob", "IsLobRoot", "action"],
       files: [],
-      filter: '',
-      filterOn: ['FileNr', 'Name'],
+      filter: "",
+      filterOn: ["FileNr", "Name"],
       hideFileParameter: true,
       fdtAvailable: false,
       fileParameter: [],
       fileParameterOrder: [
-        'Name',
-        'Number',
-        'StructureLevel',
-        'Flags',
-        'RecordCount',
-        'TopIsn',
-        'MaxIsn',
-        'IsnCnt',
-        'MaxRecordLength',
-        'RootFile',
-        'LobFile',
-        'MaxMuOccurence',
-        'LastModification',
-        'PaddingFactorAsso',
-        'PaddingFactorData',
-        'FdtStartRABN',
-        'HIRabn',
-        'LastUsedDataRABN',
-        'HighestIndexLevel',
-        'TotalAcBlocks',
-        'TotalNiBlocks',
-        'TotalUiBlocks',
-        'TotalDsBlocks',
-        'ACextents',
-        'NIextents',
-        'UIextents',
-        'DSextents',
+        "Name",
+        "Number",
+        "StructureLevel",
+        "Flags",
+        "RecordCount",
+        "TopIsn",
+        "MaxIsn",
+        "IsnCnt",
+        "MaxRecordLength",
+        "RootFile",
+        "LobFile",
+        "MaxMuOccurence",
+        "LastModification",
+        "PaddingFactorAsso",
+        "PaddingFactorData",
+        "FdtStartRABN",
+        "HIRabn",
+        "LastUsedDataRABN",
+        "HighestIndexLevel",
+        "TotalAcBlocks",
+        "TotalNiBlocks",
+        "TotalUiBlocks",
+        "TotalDsBlocks",
+        "ACextents",
+        "NIextents",
+        "UIextents",
+        "DSextents",
       ],
       fileParameterDrop: [
-        'AdamByteKeys',
-        'AdamKey',
-        'FdtLength',
-        'Owner',
-        'ResidualCountDSST',
-        'RotatingIsn',
-        'RotatingRabnDSST',
-        'LastNiExtendIndex',
-        'LastUiExtendIndex',
+        "AdamByteKeys",
+        "AdamKey",
+        "FdtLength",
+        "Owner",
+        "ResidualCountDSST",
+        "RotatingIsn",
+        "RotatingRabnDSST",
+        "LastNiExtendIndex",
+        "LastUiExtendIndex",
       ],
-      parameterFields: ['Name', 'Value'],
+      parameterFields: ["Name", "Value"],
       fileFields: [],
-      fieldFields: ['Level', 'Name', 'Format', 'Flags', 'Type', 'SubFields'],
-      timer: '',
+      fieldFields: ["Level", "Name", "Format", "Flags", "Type", "SubFields"],
+      timer: "",
     };
   }
   created(): void {
     this.$data.db = store.getters.search(this.url);
     this.$data.timer = setInterval(this.loadFiles, 15000);
     if (this.$data.db === undefined) {
-      store.dispatch('SYNC_ADMIN_DBS');
+      store.dispatch("SYNC_ADMIN_DBS");
       return;
     }
     this.loadFiles();
@@ -330,40 +364,40 @@ export default class FilesList extends Vue {
       });
   }
   levelSpace(nr: number): string {
-    let res = '';
+    let res = "";
     for (let i = 0; i < nr; i++) {
-      res += ' ';
+      res += " ";
     }
 
     return res + nr;
   }
   infoDeleteFile(item: any): void {
     this.$data.currentFile = item.FileNr;
-    console.log('Delete ' + item.FileNr + ' ' + JSON.stringify(item));
+    console.log("Delete " + item.FileNr + " " + JSON.stringify(item));
     //  this.$data.db.deleteFile(item.FileNr);
     this.$bvModal
       .msgBoxConfirm(
-        'Please confirm that you want to delete the Adabas file ' +
+        "Please confirm that you want to delete the Adabas file " +
           item.FileNr +
-          '.',
+          ".",
         {
-          title: 'Please Confirm',
-          size: 'sm',
-          buttonSize: 'sm',
-          okVariant: 'danger',
-          okTitle: 'YES',
-          cancelTitle: 'NO',
-          footerClass: 'p-2',
+          title: "Please Confirm",
+          size: "sm",
+          buttonSize: "sm",
+          okVariant: "danger",
+          okTitle: "YES",
+          cancelTitle: "NO",
+          footerClass: "p-2",
           hideHeaderClose: false,
           centered: true,
-        },
+        }
       )
       .then((value) => {
         console.log(
-          'Selected value: ' +
+          "Selected value: " +
             this.$data.currentFile +
-            ' ' +
-            JSON.stringify(value),
+            " " +
+            JSON.stringify(value)
         );
         if (value) {
           this.$data.db.deleteFile(this.$data.currentFile);
@@ -371,50 +405,79 @@ export default class FilesList extends Vue {
       })
       .catch((err) => {
         // An error occurred
-        console.log('Catching err ' + err);
+        console.log("Catching err " + err);
       });
   }
   infoRenumberFile(item: any): void {
     this.$data.currentFile = item.FileNr;
-    console.log('Renumber ' + item.FileNr);
-    this.$root.$emit('bv::show::modal', 'modal-renumber', '#btnShow');
+    console.log("Renumber " + item.FileNr);
+    this.$root.$emit("bv::show::modal", "modal-renumber", "#btnShow");
+  }
+  infoRenameFile(item: any): void {
+    this.$data.currentFile = item.FileNr;
+    this.$data.newName = item.Name;
+    console.log("Rename " + item.FileNr);
+    this.$root.$emit("bv::show::modal", "modal-rename", "#btnShow");
+  }
+  infoAddLob(item: any): void {
+    this.$data.currentFile = item.FileNr;
+    console.log("Add Lob file " + item.FileNr);
+    this.$root.$emit("bv::show::modal", "modal-addlob", "#btnShow");
   }
   renumberFile(): void {
     console.log(
-      'Renumber ' + this.$data.currentFile + ' to ' + this.$data.newNr,
+      "Renumber " + this.$data.currentFile + " to " + this.$data.newNr
     );
     if (this.$data.newNr > 0) {
       this.$data.db.renumberFile(this.$data.currentFile, this.$data.newNr);
     }
     this.$data.newNr = 0;
   }
+  addLobFile(): void {
+    console.log(
+      "Add LOB file for " + this.$data.currentFile + " with " + this.$data.newNr
+    );
+    if (this.$data.newNr > 0) {
+      this.$data.db.addLobFile(this.$data.currentFile, this.$data.newNr);
+    }
+    this.$data.newNr = 0;
+  }
+  renameFile(): void {
+    console.log(
+      "Renamer " + this.$data.currentFile + " with " + this.$data.newName
+    );
+    if (this.$data.newName != "") {
+      this.$data.db.renameFile(this.$data.currentFile, this.$data.newName);
+    }
+    this.$data.newName = "";
+  }
   refreshFile(item: any): void {
     this.$data.currentFile = item.FileNr;
-    console.log('Refresh ' + item.FileNr + ' ' + JSON.stringify(item));
+    console.log("Refresh " + item.FileNr + " " + JSON.stringify(item));
     //  this.$data.db.deleteFile(item.FileNr);
     this.$bvModal
       .msgBoxConfirm(
-        'Please confirm that you want to refresh the Adabas file ' +
+        "Please confirm that you want to refresh the Adabas file " +
           item.FileNr +
-          '.',
+          ".",
         {
-          title: 'Please Confirm',
-          size: 'sm',
-          buttonSize: 'sm',
-          okVariant: 'danger',
-          okTitle: 'YES',
-          cancelTitle: 'NO',
-          footerClass: 'p-2',
+          title: "Please Confirm",
+          size: "sm",
+          buttonSize: "sm",
+          okVariant: "danger",
+          okTitle: "YES",
+          cancelTitle: "NO",
+          footerClass: "p-2",
           hideHeaderClose: false,
           centered: true,
-        },
+        }
       )
       .then((value) => {
         console.log(
-          'Selected value: ' +
+          "Selected value: " +
             this.$data.currentFile +
-            ' ' +
-            JSON.stringify(value),
+            " " +
+            JSON.stringify(value)
         );
         if (value) {
           this.$data.db.refreshFile(this.$data.currentFile);
@@ -422,7 +485,7 @@ export default class FilesList extends Vue {
       })
       .catch((err) => {
         // An error occurred
-        console.log('Catching err ' + err);
+        console.log("Catching err " + err);
       });
   }
   beforeDestroy(): void {

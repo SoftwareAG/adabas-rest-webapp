@@ -16,7 +16,11 @@
 <template>
   <div class="createfile p-2">
     <b-button v-b-modal.modal-1 variant="primary">Create Adabas file</b-button>
-
+    <b-modal id="modal-multi-1" size="xl" title="Error creating file" ok-only>
+      <b-alert show variant="danger">
+        <p class="my-2">{{ errorResponse }}</p>
+      </b-alert>
+    </b-modal>
     <b-modal
       @ok="handleOk"
       id="modal-1"
@@ -40,7 +44,7 @@
             label-for="nested-dbid"
           >
             <b-form-input
-              v-model="createFile.fileNumber"
+              v-model.number="createFile.fileNumber"
               id="nested-dbid"
             ></b-form-input>
           </b-form-group>
@@ -62,7 +66,7 @@
             label-for="nested-checkpoint"
           >
             <b-form-input
-              v-model="createFile.fduOptions.fduLobFile"
+              v-model.number="lobFile"
               id="nested-checkpoint"
               type="number"
             ></b-form-input>
@@ -90,6 +94,8 @@ import axios from "axios";
 import { config } from "../store/config";
 import { authHeader } from "../user/auth-header";
 import store from "../store/index";
+import { ModalPlugin } from "bootstrap-vue";
+Vue.use(ModalPlugin);
 
 @Component
 export default class CreateFile extends Vue {
@@ -157,7 +163,9 @@ export default class CreateFile extends Vue {
         },
         fdtDefinition: "1,AQ%2,AF,15,A,NU%1,NN,20,A,DE,UQ%1,VN,20,A,DE",
       },
+      lobFile: 0,
       db: null,
+      errorResponse: null,
     };
   }
   created() {
@@ -223,15 +231,58 @@ export default class CreateFile extends Vue {
       headers: authHeader("application/json"),
     };
     axios
-      .post(config.Url() + "/adabas/database/"+this.$data.db.dbid()+"/file", this.$data.createFile, getConfig)
-      .then(function(response) {
-        console.log(response);
+      .post(
+        config.Url() + "/adabas/database/" + this.$data.db.dbid() + "/file",
+        this.$data.createFile,
+        getConfig
+      )
+      .then((response: any) => {
+        console.log("Response file creation" + response);
+        if (response.status == 200) {
+          this.addLobFile();
+        }
       })
-      .catch(function(error) {
+      .catch((error) => {
+        if (error.response.data.Error) {
+          this.$data.errorResponse = error.response.data.Error;
+        } else {
+          this.$data.errorResponse = error.response;
+        }
+        this.$root.$emit("bv::show::modal", "modal-multi-1", "#btnShow");
         console.log(
           error.response.statusText + ":" + JSON.stringify(error.response)
         );
       });
+  }
+  addLobFile(): void {
+    if (this.$data.lobFile > 0) {
+      const getConfig = {
+        headers: authHeader("application/json"),
+      };
+      axios
+        .put(
+          config.Url() +
+            "/adabas/database/" +
+            this.$data.db.dbid() +
+            "/file/" +
+            this.$data.createFile.fileNumber +
+            ":addlob?number=" +
+            this.$data.lobFile,
+          null,
+          getConfig
+        )
+        .then((response: any) => {
+          console.log(JSON.stringify(response));
+        })
+        .catch((error) => {
+          if (error.response.data.Error) {
+            this.$data.errorResponse = error.response.data.Error;
+          } else {
+            this.$data.errorResponse = error.response;
+          }
+          this.$root.$emit("bv::show::modal", "modal-multi-1", "#btnShow");
+        });
+    }
   }
 }
 </script>

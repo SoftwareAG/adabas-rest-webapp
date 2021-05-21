@@ -204,7 +204,7 @@ export class AdabasAdmin {
             });
     }
     // Adabas file number can be renumbered
-    async renumberFile(file: number, newNr: string): Promise<any> {
+    async renumberFile(file: number, newNr: number): Promise<any> {
         const getConfig = {
             headers: authHeader("application/json"),
             useCredentails: true,
@@ -213,6 +213,48 @@ export class AdabasAdmin {
             .put(config.Url() + "/adabas/database/"
                 + this.status.Dbid + "/file/" + file
                 + ":renumber?number=" + newNr, {}, getConfig)
+            .catch((error: any) => {
+                console.log("E: " + JSON.stringify(error));
+                if (error.response) {
+                    if (error.response.status == 401 || error.response.status == 403) {
+                        userService.logout();
+                        location.reload(true);
+                    }
+                }
+                throw error;
+            });
+    }
+    // Adabas file number can be renumbered
+    async addLobFile(file: number, newNr: number): Promise<any> {
+        const getConfig = {
+            headers: authHeader("application/json"),
+            useCredentails: true,
+        };
+        return axios
+            .put(config.Url() + "/adabas/database/"
+                + this.status.Dbid + "/file/" + file
+                + ":addLob?number=" + newNr, {}, getConfig)
+            .catch((error: any) => {
+                console.log("E: " + JSON.stringify(error));
+                if (error.response) {
+                    if (error.response.status == 401 || error.response.status == 403) {
+                        userService.logout();
+                        location.reload(true);
+                    }
+                }
+                throw error;
+            });
+    }
+    // Adabas file number can be renumbered
+    async renameFile(file: number, newName: string): Promise<any> {
+        const getConfig = {
+            headers: authHeader("application/json"),
+            useCredentails: true,
+        };
+        return axios
+            .put(config.Url() + "/adabas/database/"
+                + this.status.Dbid + "/file/" + file
+                + ":rename?name=" + newName, {}, getConfig)
             .catch((error: any) => {
                 console.log("E: " + JSON.stringify(error));
                 if (error.response) {
@@ -292,8 +334,8 @@ export class AdabasAdmin {
                         Area: element, Size: size, InUse: high.inuse,
                         High: high.high, Time: high.time, Percent: p
                     });
-                    if ((element == "APU")&&(response.HighWater.APU.APUs.length>1)) {
-                        response.HighWater.APU.APUs.forEach((apu:any)=>{
+                    if ((element == "APU") && (response.HighWater.APU.APUs.length > 1)) {
+                        response.HighWater.APU.APUs.forEach((apu: any) => {
                             highwater.push({
                                 Area: apu.Name, Size: "-", InUse: apu.HighWater.inuse,
                                 High: apu.HighWater.high, Time: apu.HighWater.time, Percent: 0
