@@ -73,6 +73,7 @@ export default class CommandqueueList extends Vue {
         'APU',
         'CommId',
         'CommandUser',
+        'CommandCode',
         'EtFlags',
         'File',
         'Flags',
