@@ -99,35 +99,35 @@
                   >
                     <b-dropdown-item
                       size="sm"
-                      variant="info"
+                      variant="outline-primary"
                       v-on:click="infoDeleteFile(row.item)"
                       class="mr-2"
                       >Delete</b-dropdown-item
                     >
                     <b-dropdown-item
                       size="sm"
-                      variant="info"
+                      variant="outline-primary"
                       v-on:click="infoRenumberFile(row.item)"
                       class="mr-2"
                       >Add LOB file</b-dropdown-item
                     >
                     <b-dropdown-item
                       size="sm"
-                      variant="info"
+                      variant="outline-primary"
                       v-on:click="infoAddLob(row.item)"
                       class="mr-2"
                       >Renumber</b-dropdown-item
                     >
                     <b-dropdown-item
                       size="sm"
-                      variant="info"
+                      variant="outline-primary"
                       v-on:click="refreshFile(row.item)"
                       class="mr-2"
                       >Refresh</b-dropdown-item
                     >
                     <b-dropdown-item
                       size="sm"
-                      variant="info"
+                      variant="outline-primary"
                       v-on:click="infoRenameFile(row.item)"
                       class="mr-2"
                       >Rename</b-dropdown-item

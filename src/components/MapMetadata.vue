@@ -81,7 +81,7 @@
       header-border-variant="secondary"
     >
       <b-card-header header-tag="header" class="p-1" role="tab">
-        <b-button class="text-left" block v-b-toggle.accordion-1 variant="info"
+        <b-button class="text-left" block v-b-toggle.accordion-1 variant="outline-primary"
           >Response</b-button
         >
       </b-card-header>

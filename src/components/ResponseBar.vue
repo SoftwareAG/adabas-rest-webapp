@@ -22,9 +22,7 @@
       header-border-variant="secondary"
     >
       <b-card-header header-tag="header" class="p-1" role="tab">
-        <b-button block v-b-toggle.accordion-2 variant="info" class="text-left"
-          >JSON response</b-button
-        >
+        <b-button block v-b-toggle.accordion-2 variant="outline-primary" >JSON response</b-button>
       </b-card-header>
       <b-collapse id="accordion-2" accordion="my-accordion" role="tabpanel">
         <b-card-body class="p-1">

@@ -50,13 +50,13 @@
                   >Start</b-button
                 >
                 <b-button
-                  variant="info"
+                  variant="outline-primary"
                   v-on:click="delJob(row.item.status.Job.Name)"
                   class="mr-2"
                   >Delete</b-button
                 >
                 <b-button
-                  variant="info"
+                  variant="outline-primary"
                   class="mr-2"
                   v-b-modal="'modal-definition-' + row.item.status.Job.Name"
                   >Show</b-button
@@ -70,7 +70,7 @@
                   <pre class="my-4">{{ row.item.status.Job }}</pre>
                 </b-modal>
                 <b-button
-                  variant="info"
+                  variant="outline-primary"
                   id="expJob"
                   class="mr-2"
                   v-on:click="exportJob(row.item.status.Job.Name)"
@@ -120,7 +120,7 @@
                 </template>
                 <template v-slot:cell(log)="row">
                   <b-button
-                    variant="info"
+                    variant="outline-primary"
                     class="mr-2"
                     v-on:click="delExecution(row.item.Id)"
                     >Delete</b-button

@@ -16,7 +16,7 @@
 <template>
   <div class="statusbar p-0 mb-0">
     <ResponseBar />
-    <b-alert show>Status: {{ status.status }}</b-alert>
+    <b-alert variant="outline-primary" show>Status: {{ status.status }}</b-alert>
   </div>
 </template>
 
