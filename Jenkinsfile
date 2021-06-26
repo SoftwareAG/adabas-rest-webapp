@@ -6,7 +6,7 @@ node('docker-builds') {
        checkout([$class: 'GitSCM', branches: [
          [name: '*/master']
        ], doGenerateSubmoduleConfigurations: false, extensions: [
-         [$class: 'CleanBeforeCheckout']
+         [$class: 'CleanBeforeCheckout', deleteUntrackedNestedRepositories: true]
        ], submoduleCfg: [], userRemoteConfigs: [
          [url: 'https://softwareag.com/Adabas/adabas-rest-webapp-mirror.git']
        ]])
