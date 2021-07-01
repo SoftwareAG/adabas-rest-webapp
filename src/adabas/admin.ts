@@ -112,6 +112,29 @@ export class AdabasAdmin {
     userQueue(): Promise<any> {
         return triggerCallOnArray("/adabas/database/" + this.status.Dbid + "/userqueue", ["UserQueue", "UserQueueEntry"]);
     }
+    userQueueDetails(uqid: number): Promise<any> {
+        return triggerCallOnParameter("/adabas/database/" + this.status.Dbid + "/userqueue/" + uqid, "");
+    }
+    // Stop the user queue entry
+    stopUser(uqid: number) {
+        const getConfig = {
+            headers: authHeader("application/json"),
+            useCredentails: true,
+        };
+        try {
+            return axios
+                .delete(config.Url() + "/adabas/database/" + this.status.Dbid + "/userqueue/" + uqid, getConfig);
+        }
+        catch (error) {
+            if (error.response) {
+                if (error.response.status == 401 || error.response.status == 403) {
+                    userService.logout();
+                    location.reload(true);
+                }
+            }
+            throw error;
+        }
+    }
     // Provide the current active hold queue entries
     holdQueue(): Promise<any> {
         return triggerCallOnArray("/adabas/database/" + this.status.Dbid + "/holdqueue", ["HoldQueue"]);
@@ -360,9 +383,13 @@ export class AdabasAdmin {
 async function triggerCallOnParameter(resource: string, dataName: string): Promise<any> {
     const response = await triggerCall(resource);
     const p = ([] as any[]);
-    Object.entries(response[dataName]).forEach((key: any) => {
-        p.push({ Name: key[0], Value: key[1] });
-    });
+    if (dataName == "") {
+        return response;
+    } else {
+        Object.entries(response[dataName]).forEach((key: any) => {
+            p.push({ Name: key[0], Value: key[1] });
+        });
+    }
     store.commit('SET_STATUS', 'OK');
     return p;
 }
