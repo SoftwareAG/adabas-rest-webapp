@@ -95,7 +95,10 @@ export default class CommandqueueList extends Vue {
   loadCommandQueue() {
     this.$data.db.commandQueue().then((response: any) => {
       this.$data.commandqueues = response;
-    });
+     this.$data.commandqueues.forEach(function(part:any, index:number, theArray:any) {
+        theArray[index].User.Timestamp = new Date(theArray[index].User.Timestamp).toUTCString();
+      });
+     });
   }
   beforeDestroy() {
     clearInterval(this.$data.timer);

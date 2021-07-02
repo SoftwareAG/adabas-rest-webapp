@@ -43,6 +43,9 @@
                 :items="highwater"
                 :fields="fields"
               >
+                <template v-slot:cell(Time)="row">
+                  {{new Date(row.item.Time).toUTCString()}}
+                </template>
                 <template v-slot:cell(statistics)="row">
                   <b-progress
                     :show-value="false"

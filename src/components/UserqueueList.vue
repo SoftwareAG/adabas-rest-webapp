@@ -246,10 +246,10 @@ export default class UserqueueList extends Vue {
     return {
       fields: [
         "UqId",
-        "Uid.Id",
+        { key: "Uid.Id", label: "Adabas ID" },
         "Uid.Node",
         "Uid.Terminal",
-        "Uid.Timestamp",
+        { key: "Uid.Timestamp", label: "Adabs ID Timestamp" },
         "User",
         "Flags",
         "EtFlags",
@@ -286,6 +286,9 @@ export default class UserqueueList extends Vue {
   loadUserQueue() {
     this.$data.db.userQueue().then((response: any) => {
       this.$data.userqueues = response;
+      this.$data.userqueues.forEach(function(part:any, index:number, theArray:any) {
+        theArray[index].Uid.Timestamp = new Date(theArray[index].Uid.Timestamp).toUTCString();
+      });
     });
   }
   display_detail(uq: any) {
