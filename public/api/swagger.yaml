@@ -1116,7 +1116,7 @@ paths:
         - Offline
       operationId: deleteAdabasDatabase
       parameters:
-        - type: number
+        - type: integer
           description: Database ID
           name: dbid_operation
           in: path
@@ -1150,7 +1150,7 @@ paths:
         - Online
       operationId: getDatabaseActStats
       parameters:
-        - $ref: "#/parameters/dbidParam"
+        - $ref: "#/parameters/targetParam"
       responses:
         "200":
           description: "Successful response, with Adabas Activity statistics"
@@ -1180,7 +1180,7 @@ paths:
         - Online
       operationId: getDatabaseBPStats
       parameters:
-        - $ref: "#/parameters/dbidParam"
+        - $ref: "#/parameters/targetParam"
       responses:
         "200":
           description: "Successful response, with Adabas Buffer Pool statistics"
@@ -1271,6 +1271,36 @@ paths:
           description: Authorization error
         "403":
           description: Role access denied
+  "/adabas/database/{dbid}/cluster":
+    get:
+      security:
+        - BasicAuth: []
+        - hasRole: [admin]
+      description: Retrieve the current status of Adabas cluster
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      tags:
+        - Online
+      operationId: getAdabasCluster
+      parameters:
+        - $ref: "#/parameters/targetParam"
+      responses:
+        "200":
+          description: "Successful response, with status of Adabas cluster."
+          schema:
+            $ref: "#/definitions/Cluster"
+        "400":
+          description: Database error evaluating cluster
+          schema:
+            $ref: "#/definitions/Error"
+        "401":
+          description: Authorization error
+        "403":
+          description: Role access denied
   "/adabas/database/{dbid}/commandqueue":
     get:
       security:
@@ -1287,7 +1317,7 @@ paths:
         - Online
       operationId: getDatabaseCommandQueue
       parameters:
-        - $ref: "#/parameters/dbidParam"
+        - $ref: "#/parameters/targetParam"
         - $ref: "#/parameters/rfc3339Param"
       responses:
         "200":
@@ -1446,7 +1476,7 @@ paths:
         - OnlineOffline
       operationId: getFieldDefinitionTable
       parameters:
-        - $ref: "#/parameters/dbidParam"
+        - $ref: "#/parameters/targetParam"
         - type: number
           description: >-
             File number and operation seprated by ':' Possible operations are -
@@ -1483,7 +1513,7 @@ paths:
         - OnlineOffline
       operationId: modifyFieldDefinitionTable
       parameters:
-        - $ref: "#/parameters/dbidParam"
+        - $ref: "#/parameters/targetParam"
         - $ref: "#/parameters/fileParam"
         - type: string
           description: Add fields to the FDT
@@ -1518,7 +1548,7 @@ paths:
         - OnlineOffline
       operationId: dropFields
       parameters:
-        - $ref: "#/parameters/dbidParam"
+        - $ref: "#/parameters/targetParam"
         - $ref: "#/parameters/fileParam"
         - type: string
           description: List of fields to be deleted
@@ -1554,7 +1584,7 @@ paths:
         - OnlineOffline
       operationId: getDatabaseFiles
       parameters:
-        - $ref: "#/parameters/dbidParam"
+        - $ref: "#/parameters/targetParam"
       responses:
         "200":
           description: "Successful response, with a representation of the Tax Filing."
@@ -1583,7 +1613,7 @@ paths:
         - Online
       operationId: postAdabasFile
       parameters:
-        - $ref: "#/parameters/dbidParam"
+        - $ref: "#/parameters/targetParam"
         - name: fdufdt
           in: body
           schema:
@@ -1617,7 +1647,7 @@ paths:
         - OnlineOffline
       operationId: getDatabaseFile
       parameters:
-        - $ref: "#/parameters/dbidParam"
+        - $ref: "#/parameters/targetParam"
         - type: string
           description: >-
             File number and operation separated by ':' Possible operations are -
@@ -1664,7 +1694,7 @@ paths:
         - Online
       operationId: putAdabasFileParameter
       parameters:
-        - $ref: "#/parameters/dbidParam"
+        - $ref: "#/parameters/targetParam"
         - type: string
           description: >-
             File number and operation, separated with a :. Possible operation
@@ -1726,7 +1756,7 @@ paths:
         - Online
       operationId: createAdabasFile
       parameters:
-        - $ref: "#/parameters/dbidParam"
+        - $ref: "#/parameters/targetParam"
         - type: string
           description: "File number, the file number in the body is ignored"
           name: file_operation
@@ -1764,7 +1794,7 @@ paths:
         - OnlineOffline
       operationId: deleteFile
       parameters:
-        - $ref: "#/parameters/dbidParam"
+        - $ref: "#/parameters/targetParam"
         - type: number
           description: "File number, no operation possible"
           name: file_operation
@@ -1861,7 +1891,7 @@ paths:
         - Online
       operationId: getDatabaseHoldQueue
       parameters:
-        - $ref: "#/parameters/dbidParam"
+        - $ref: "#/parameters/targetParam"
         - $ref: "#/parameters/rfc3339Param"
       responses:
         "200":
@@ -1892,7 +1922,7 @@ paths:
         - Online
       operationId: getDatabaseHighWater
       parameters:
-        - $ref: "#/parameters/dbidParam"
+        - $ref: "#/parameters/targetParam"
         - $ref: "#/parameters/rfc3339Param"
       responses:
         "200":
@@ -2216,6 +2246,36 @@ paths:
           description: Authorization error
         "403":
           description: Role access denied
+  "/adabas/database/{dbid}/tcp":
+    get:
+      security:
+        - BasicAuth: []
+        - hasRole: [admin]
+      description: Retrieve the current ADATCP connection of Adabas
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      tags:
+        - Online
+      operationId: getAdabasTCP
+      parameters:
+        - $ref: "#/parameters/targetParam"
+      responses:
+        "200":
+          description: "Successful response, with status of Adabas cluster."
+          schema:
+            $ref: "#/definitions/TCP"
+        "400":
+          description: Database error evaluating TCP list
+          schema:
+            $ref: "#/definitions/Error"
+        "401":
+          description: Authorization error
+        "403":
+          description: Role access denied
   "/adabas/database/{dbid}/threadtable":
     get:
       security:
@@ -2232,7 +2292,7 @@ paths:
         - Online
       operationId: getDatabaseThreadTable
       parameters:
-        - $ref: "#/parameters/dbidParam"
+        - $ref: "#/parameters/targetParam"
       responses:
         "200":
           description: "Successful response, with Adabas Thread table"
@@ -2328,7 +2388,7 @@ paths:
         - Online
       operationId: getDatabaseUserQueue
       parameters:
-        - $ref: "#/parameters/dbidParam"
+        - $ref: "#/parameters/targetParam"
         - $ref: "#/parameters/rfc3339Param"
       responses:
         "200":
@@ -2359,12 +2419,17 @@ paths:
         - Online
       operationId: getUserQueueDetail
       parameters:
-        - $ref: "#/parameters/dbidParam"
+        - $ref: "#/parameters/targetParam"
         - type: number
           description: User Queue ID
           name: queueid
           in: path
           required: true
+        - type: number
+          description: If range of users this is the user id end User Queue entry
+          name: toqueueid
+          in: query
+          required: false
         - $ref: "#/parameters/rfc3339Param"
       responses:
         "200":
@@ -2394,7 +2459,7 @@ paths:
         - Online
       operationId: stopUserQueueEntry
       parameters:
-        - $ref: "#/parameters/dbidParam"
+        - $ref: "#/parameters/targetParam"
         - type: number
           description: User Queue ID
           name: queueid
@@ -2454,11 +2519,7 @@ paths:
         - ClassicDatabaseAccess
       operationId: getLob
       parameters:
-        - type: integer
-          description: Database id
-          name: dbid
-          in: path
-          required: true
+        - $ref: "#/parameters/targetParam"
         - type: string
           description: Remote node reference
           name: reference
@@ -2508,11 +2569,7 @@ paths:
         - ClassicDatabaseAccess
       operationId: updateLob
       parameters:
-        - type: integer
-          description: Database id
-          name: dbid
-          in: path
-          required: true
+        - $ref: "#/parameters/targetParam"
         - type: string
           description: Remote node reference
           name: reference
@@ -2863,11 +2920,7 @@ paths:
         - ClassicDatabaseAccess
       operationId: getImage
       parameters:
-        - type: integer
-          description: Database id
-          name: dbid
-          in: path
-          required: true
+        - $ref: "#/parameters/targetParam"
         - type: string
           description: Remote node reference
           name: reference
@@ -3064,11 +3117,7 @@ paths:
         - ClassicDatabaseAccess
       operationId: getFiles
       parameters:
-        - type: number
-          description: Database ID
-          name: dbid
-          in: path
-          required: true
+        - $ref: "#/parameters/targetParam"
         - type: string
           description: Remote node reference
           name: reference
@@ -3084,6 +3133,10 @@ paths:
                 - 8
                 - 9
                 - 11
+        "400":
+          description: Parameter error
+          schema:
+            $ref: "#/definitions/Error"
         "401":
           description: Authorization error
         "403":
@@ -3108,11 +3161,7 @@ paths:
         - ClassicDatabaseAccess
       operationId: getClassicRecordData
       parameters:
-        - type: number
-          description: Database ID
-          name: dbid
-          in: path
-          required: true
+        - $ref: "#/parameters/targetParam"
         - type: number
           description: File number
           name: file
@@ -3139,6 +3188,8 @@ paths:
           description: "Successful response, with a representation of the data."
           schema:
             $ref: "#/definitions/Response"
+        "400":
+          description: Parameter errors or wrong request
         "401":
           description: Authorization error
         "403":
@@ -3163,11 +3214,7 @@ paths:
         - ClassicDatabaseAccess
       operationId: putClassicRecordData
       parameters:
-        - type: number
-          description: Database ID
-          name: dbid
-          in: path
-          required: true
+        - $ref: "#/parameters/targetParam"
         - type: string
           description: Remote node reference
           name: reference
@@ -3212,11 +3259,7 @@ paths:
         - ClassicDatabaseAccess
       operationId: postClassicRecordData
       parameters:
-        - type: number
-          description: Database ID
-          name: dbid
-          in: path
-          required: true
+        - $ref: "#/parameters/targetParam"
         - type: number
           description: File number
           name: file
@@ -3261,11 +3304,7 @@ paths:
         - ClassicDatabaseAccess
       operationId: getClassicIsnRecordData
       parameters:
-        - type: number
-          description: Database ID
-          name: dbid
-          in: path
-          required: true
+        - $ref: "#/parameters/targetParam"
         - type: number
           description: File number
           name: file
@@ -3323,11 +3362,7 @@ paths:
         - ClassicDatabaseAccess
       operationId: putClassicIsnRecordData
       parameters:
-        - type: number
-          description: Database ID
-          name: dbid
-          in: path
-          required: true
+        - $ref: "#/parameters/targetParam"
         - type: number
           description: File number
           name: file
@@ -3377,11 +3412,7 @@ paths:
         - ClassicDatabaseAccess
       operationId: postClassicIsnRecordData
       parameters:
-        - type: number
-          description: Database ID
-          name: dbid
-          in: path
-          required: true
+        - $ref: "#/parameters/targetParam"
         - type: number
           description: File number
           name: file
@@ -3430,11 +3461,7 @@ paths:
         - ClassicDatabaseAccess
       operationId: deleteClassicIsnRecordData
       parameters:
-        - type: number
-          description: Database ID
-          name: dbid
-          in: path
-          required: true
+        - $ref: "#/parameters/targetParam"
         - type: number
           description: File number
           name: file
@@ -3478,11 +3505,7 @@ paths:
         - ClassicDatabaseAccess
       operationId: getClassicIsnFieldRecordData
       parameters:
-        - type: number
-          description: Database ID
-          name: dbid
-          in: path
-          required: true
+        - $ref: "#/parameters/targetParam"
         - type: number
           description: File number
           name: file
@@ -3541,11 +3564,7 @@ paths:
         - ClassicDatabaseAccess
       operationId: putClassicIsnFieldRecordData
       parameters:
-        - type: number
-          description: Database ID
-          name: dbid
-          in: path
-          required: true
+        - $ref: "#/parameters/targetParam"
         - type: number
           description: File number
           name: file
@@ -4036,13 +4055,17 @@ paths:
         - ClassicDatabaseAccess
       operationId: getFields
       parameters:
-        - $ref: "#/parameters/dbidParam"
+        - $ref: "#/parameters/targetParam"
         - $ref: "#/parameters/fileParam"
       responses:
         "200":
           description: "Successful response, with the list of fields in Adabas file."
           schema:
             $ref: "#/definitions/Fields"
+        "400":
+          description: Wrong paramters
+          schema:
+            $ref: "#/definitions/Error"
         "401":
           description: Authorization error
         "403":
@@ -5335,7 +5358,7 @@ definitions:
         type: object
         properties:
           Dbid:
-            type: integer
+            type: string
           Status:
             type: string
   Databases:
@@ -5409,6 +5432,9 @@ definitions:
       File:
         type: object
         properties:
+          ACextentsUsed:
+            type: integer
+            x-omitempty: false
           ACextents:
             type: array
             items:
@@ -5419,58 +5445,87 @@ definitions:
               type: integer
           AdamDsBlocks:
             type: integer
+            x-omitempty: false
           AdamKey:
             type: string
           AdamParams:
             type: integer
+            x-omitempty: false
           AlphaEncoding:
             type: integer
+            x-omitempty: false
+          DSextentsUsed:
+            type: integer
+            x-omitempty: false
           DSextents:
             type: array
             items:
               $ref: "#/definitions/FcbExtents"
           FDTOffsetAdam:
             type: integer
+            x-omitempty: false
           FdtLength:
             type: integer
+            x-omitempty: false
           FdtStartRABN:
             type: integer
+            x-omitempty: false
           FirstRABNNiIndexReusage:
             type: integer
+            x-omitempty: false
           FirstRABNUiIndexReusage:
             type: integer
+            x-omitempty: false
           Flags:
             type: string
+            x-omitempty: false
           HIRabn:
             type: integer
+            x-omitempty: false
           HighestIndexLevel:
             type: integer
+            x-omitempty: false
           IsnCnt:
             type: integer
+            x-omitempty: false
           LastDsExtendIndex:
             type: integer
+            x-omitempty: false
           LastModification:
             type: string
           LastNiExtendIndex:
             type: integer
+            x-omitempty: false
           LastUiExtendIndex:
             type: integer
+            x-omitempty: false
           LastUsedDataRABN:
             type: integer
+            x-omitempty: false
           LobFile:
             type: integer
+            x-omitempty: false
           LowIsn:
             type: integer
+            x-omitempty: false
           MaxHyperIsn:
             type: integer
+            x-omitempty: false
           MaxIsn:
             type: integer
+            x-omitempty: false
           MaxMuOccurence:
             type: integer
+            x-omitempty: false
           MaxRecordLength:
             type: integer
+            x-omitempty: false
           NIRabn:
             type: integer
+            x-omitempty: false
+          NIextentsUsed:
+            type: integer
+            x-omitempty: false
           NIextents:
             type: array
             items:
@@ -5479,38 +5534,57 @@ definitions:
             type: string
           Number:
             type: integer
+            x-omitempty: false
           Owner:
             type: string
           PaddingFactorAsso:
             type: integer
+            x-omitempty: false
           PaddingFactorData:
             type: integer
+            x-omitempty: false
           RecordCount:
             type: integer
+            x-omitempty: false
           ResidualCountDSST:
             type: integer
+            x-omitempty: false
           RootFile:
             type: integer
+            x-omitempty: false
           RotatingIsn:
             type: integer
+            x-omitempty: false
           RotatingRabnDSST:
             type: integer
+            x-omitempty: false
           SecurityInfo:
             type: integer
+            x-omitempty: false
           StructureLevel:
             type: integer
+            x-omitempty: false
           TopIsn:
             type: integer
+            x-omitempty: false
           TotalAcBlocks:
             type: integer
+            x-omitempty: false
           TotalDsBlocks:
             type: integer
+            x-omitempty: false
           TotalNiBlocks:
             type: integer
+            x-omitempty: false
           TotalUiBlocks:
             type: integer
+            x-omitempty: false
           UIRabn:
             type: integer
+            x-omitempty: false
+          UIextentsUsed:
+            type: integer
+            x-omitempty: false
           UIextents:
             type: array
             items:
@@ -5520,14 +5594,19 @@ definitions:
     properties:
       FirstRabn:
         type: integer
+        x-omitempty: false
       FreeOrIsn:
         type: integer
+        x-omitempty: false
       LastRabn:
         type: integer
+        x-omitempty: false
       LenOrIsns:
         type: integer
+        x-omitempty: false
       ShiftCount:
         type: integer
+        x-omitempty: false
   Fdt:
     type: object
     properties:
@@ -5548,7 +5627,7 @@ definitions:
               $ref: "#/definitions/Field"
           Time:
             type: string
-            format: date-time
+            # format: date-time
   FduFdt:
     type: object
     required:
@@ -5659,6 +5738,7 @@ definitions:
         type: string
       Length:
         type: integer
+        x-omitempty: false
       Level:
         type: integer
       Name:
@@ -5695,6 +5775,8 @@ definitions:
         type: integer
       IsLobRoot:
         type: integer
+      Type:
+        type: string
       Name:
         type: string
       RecordCount:
@@ -5911,7 +5993,7 @@ definitions:
     type: object
     properties:
       Job:
-        $ref: "#/definitions/Job"
+        $ref: "#/definitions/JobShortDescription"
       Status:
         type: string
   JobDefinition:
@@ -5949,6 +6031,24 @@ definitions:
             Parameter:
               type: string
       Script:
+        type: string
+      User:
+        type: string
+      Utility:
+        type: string
+  JobShortParameter:
+    type: object
+    properties:
+      Job:
+        $ref: "#/definitions/JobShortDescription"
+  JobShortDescription:
+    type: object
+    properties:
+      CronSchedule:
+        type: string
+      Description:
+        type: string
+      Name:
         type: string
       User:
         type: string
@@ -6316,21 +6416,29 @@ definitions:
         type: string
       ErrorCode:
         type: integer
+        x-omitempty: false
       InifileValue:
         type: string
       IsDynamic:
         type: boolean
+        x-omitempty: false
       IsMaxValueAvailable:
         type: boolean
         default: false
+        x-omitempty: false
       IsMinValueAvailable:
         type: boolean
+        default: false
+        x-omitempty: false
       IsOnlineValueAvailable:
         type: boolean
+        x-omitempty: false
       MaxValue:
         type: integer
+        x-omitempty: false
       MinValue:
         type: integer
+        x-omitempty: false
       Name:
         type: string
       OnlineValue:
@@ -6386,6 +6494,31 @@ definitions:
         type: array
         items:
           type: integer
+  TCP:
+    type: object
+    properties:
+      Entry:
+        type: array
+        items:
+          $ref: "#/definitions/TCPentry"
+  TCPentry:
+    type: object
+    properties:
+      ID:
+        type: integer
+        x-omitempty: false
+      RecvID:
+        type: integer
+        x-omitempty: false
+      RemoteUser:
+        type: string
+      RemoteHost:
+        type: string
+      RemoteIP:
+        type: string
+      RemotePort:
+        type: integer
+        x-omitempty: false
   Info:
     type: object
     properties:
@@ -6406,8 +6539,8 @@ definitions:
             type: string
           Code:
             type: string
-          Dbid:
-            type: integer
+          Target:
+            type: string
           Message:
             type: string
   SubField:
@@ -6503,36 +6636,40 @@ definitions:
   UserQueueDetail:
     type: object
     properties:
-      CommandCount:
-        type: integer
-      ISN_Hold:
-        type: integer
-      ISN_Lists:
-        type: integer
-      LastActivity:
-        type: string
-        format: date-time
-      StartSession:
-        type: string
-        format: date-time
-      StartTransaction:
-        type: string
-        format: date-time
-      TNALimit:
-        type: integer
-      TTLimit:
-        type: integer
-      TransactionCount:
-        type: integer
-      UserEncoding:
-        type: integer
-      UserQueueDetail:
+      UserQueueDetails:
         type: object
         properties:
+          CommandCount:
+            type: integer
+            x-omitempty: false
+          ISN_Hold:
+            type: integer
+            x-omitempty: false
+          ISN_Lists:
+            type: integer
+            x-omitempty: false
+          LastActivity:
+            type: string
+            format: date-time
+          StartSession:
+            type: string
+            format: date-time
+          StartTransaction:
+            type: string
+            format: date-time
+          TNALimit:
+            type: integer
+            x-omitempty: false
+          TTLimit:
+            type: integer
+            x-omitempty: false
+          TransactionCount:
+            type: integer
+            x-omitempty: false
+          UserEncoding:
+            type: integer
           DetailEntry:
-            type: array
-            items:
-              $ref: "#/definitions/UserQueueEntry"
+            $ref: "#/definitions/UserQueueEntry"
       files:
         type: array
         items:
@@ -6769,6 +6906,12 @@ parameters:
   dbidParam:
     type: number
     description: Database ID
+    name: dbid
+    in: path
+    required: true
+  targetParam:
+    type: string
+    description: Database ID or ADATCP or ADATCPS short reference like adatcp:<host>:<port>
     name: dbid
     in: path
     required: true
