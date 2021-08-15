@@ -18,12 +18,13 @@
 */
 
 import Vue from 'vue';
-
+import App from '../App.vue'
 
 export function Url() {
    // console.log('Mode:' + process.env.NODE_ENV);
    if (process.env.NODE_ENV === 'development') {
-      return 'http://localhost:8130'; // GO
+      return 'https://localhost:61091'; // GO
+      // return 'http://localhost:8130'; // GO
       // return 'http://localhost:8091'; // Java
    }
    return '.';
@@ -33,7 +34,7 @@ export function Version(): string {
    if (process.env.NODE_ENV === 'development') {
       return 'dev';
    }
-   return 'v1.0.1';
+   return App.version;
 }
 
 export const config = {

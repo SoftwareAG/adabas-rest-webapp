@@ -80,10 +80,11 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import Sidebar from './Sidebar.vue';
 import store from '../store/index';
-import BarChart from './BarChart';
-import CommitChart from './DoughnutChart';
+import BarChart from './BarChart3.vue';
+import CommitChart from './DoughnutChart3.vue';
 import StatusBar from './StatusBar.vue';
 import Url from './Url.vue';
+import { eventBus } from '../main'
 
 @Component({
   components: {
@@ -119,7 +120,7 @@ export default class CommandStatsData extends Vue {
       this.$data.comstats = response;
       let labels = [] as string[];
       let data = [] as number[];
-      let datacollection = {
+      /*let datacollection = {
         labels: ['A1', 'E1', 'L1', 'S1', 'ET', 'CL'],
         datasets: [
           {
@@ -162,15 +163,17 @@ export default class CommandStatsData extends Vue {
           },
         ],
       };
+      */
       response.forEach((element: any) => {
         if (element.CommandCount > 0) {
           labels.push(element.CommandName);
           data.push(element.CommandCount);
         }
       });
-      datacollection.labels = labels;
+      eventBus.$emit('commandStats',{Data: data,Label: labels} );
+      /*datacollection.labels = labels;
       datacollection.datasets[0].data = data;
-      this.$data.datacollection = datacollection;
+      this.$data.datacollection = datacollection;*/
     });
   }
   beforeDestroy() {

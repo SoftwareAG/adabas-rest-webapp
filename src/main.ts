@@ -28,13 +28,14 @@ import store from './store'
 import { Route } from 'vue-router'
 
 Vue.config.productionTip = false
+export const eventBus = new Vue();
 
 const DEFAULT_TITLE = 'Adabas REST server';
 router.afterEach((to, from) => {
     // Use next tick to handle router history correctly
     // see: https://github.com/vuejs/vue-router/issues/914#issuecomment-384477609
     Vue.nextTick(() => {
-        document.title = to.meta.title || DEFAULT_TITLE;
+       document.title = to?.meta?.title || DEFAULT_TITLE;
     });
 });
 router.beforeEach((to: Route, from: Route, next: any) => {
