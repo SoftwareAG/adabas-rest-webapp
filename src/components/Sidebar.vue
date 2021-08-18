@@ -28,6 +28,9 @@
         <b-nav-item :disabled="!active()" :to="'/highwater/' + url"
           >High Watermark</b-nav-item
         >
+        <b-nav-item :disabled="!active()" :to="'/monitor/' + url"
+          >Monitor</b-nav-item
+        >
         <b-nav-item :disabled="!active()" :to="'/cmdstats/' + url"
           >Command statistics</b-nav-item
         >

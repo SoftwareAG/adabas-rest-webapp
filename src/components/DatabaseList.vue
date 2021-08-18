@@ -203,6 +203,13 @@
                       </b-dropdown-item>
                       <b-dropdown-item
                         size="sm"
+                        :to="'/monitor/' + row.item.status.Dbid"
+                        class="mr-2"
+                      >
+                        Monitor statistics
+                      </b-dropdown-item>
+                      <b-dropdown-item
+                        size="sm"
                         :to="'/bufferpool/' + row.item.status.Dbid"
                         class="mr-2"
                       >

@@ -40,6 +40,7 @@ import UCB from '../admin_views/UCB.vue'
 import Activity from '../admin_views/Activity.vue'
 import Bufferpool from '../admin_views/Bufferpool.vue'
 import Commandstats from '../admin_views/Commandstats.vue'
+import Monitor from '../admin_views/Monitor.vue'
 import DatabaseInfo from '../admin_views/DatabaseInfo.vue'
 import Cluster from '../admin_views/Cluster.vue'
 import DatabaseCluster from '../admin_views/DatabaseCluster.vue'
@@ -173,6 +174,11 @@ export default new Router({
       path: '/cmdstats/:url',
       name: 'Database Command statistics',
       component: Commandstats, props: true
+    },
+    {
+      path: '/monitor/:url',
+      name: 'Database Monitor statistics',
+      component: Monitor, props: true
     },
     {
       path: '/checkpoints/:url',
