@@ -1,20 +1,20 @@
 <template>
-  <div id="doughnutChart3" style="width: 400px">
-  <DoughnutChart 
-    ref="doughtnutRef"
-    :chartData="testData" />
-  </div>
+  <!--div id="myDoughnutChart3" style="width: 400px"-->
+    <DoughnutChart ref="doughtnutRef" :chartData="testData" />
+  <!--/div-->
 </template>
 
 <script lang="ts">
-//import { Chart } from 'chart.js';
+//import { Chart } from "chart.js/auto";
 import { defineComponent, ref } from "@vue/composition-api";
-import { DoughnutChart, ExtractComponentData } from 'vue-chart-3';
+import { DoughnutChart, ExtractComponentData } from "vue-chart-3";
 import store from "../store/index";
 import { eventBus } from "../main";
+import { Chart, DoughnutController, ArcElement, Tooltip } from 'chart.js';
+Chart.register(DoughnutController, ArcElement, Tooltip);
 
 export default defineComponent({
-  name: "DoughnutChart",
+  name: "myDoughnutChart3",
   components: { DoughnutChart },
   setup(props) {
     const doughtnutRef = ref<ExtractComponentData<typeof DoughnutChart>>();
@@ -63,14 +63,14 @@ export default defineComponent({
         },
       ],
     };
-    /*eventBus.$on("commandStats", (dataIn: any) => {
+    eventBus.$on("commandStats", (dataIn: any) => {
       console.log("DOUGHNAT EVENT:" + JSON.stringify(dataIn));
       label.value = dataIn.Label;
       testData.labels = dataIn.Label;
       testData.datasets[0].data = dataIn.Data;
       data.value = dataIn.Data;
-      console.log("DOUGHNAT LABELS:"+JSON.stringify(label.value));
-    });*/
+      console.log("DOUGHNAT LABELS:" + JSON.stringify(label.value));
+    });
 
     return { testData, doughtnutRef };
   },

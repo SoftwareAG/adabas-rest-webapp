@@ -22,7 +22,7 @@
     "vue-chart-3": "^0.5.7",
     "vue-class-component": "^7.2.3",
     "vue-property-decorator": "^9.1.2",
-    "vue-router": "^3.2.0",
+    "vue-router": "^2.8.1",
     "vuex": "^3.4.0"
   },
   "devDependencies": {

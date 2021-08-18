@@ -1,18 +1,3 @@
-<!--
- * Copyright (c) 2020 Software AG (http://www.softwareag.com/)
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.-->
-
 <template>
   <div class="commandstatsdata p-2">
     <Sidebar :url="url" />
@@ -37,9 +22,9 @@
           <b-row>
             <b-col sm="4" class="h-100 p-1">
               <b-pagination
-                v-model="currentPage"
+                v-model="tableMetadata.currentPage"
                 :total-rows="comstats.length"
-                :per-page="perPage"
+                :per-page="tableMetadata.perPage"
                 aria-controls="my-table"
               ></b-pagination>
 
@@ -50,12 +35,12 @@
                 bordered
                 hover
                 small
-                :per-page="perPage"
-                :current-page="currentPage"
+                :per-page="tableMetadata.perPage"
+                :current-page="tableMetadata.currentPage"
                 :items="comstats"
-                :sort-by.sync="sortBy"
-                :sort-desc.sync="sortDesc"
-                :fields="fields"
+                :sort-by.sync="tableMetadata.sortBy"
+                :sort-desc.sync="tableMetadata.sortDesc"
+                :fields="tableMetadata.fields"
                 sort-icon-left
                 responsive="sm"
               >
@@ -63,12 +48,14 @@
             </b-col>
             <b-col sm="4">
               <div class="small Chart w-100">
-                <commit-chart :chart-data="datacollection"></commit-chart>
+                <DoughnutChart v-bind="doughnutChartProps" />
+                <img style="width: 300px" v-if="imgData" :src="imgData" />
               </div>
             </b-col>
             <b-col sm="4">
               <div class="small Chart w-100">
-                <bar-chart :chart-data="datacollection"></bar-chart>
+                <BarChart v-bind="barChartProps" />
+                <img style="width: 300px" v-if="imgData" :src="imgData" />
               </div>
             </b-col> </b-row></b-container></b-card-body
     ></b-card>
@@ -76,114 +63,188 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
-import Sidebar from './Sidebar.vue';
-import store from '../store/index';
-import BarChart from './BarChart3.vue';
-import CommitChart from './DoughnutChart3.vue';
-import StatusBar from './StatusBar.vue';
-import Url from './Url.vue';
-import { eventBus } from '../main'
+<script>
+import { Chart } from "chart.js/auto";
+import { DoughnutChart, useDoughnutChart, BarChart, useBarChart } from "vue-chart-3";
+import {
+  ref,
+  onMounted,
+  computed,
+  onBeforeUnmount,
+  defineComponent,
+} from "@vue/composition-api";
+import { shuffle } from "lodash";
+import Sidebar from "./Sidebar.vue";
+import StatusBar from "./StatusBar.vue";
+import Url from "./Url.vue";
+import store from "../store/index";
 
-@Component({
+export default defineComponent({
+  name: "CommandstatsData",
   components: {
+    BarChart,
+    DoughnutChart,
     Sidebar,
     StatusBar,
-    BarChart,
-    CommitChart,
     Url,
   },
-})
-export default class CommandStatsData extends Vue {
-  @Prop(String) readonly url: string | undefined;
-  data() {
-    return {
+  props: ["url"],
+  setup(props) {
+    const data = ref([10, 10, 40, 10, 0]);
+    const legendTop = ref(true);
+    const imgData = ref(null);
+    const url = props.url;
+    const comstats = ref([]);
+    let timer = null;
+    const labels = ref(["A1", "E1", "L1", "S1", "ET", "CL"]);
+    const tableMetadata = {
       perPage: 12,
       currentPage: 1,
-      sortBy: 'CommandCount',
+      sortBy: "CommandCount",
       sortDesc: true,
-      fields: ['CommandName', 'CommandCount'],
-      comstats: [],
-      datacollection: null,
-      timer: '',
-      db: null,
+      fields: ["CommandName", "CommandCount"],
     };
-  }
-  mounted() {
-    this.$data.db = store.getters.search(this.url);
-    this.$data.timer = setInterval(this.loadCommandStat, 5000);
-    this.loadCommandStat();
-  }
-  loadCommandStat() {
-    this.$data.db.commandStats().then((response: any) => {
-      this.$data.comstats = response;
-      let labels = [] as string[];
-      let data = [] as number[];
-      /*let datacollection = {
-        labels: ['A1', 'E1', 'L1', 'S1', 'ET', 'CL'],
-        datasets: [
-          {
-            label: 'Adabas commands',
-            backgroundColor: [
-              'rgb(200,126,64)',
-              'rgb(200,226,202)',
-              'rgb(200,210,172)',
-              'rgb(200,189,139)',
-              'rgb(200,162,103)',
-              'rgb(150,126,64)',
-              'rgb(150,126,64)',
-              'rgb(150,226,202)',
-              'rgb(150,210,172)',
-              'rgb(150,189,139)',
-              'rgb(130,162,103)',
-              'rgb(130,126,64)',
-              'rgb(130,126,64)',
-              'rgb(130,226,202)',
-              'rgb(130,210,172)',
-              'rgb(130,189,139)',
-              'rgb(130,162,103)',
-              'rgb(226,126,64)',
-              'rgb(226,126,64)',
-              'rgb(232,226,202)',
-              'rgb(226,210,172)',
-              'rgb(223,189,139)',
-              'rgb(223,162,103)',
-              'rgb(226,126,64)',
-              'rgb(226,126,64)',
-              'rgb(232,226,202)',
-              'rgb(226,210,172)',
-              'rgb(223,189,139)',
-              'rgb(223,162,103)',
-              'rgb(226,126,64)',
-            ],
-            borderWidth: 0,
-            hoverBorderWidth: 0,
-            data: [10, 10, 40, 10, 0],
-          },
-        ],
-      };
-      */
-      response.forEach((element: any) => {
-        if (element.CommandCount > 0) {
-          labels.push(element.CommandName);
-          data.push(element.CommandCount);
-        }
-      });
-      eventBus.$emit('commandStats',{Data: data,Label: labels} );
-      /*datacollection.labels = labels;
-      datacollection.datasets[0].data = data;
-      this.$data.datacollection = datacollection;*/
+    let db = null;
+    const options = computed(() => ({
+      scales: {
+        y: {
+          beginAtZero: true,
+        },
+      },
+     plugins: {
+        legend: {
+          position:  "top",
+          display: false,
+        },
+        title: {
+          display: false,
+          text: "Adabas calls",
+        },
+      },
+    }));
+    const doughnutOptions = computed(() => ({
+      scales: {
+        y: {
+          beginAtZero: true,
+        },
+      },
+     plugins: {
+        legend: {
+          position:  "top",
+          display: true,
+        },
+        title: {
+          display: false,
+          text: "Adabas calls",
+        },
+      },
+    }));
+
+    const chartData = computed(() => ({
+      labels: labels.value,
+      datasets: [
+        {
+          label: "Adabas calls",
+          data: data.value,
+          backgroundColor: [
+            "rgb(200,126,64)",
+            "rgb(200,226,202)",
+            "rgb(200,210,172)",
+            "rgb(200,189,139)",
+            "rgb(200,162,103)",
+            "rgb(150,126,64)",
+            "rgb(150,126,64)",
+            "rgb(150,226,202)",
+            "rgb(150,210,172)",
+            "rgb(150,189,139)",
+            "rgb(130,162,103)",
+            "rgb(130,126,64)",
+            "rgb(130,126,64)",
+            "rgb(130,226,202)",
+            "rgb(130,210,172)",
+            "rgb(130,189,139)",
+            "rgb(130,162,103)",
+            "rgb(226,126,64)",
+            "rgb(226,126,64)",
+            "rgb(232,226,202)",
+            "rgb(226,210,172)",
+            "rgb(223,189,139)",
+            "rgb(223,162,103)",
+            "rgb(226,126,64)",
+            "rgb(226,126,64)",
+            "rgb(232,226,202)",
+            "rgb(226,210,172)",
+            "rgb(223,189,139)",
+            "rgb(223,162,103)",
+            "rgb(226,126,64)",
+          ],
+          borderWidth: 0,
+          hoverBorderWidth: 0,
+        },
+      ],
+    }));
+
+    const { barChartProps, barChartRef } = useBarChart({
+      chartData,
+      options,
     });
-  }
-  beforeDestroy() {
-    clearInterval(this.$data.timer);
-  }
-}
+    const { doughnutChartProps, doughnutChartRef } = useDoughnutChart({
+      chartData,
+      doughnutOptions,
+    });
+    onMounted(() => {
+      db = store.getters.search(props.url);
+      if (timer==null) {
+        timer = setInterval(loadCommandStat, 10000);
+      }
+      loadCommandStat();
+    });
+    onBeforeUnmount(() => {
+      clearInterval(timer);
+      timer = null;
+    });
+    function loadCommandStat() {
+      if (!db || db==null) {
+        return;
+      }
+      db.commandStats().then((response) => {
+        if (!response) {
+          return;
+        }
+        comstats.value = response;
+        labels.value = [];
+        data.value = [];
+        response.forEach((element) => {
+          if (element.CommandCount > 0) {
+            labels.value.push(element.CommandName);
+            data.value.push(element.CommandCount);
+          }
+        });
+      });
+    }
+
+    return {
+      tableMetadata,
+      comstats,
+      doughnutChartProps,
+      doughnutChartRef,
+      barChartProps,
+      barChartRef,
+      imgData,
+    };
+  },
+});
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped lang="scss">
+<style>
+.commandstatsdata {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+  margin-top: 60px;
+}
 h3 {
   margin: 40px 0 0;
 }

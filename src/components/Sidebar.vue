@@ -110,7 +110,7 @@ export default class Sidebar extends Vue {
     return this.$data.db.status.Active;
   }
   state() {
-    if (!this.$data.db.status) {
+    if ((!this.$data.db)||(!this.$data.db.status)) {
       return "Unknown";
     }
     if (this.$data.db.status.Active) {

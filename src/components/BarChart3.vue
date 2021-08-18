@@ -1,28 +1,30 @@
 <template>
-  <div id="barChart3" style="width: 400px">
-  <BarChart ref="barChartRef" :chartData="chartData" />
-  </div>
+  <!--div id="barChart3" style="width: 400px"-->
+    <BarChart ref="barChartRef" :chartData="testData" />
+  <!--/div-->
 </template>
 
 <script lang="ts">
-//import { Chart } from 'chart.js';
-import { defineComponent, ref,computed, onMounted } from "@vue/composition-api";
-import { BarChart,useBarChart } from "vue-chart-3";
+import { Chart } from "chart.js/auto";
+import {
+  defineComponent,
+  ref,
+  computed,
+  onMounted,
+} from "@vue/composition-api";
+import { BarChart, useBarChart } from "vue-chart-3";
 import store from "../store/index";
 import { eventBus } from "../main";
 
 export default defineComponent({
-  name: "BarChart",
+  name: "myBarChart3",
   components: { BarChart },
-  props: {
-    url: String,
-  },
   setup(props) {
     const barChartRef = ref<typeof BarChart>();
-    const data = ref([10, 10, 40, 10, 0, 10]);
-    const label = ref(["A1", "E1", "L1", "S1", "ET", "CL"]);
+    const data = ref([10,20]);
+    const label = ref(["CL","OP"]);
     const testData = {
-      labels: label,
+      labels: label.value,
       datasets: [
         {
           label: label.value,
@@ -90,17 +92,17 @@ export default defineComponent({
       chartData,
       options,
     });*/
-    eventBus.$on("commandStats", (dataIn: any) => {
+    /*eventBus.$on("commandStats", (dataIn: any) => {
       console.log("BAR EVENT:" + JSON.stringify(dataIn));
       label.value = dataIn.Label;
-      /*testData.labels = dataIn.Label;
+      testData.labels = dataIn.Label;
       testData.datasets[0].data = dataIn.Data;
-      data.value = dataIn.Data;*/
-      console.log("BAR LABELS:"+JSON.stringify(label.value));
-    });
+      data.value = dataIn.Data;
+      console.log("BAR LABELS:" + JSON.stringify(label.value));
+    });*/
 
     return { testData, barChartRef };
-//    return { barChartProps,barChartRef,chartData };
+    //    return { barChartProps,barChartRef,chartData };
   },
 });
 </script>
