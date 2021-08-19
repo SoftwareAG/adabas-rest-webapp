@@ -16,7 +16,7 @@ node('docker-builds') {
         'HOME=.',
     ]){
     stage('Install') {
-      sh 'npm install'
+      sh 'rm -f node_modules dist;npm install'
     }
     stage('Build') {
       sh 'npm run build'
