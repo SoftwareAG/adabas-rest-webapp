@@ -215,6 +215,13 @@
                       >
                         Buffer Pool
                       </b-dropdown-item>
+                     <b-dropdown-item
+                        size="sm"
+                        :to="'/bufferflush/' + row.item.status.Dbid"
+                        class="mr-2"
+                      >
+                        Buffer Flush
+                      </b-dropdown-item>
                       <b-dropdown-item
                         size="sm"
                         :to="'/checkpoints/' + row.item.status.Dbid"

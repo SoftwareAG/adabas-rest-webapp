@@ -37,6 +37,9 @@
         <b-nav-item :disabled="!active()" :to="'/bufferpool/' + url"
           >Buffer Pool statistics</b-nav-item
         >
+        <b-nav-item :disabled="!active()" :to="'/bufferflush/' + url"
+          >Buffer Flush statistics</b-nav-item
+        >
         <b-nav-item :disabled="!active()" :to="'/threadtable/' + url"
           >Thread table</b-nav-item
         >

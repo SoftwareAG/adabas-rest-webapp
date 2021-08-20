@@ -39,6 +39,7 @@ import Threadtable from '../admin_views/Threadtable.vue'
 import UCB from '../admin_views/UCB.vue'
 import Activity from '../admin_views/Activity.vue'
 import Bufferpool from '../admin_views/Bufferpool.vue'
+import Bufferflush from '../admin_views/Bufferflush.vue'
 import Commandstats from '../admin_views/Commandstats.vue'
 import Monitor from '../admin_views/Monitor.vue'
 import DatabaseInfo from '../admin_views/DatabaseInfo.vue'
@@ -154,6 +155,11 @@ export default new Router({
       path: '/bufferpool/:url',
       name: 'Database Buffer Pool',
       component: Bufferpool, props: true
+    },
+    {
+      path: '/bufferflush/:url',
+      name: 'Database Buffer Flush',
+      component: Bufferflush, props: true
     },
     {
       path: '/nuclog/:url',

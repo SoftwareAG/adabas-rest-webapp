@@ -101,6 +101,10 @@ export class AdabasAdmin {
         return triggerCallOnParameter("/adabas/database/" + this.status.Dbid + "/actstats", "Statistics");
     }
     // Provide Bufferpool statistics values
+    bfStats(): Promise<any> {
+        return triggerCall("/adabas/database/" + this.status.Dbid + "/bfstats");
+    }
+    // Provide Bufferflush statistics values
     bpStats(): Promise<any> {
         return triggerCallOnParameter("/adabas/database/" + this.status.Dbid + "/bpstats", "Statistics");
     }
