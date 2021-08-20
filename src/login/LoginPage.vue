@@ -23,18 +23,17 @@
         alt="Responsive image"
       ></b-img>
     </div>
-    <h2>User Login</h2>
+    <h2>Adabas WebApp Login</h2>
     <form @submit.prevent="handleSubmit">
       <div>
         <table class="table table-striped">
           <tr>
-            <td class="text-right">Username:</td>
-            <td class="text-left">Example user 'admin'</td>
+            <td class="text-right">Info:</td>
+            <td class="text-left">Default user is 'admin'</td>
           </tr>
           <tr>
-            <td class="text-right">Password:</td>
-            <td class="text-left">
-              Software AG standard passsword is 'manage'
+            <td class="text-left" colspan="2">
+              Passsword is generated in the installation procedure. Use 'service.sh' to create new users or to set the password afterwards.
             </td>
           </tr>
         </table>
