@@ -122,6 +122,8 @@ export default defineComponent({
     };
     let db = null;
     const options = computed(() => ({
+    responsive: true,
+    maintainAspectRatio: false,
       scales: {
         y: {
           beginAtZero: true,

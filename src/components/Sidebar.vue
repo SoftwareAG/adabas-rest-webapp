@@ -28,7 +28,7 @@
         <b-nav-item :disabled="!active()" :to="'/highwater/' + url"
           >High Watermark</b-nav-item
         >
-        <b-nav-item :disabled="!active()" :to="'/monitor/' + url"
+        <b-nav-item :disabled="!active() && !isMonitor()" :to="'/monitor/' + url"
           >Monitor</b-nav-item
         >
         <b-nav-item :disabled="!active()" :to="'/cmdstats/' + url"
@@ -37,7 +37,7 @@
         <b-nav-item :disabled="!active()" :to="'/bufferpool/' + url"
           >Buffer Pool statistics</b-nav-item
         >
-        <b-nav-item :disabled="!active()" :to="'/bufferflush/' + url"
+        <b-nav-item :disabled="!active() && !isMonitor()" :to="'/bufferflush/' + url"
           >Buffer Flush statistics</b-nav-item
         >
         <b-nav-item :disabled="!active()" :to="'/threadtable/' + url"
@@ -123,6 +123,12 @@ export default class Sidebar extends Vue {
       return "Online";
     }
     return "Offline";
+  }
+  isMonitor(): boolean {
+    if (this.$data.db.status.StructureLevel>21) {
+      return true;
+    }
+    return false;
   }
 }
 </script>

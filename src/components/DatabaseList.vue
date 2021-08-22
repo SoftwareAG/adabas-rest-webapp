@@ -201,7 +201,7 @@
                       >
                         Command statistics
                       </b-dropdown-item>
-                      <b-dropdown-item
+                      <b-dropdown-item :disabled="!isMonitor(row.item)"
                         size="sm"
                         :to="'/monitor/' + row.item.status.Dbid"
                         class="mr-2"
@@ -215,7 +215,7 @@
                       >
                         Buffer Pool
                       </b-dropdown-item>
-                     <b-dropdown-item
+                     <b-dropdown-item :disabled="!isMonitor(row.item)"
                         size="sm"
                         :to="'/bufferflush/' + row.item.status.Dbid"
                         class="mr-2"
@@ -478,6 +478,13 @@ export default class DatabaseList extends Vue {
     this.$router.push({ path: '/information/' + items[0].status.Dbid });
     return;
   }
+  isMonitor(item: any): boolean {
+    if (item.status.StructureLevel>21) {
+      return true;
+    }
+    return false;
+  }
+
   beforeDestroy(): void {
     clearInterval(this.$data.timer);
   }

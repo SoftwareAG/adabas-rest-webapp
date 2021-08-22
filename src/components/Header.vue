@@ -38,12 +38,14 @@
             <b-dropdown-item to="/modify">Modify record</b-dropdown-item>
           </b-nav-item-dropdown>
           <b-nav-item :disabled="!isAdministrator" to="/databases/">Database Administration</b-nav-item>
-          <b-nav-item :disabled="!isClusterAdministrator" to="/cluster/">Database Cluster</b-nav-item>
+          <!--b-nav-item :disabled="!isClusterAdministrator" to="/cluster/">Database Cluster</b-nav-item-->
           <b-nav-item :disabled="!isAdministrator" to="/jobs"
             >List of tasks</b-nav-item
           >
-          <b-nav-item to="/configuration/">Configuration</b-nav-item>
-          <b-nav-item to="/log/">RESTful Log</b-nav-item>
+          <b-nav-item-dropdown text="Configure REST server" right>
+            <b-dropdown-item to="/configuration/">Configuration</b-dropdown-item>
+            <b-dropdown-item to="/log/">RESTful Log</b-dropdown-item>
+          </b-nav-item-dropdown>
           <b-nav-item-dropdown text="Examples" right>
             <b-dropdown-item to="/example_description"
               >Description</b-dropdown-item
