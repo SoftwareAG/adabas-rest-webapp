@@ -25,7 +25,7 @@
         <b-container fluid>
           <b-row
             ><b-col>
-              This page provide the list of Adabas database utility control
+              This page provides the list of Adabas database utility control
               block active in the database.
             </b-col>
           </b-row>

@@ -31,7 +31,7 @@ import BufferFlushData from '@/components/BufferFlushData.vue';
     BufferFlushData,
   },
 })
-export default class Bufferpool extends Vue {
+export default class Bufferflush extends Vue {
       @Prop(String) readonly url: string | undefined;
 }
 </script>

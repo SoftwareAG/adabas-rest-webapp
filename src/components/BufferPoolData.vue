@@ -25,8 +25,8 @@
         <b-container fluid>
           <b-row
             ><b-col>
-              This page provide the list of Adabas database Buffer Pool to be
-              administrate through this Adabas RESTful server.
+              This page provide the statistics of Adabas database Buffer Pool to be
+              monitored through this Adabas RESTful server.
             </b-col>
           </b-row>
           <b-row

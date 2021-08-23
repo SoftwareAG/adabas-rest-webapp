@@ -22,7 +22,7 @@
     >
       <b-card-body>
         <p>
-          This page provide access to the list of Adabas RESTful server jobs to
+          This page provides access to the list of Adabas RESTful server jobs to
           be administrate through this Adabas RESTful server. These jobs can
           start long running Adabas utility tasks.
         </p>

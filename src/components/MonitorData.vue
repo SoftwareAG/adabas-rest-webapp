@@ -10,8 +10,8 @@
         <b-container fluid>
           <b-row>
             <b-col>
-              This page provide the list of Adabas database command statistics
-              to be administrate through this Adabas RESTful server.
+              This page provides the statistics of Adabas database commands per second and I/O
+              to be monitored through this Adabas RESTful server.
             </b-col>
           </b-row>
           <b-row>
@@ -122,8 +122,8 @@ export default defineComponent({
     };
     let db = null;
     const options = computed(() => ({
-    responsive: true,
-    maintainAspectRatio: false,
+      responsive: true,
+      maintainAspectRatio: false,
       scales: {
         y: {
           beginAtZero: true,
@@ -211,10 +211,10 @@ export default defineComponent({
         if (!response) {
           return;
         }
-        console.log("MONITOR:" + JSON.stringify(response));
+        //console.log("MONITOR:" + JSON.stringify(response));
         let monitorElement = {};
         if (last != null) {
-          console.log(response.ApioCnt + " " + last.ApioCnt);
+          // console.log(response.ApioCnt + " " + last.ApioCnt);
           monitorElement.Commands = response.AcmdCnt - last.AcmdCnt;
           monitorElement["ASSO I/O"] = response.AaioCnt - last.AaioCnt;
           monitorElement["DATA I/O"] = response.AdioCnt - last.AdioCnt;

@@ -42,7 +42,12 @@ export default Vue.extend({
     if (v) {
         this.$data.version = JSON.parse(v).version;
     }
-
+    console.log("JSON local storage version: "+v);
+    this.$data.webAppVersion = config.Version()
+    if (this.$data.webAppVersion === "") {
+       this.$data.webAppVersion = "Unknown"
+    }
+    console.log("Web App version: "+this.$data.webAppVersion );
   },
 });
 </script>

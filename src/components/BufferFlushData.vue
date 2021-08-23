@@ -25,8 +25,7 @@
         <b-container fluid>
           <b-row
             ><b-col>
-              This page provide the list of Adabas database Buffer Flush to be
-              administrate through this Adabas RESTful server.
+              This page provides the statistics of Adabas database Buffer Flush.
             </b-col>
           </b-row>
           <b-row
@@ -43,42 +42,42 @@
           <b-row>
             <b-col class="text-right"> Explicit </b-col>
             <b-col>
-              {{ checkUndefinedIndex(bufferflush.BfFlushCounter,1) }}
+              {{ checkUndefinedIndex(bufferflush.BfFlushCounter, 1) }}
             </b-col>
           </b-row>
           <b-row>
             <b-col class="text-right"> Write Limit </b-col>
             <b-col>
-              {{ checkUndefinedIndex(bufferflush.BfFlushCounter,0) }}
+              {{ checkUndefinedIndex(bufferflush.BfFlushCounter, 0) }}
             </b-col>
           </b-row>
           <b-row>
             <b-col class="text-right"> WORK Limit </b-col>
             <b-col>
-              {{ checkUndefinedIndex(bufferflush.BfFlushCounter,2) }}
+              {{ checkUndefinedIndex(bufferflush.BfFlushCounter, 2) }}
             </b-col>
           </b-row>
           <b-row>
-            <b-col class="text-right"> Space  </b-col>
+            <b-col class="text-right"> Space </b-col>
             <b-col>
-              {{ checkUndefinedIndex(bufferflush.BfFlushCounter,3) }}
+              {{ checkUndefinedIndex(bufferflush.BfFlushCounter, 3) }}
             </b-col>
           </b-row>
           <b-row>
             <b-col class="text-right"> Emergency </b-col>
             <b-col>
-              {{ checkUndefinedIndex(bufferflush.BfFlushCounter,4) }}
+              {{ checkUndefinedIndex(bufferflush.BfFlushCounter, 4) }}
             </b-col>
           </b-row>
           <b-row>
             <b-col class="text-right"> Ignored blocks </b-col>
             <b-col>
-              {{ checkUndefinedIndex(bufferflush.BfFlushCounter,5) }}
+              {{ checkUndefinedIndex(bufferflush.BfFlushCounter, 5) }}
             </b-col>
           </b-row>
           <b-row>
             <b-col class="text-right">
-              <b-table :items="bufferflush.LStat" :fields="fields">
+              <b-table :items="bufferflush.LStat" :fields="tableMetadata.fields">
                 <template v-slot:cell(WriteLimit)="row">
                   {{ row.item.WriteLimit / 10 }}
                 </template>
@@ -99,6 +98,12 @@
                 </template>
               </b-table>
             </b-col>
+            <b-col class="text-right">
+              <div class="small Chart w-100">
+                <LineChart v-bind="lineChartProps" />
+                <img style="width: 300px" v-if="imgData" :src="imgData" />
+              </div>
+            </b-col>
           </b-row>
         </b-container>
       </b-card-body>
@@ -107,24 +112,46 @@
   </div>
 </template>
 
-<script lang="ts">
+<script>
+import { Chart } from "chart.js/auto";
+import { LineChart, useLineChart } from "vue-chart-3";
+import {
+  ref,
+  onMounted,
+  computed,
+  onBeforeUnmount,
+  defineComponent,
+} from "@vue/composition-api";
 import { Component, Prop, Vue } from "vue-property-decorator";
 import Sidebar from "./Sidebar.vue";
 import store from "../store/index";
 import StatusBar from "./StatusBar.vue";
 import Url from "./Url.vue";
 
-@Component({
+export default defineComponent({
+  name: "BufferFlushData",
   components: {
-    StatusBar,
+    LineChart,
     Sidebar,
+    StatusBar,
     Url,
   },
-})
-export default class BufferFlushData extends Vue {
-  @Prop(String) readonly url: string | undefined;
-  data() {
-    return {
+  props: ["url"],
+  setup(props) {
+    const data = ref([]);
+    const legendTop = ref(true);
+    const imgData = ref(null);
+    const url = props.url;
+    let last = null;
+    const bufferflush = ref({ LStat: [] });
+    let timer = null;
+    let index = 1;
+    const labels = ref(["Commands"]);
+    const tableMetadata = {
+      perPage: 20,
+      currentPage: 1,
+      sortBy: "CommandCount",
+      sortDesc: true,
       fields: [
         "StartTime",
         "WriteLimit",
@@ -134,61 +161,136 @@ export default class BufferFlushData extends Vue {
         "Duration",
         "Rejected",
       ],
-      bufferflush: { LStat: [] },
     };
-  }
-  created() {
-    const db = store.getters.search(this.url);
-    db.bfStats().then((response: any) => {
-      this.$data.bufferflush = response;
+    let db = null;
+    const options = computed(() => ({
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: {
+          beginAtZero: true,
+          stacked: true,
+          position: "left",
+        },
+      },
+      plugins: {
+        legend: {
+          position: "top",
+          display: false,
+        },
+        title: {
+          display: false,
+          text: "Adabas calls",
+        },
+      },
+    }));
+    const chartData = computed(() => ({
+      labels: labels.value,
+      datasets: [
+        {
+          label: "Adabas calls",
+          data: data.value,
+          fill: false,
+          borderColor: "rgb(75, 192, 192)",
+          tension: 0.4,
+          yAxisID: "y",
+        },
+      ],
+    }));
+
+    const { lineChartProps, lineChartRef } = useLineChart({
+      chartData,
+      options,
     });
-  }
-  formatBytes(bytes: number, decimals = 2) {
-    if (bytes === 0) return "0 Bytes";
-
-    const k = 1024;
-    const dm = decimals < 0 ? 0 : decimals;
-    const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
-
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
-  }
-  avgioMsec(item:any) {
-			var avgioMsec = 0
-      if (!item.BfDiffEndBf || !item.BfFlushPagesSum) {
-        return 0
+    onMounted(() => {
+      db = store.getters.search(props.url);
+      if (timer == null) {
+        timer = setInterval(loadCommandStat, 1000);
       }
-			if (item.BfDiffEndBf != 0 && item.BfFlushPagesSum > 0 ){
-				/* Average I/O time in msec*100 (because of editing) */
-				avgioMsec = ((item.BfDiffEndBf-item.BfDiffStartIO)*100) / (item.BfFlushPagesSum)
-			}
-      return avgioMsec
-  } 
-  checkUndefined(v:any) {
-    if (!v) {
-      return 0
+      loadCommandStat();
+    });
+    onBeforeUnmount(() => {
+      clearInterval(timer);
+      timer = null;
+    });
+    function loadCommandStat() {
+      if (!db || db == null) {
+        return;
+      }
+      db.bfStats().then((response) => {
+        if (!response) {
+          return;
+        }
+        bufferflush.value = response;
+        data.value = [];
+        //console.log("RESPONSE: "+JSON.stringify(response));
+        response.LStat.forEach((l)=>{
+          data.value.push(l.FlushPagesSum);
+        });
+      });
     }
-    return v
-  }
-  checkUndefinedIndex(v:any,index:number) {
-    if (!v) {
-      return 0
+    function formatBytes(bytes, decimals = 2) {
+      if (bytes === 0) return "0 Bytes";
+
+      const k = 1024;
+      const dm = decimals < 0 ? 0 : decimals;
+      const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
     }
-    return v[index]
-  }
-  countFlushes() {
-  	let c = (0)
-    if (!this.$data.bufferflush.BfFlushCounter) {
-      return 0
+    function avgioMsec(item) {
+      var avgioMsec = 0;
+      if (!item.BfDiffEndBf || !item.BfFlushPagesSum) {
+        return 0;
+      }
+      if (item.BfDiffEndBf != 0 && item.BfFlushPagesSum > 0) {
+        /* Average I/O time in msec*100 (because of editing) */
+        avgioMsec =
+          ((item.BfDiffEndBf - item.BfDiffStartIO) * 100) /
+          item.BfFlushPagesSum;
+      }
+      return avgioMsec;
     }
-	 this.$data.bufferflush.BfFlushCounter.foreach((element:number,index:number) => {
-		  if (index != 6) {
-			  c += element
-		  }     
-   });
-  }
-}
+    function checkUndefined(v) {
+      if (!v) {
+        return 0;
+      }
+      return v;
+    }
+    function checkUndefinedIndex(v, index) {
+      if (!v) {
+        return 0;
+      }
+      return v[index];
+    }
+    function countFlushes() {
+      let c = 0;
+      if (!bufferflush.value.BfFlushCounter) {
+        return 0;
+      }
+      bufferflush.value.BfFlushCounter.foreach((element, index) => {
+        if (index != 6) {
+          c += element;
+        }
+      });
+      return c;
+    }
+    return {
+      avgioMsec,
+      checkUndefined,
+      checkUndefinedIndex,
+      countFlushes,
+      formatBytes,
+      tableMetadata,
+      bufferflush,
+      lineChartProps,
+      lineChartRef,
+      imgData,
+    };
+  },
+});
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

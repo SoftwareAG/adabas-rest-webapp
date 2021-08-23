@@ -25,7 +25,7 @@
         <b-container fluid>
           <b-row
             ><b-col>
-              This page provide Adabas database nucleus log/output.
+              This page provides the Adabas REST server log output.
             </b-col></b-row
           >
           <b-row

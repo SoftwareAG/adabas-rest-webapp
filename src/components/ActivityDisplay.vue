@@ -25,8 +25,8 @@
         <b-container fluid>
           <b-row
             ><b-col>
-              This page provide the list of Adabas database activity to be
-              administrate through this Adabas RESTful server.
+              This page provides the activity of Adabas database to be
+              monitored through this Adabas RESTful server.
             </b-col>
           </b-row>
           <b-row

@@ -25,8 +25,8 @@
         <b-container fluid>
           <b-row
             ><b-col>
-              This page provide the list of Adabas database user queue to be
-              administrate through this Adabas RESTful server.
+              This page provides the list of Adabas database threads to be
+              monitored through this Adabas RESTful server.
             </b-col>
           </b-row>
           <b-row

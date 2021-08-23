@@ -22,7 +22,7 @@
     >
       <b-card-body>
         <p>
-          This page provide access to Adabas data using the Adabas Map
+          This page provides access to Adabas data using the Adabas Map
           technology used in Adabas Client for Java. Please select query
           information like search and field to be received.
         </p>

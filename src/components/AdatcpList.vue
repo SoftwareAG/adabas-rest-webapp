@@ -25,7 +25,7 @@
         <b-container fluid>
           <b-row>
             <b-col>
-              This page provide the list of Adabas database ADATCP connections.
+              This page provides the list of Adabas database ADATCP connections.
             </b-col>
           </b-row>
           <b-row>

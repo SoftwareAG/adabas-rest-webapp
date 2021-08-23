@@ -145,7 +145,7 @@ export class AdabasAdmin {
     }
     // Provide the current command statistics showing the number of call per Adabas command
     commandStats(): Promise<any> {
-        return triggerCallOnArray("/adabas/database/" + this.status.Dbid + "/commandstats", [""]);
+        return triggerCallOnArray("/adabas/database/" + this.status.Dbid + "/commandstats", ["CommandStats","Commands"]);
     }
     // Provide the current monitor I/O statistics and the number of call per second
     monitor(): Promise<any> {

@@ -25,7 +25,7 @@
         <b-container fluid>
           <b-row>
             <b-col>
-              This page provide the list of Adabas database High Watermark.
+              This page provides the statistics of Adabas database High Watermark.
             </b-col>
           </b-row>
           <b-row>

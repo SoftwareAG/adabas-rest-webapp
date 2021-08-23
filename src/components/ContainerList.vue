@@ -25,7 +25,7 @@
         <b-container fluid>
           <b-row
             ><b-col>
-              This page provide the list of Adabas database containers to be
+              This page provides the list of Adabas database containers to be
               administrate through this Adabas RESTful server.
             </b-col></b-row
           >

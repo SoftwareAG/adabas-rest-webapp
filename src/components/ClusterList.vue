@@ -24,7 +24,7 @@
         <b-container fluid>
           <b-row>
             <b-col>
-              This page provide access to the list of Adabas database cluster to
+              This page provides access to the list of nodes in an Adabas database cluster to
               be administrate through this Adabas RESTful server.
             </b-col>
           </b-row>
