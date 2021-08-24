@@ -242,6 +242,7 @@ import store from "../store/index";
 import StatusBar from "./StatusBar.vue";
 import CreateFile from "./CreateFile.vue";
 import Url from "./Url.vue";
+import { SearchDatabases } from '@/adabas/admin';
 
 @Component({
   components: {
@@ -315,7 +316,7 @@ export default class FilesList extends Vue {
     };
   }
   created(): void {
-    this.$data.db = store.getters.search(this.url);
+    this.$data.db = SearchDatabases(this.url);
     this.$data.timer = setInterval(this.loadFiles, 15000);
     if (this.$data.db === undefined) {
       store.dispatch("SYNC_ADMIN_DBS");
@@ -325,7 +326,7 @@ export default class FilesList extends Vue {
   }
   loadFiles(): void {
     if (this.$data.db === undefined) {
-      this.$data.db = store.getters.search(this.url);
+      this.$data.db = SearchDatabases(this.url);
       if (this.$data.db === undefined) {
         return;
       }

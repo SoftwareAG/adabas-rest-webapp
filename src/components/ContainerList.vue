@@ -61,6 +61,7 @@ import Sidebar from './Sidebar.vue';
 import store from '../store/index';
 import StatusBar from './StatusBar.vue';
 import Url from './Url.vue';
+import { SearchDatabases } from '@/adabas/admin';
 
 @Component({
   components: {
@@ -88,7 +89,7 @@ export default class DatabaseList extends Vue {
     };
   }
   created() {
-    const db = store.getters.search(this.url);
+    const db = SearchDatabases(this.url);
     db.containerList().then((response: any) => {
       this.$data.containers = response;
     });

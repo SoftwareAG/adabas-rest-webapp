@@ -73,11 +73,10 @@ import {
   onBeforeUnmount,
   defineComponent,
 } from "@vue/composition-api";
-import { shuffle } from "lodash";
 import Sidebar from "./Sidebar.vue";
 import StatusBar from "./StatusBar.vue";
 import Url from "./Url.vue";
-import store from "../store/index";
+import { SearchDatabases } from '@/adabas/admin';
 
 export default defineComponent({
   name: "CommandstatsData",
@@ -193,9 +192,9 @@ export default defineComponent({
       doughnutOptions,
     });
     onMounted(() => {
-      db = store.getters.search(props.url);
+      db = SearchDatabases(props.url);
       if (timer==null) {
-        timer = setInterval(loadCommandStat, 10000);
+        timer = setInterval(loadCommandStat, 1000);
       }
       loadCommandStat();
     });
@@ -205,6 +204,7 @@ export default defineComponent({
     });
     function loadCommandStat() {
       if (!db || db==null) {
+        db = SearchDatabases(props.url);
         return;
       }
       db.commandStats().then((response) => {

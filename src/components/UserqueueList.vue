@@ -231,6 +231,7 @@ import { BIconXCircle } from "bootstrap-vue";
 import StatusBar from "./StatusBar.vue";
 import Url from "./Url.vue";
 import store from "../store/index";
+import { SearchDatabases } from '@/adabas/admin';
 
 @Component({
   components: {
@@ -279,7 +280,7 @@ export default class UserqueueList extends Vue {
     };
   }
   created() {
-    this.$data.db = store.getters.search(this.url);
+    this.$data.db = SearchDatabases(this.url);
     this.$data.timer = setInterval(this.loadUserQueue, 5000);
     this.loadUserQueue();
   }

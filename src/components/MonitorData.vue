@@ -10,8 +10,8 @@
         <b-container fluid>
           <b-row>
             <b-col>
-              This page provides the statistics of Adabas database commands per second and I/O
-              to be monitored through this Adabas RESTful server.
+              This page provides the statistics of Adabas database commands per
+              second and I/O to be monitored through this Adabas RESTful server.
             </b-col>
           </b-row>
           <b-row>
@@ -67,11 +67,10 @@ import {
   onBeforeUnmount,
   defineComponent,
 } from "@vue/composition-api";
-import { shuffle } from "lodash";
 import Sidebar from "./Sidebar.vue";
 import StatusBar from "./StatusBar.vue";
 import Url from "./Url.vue";
-import store from "../store/index";
+import { SearchDatabases } from '@/adabas/admin';
 
 export default defineComponent({
   name: "MonitorData",
@@ -104,7 +103,7 @@ export default defineComponent({
     ]);
     let timer = null;
     let index = 1;
-    const labels = ref(["Commands"]);
+    const labels = ref(["Interval"]);
     const tableMetadata = {
       perPage: 20,
       currentPage: 1,
@@ -142,8 +141,8 @@ export default defineComponent({
           display: false,
         },
         title: {
-          display: false,
-          text: "Adabas calls",
+          display: true,
+          text: "Adabas calls and I/O",
         },
       },
     }));
@@ -151,7 +150,7 @@ export default defineComponent({
       labels: labels.value,
       datasets: [
         {
-          label: "Adabas calls",
+          label: "Adabas calls/sec",
           data: data.value,
           fill: false,
           borderColor: "rgb(75, 192, 192)",
@@ -159,28 +158,42 @@ export default defineComponent({
           yAxisID: "y",
         },
         {
-          label: "DATA I/O",
+          label: "DATA I/O sec",
           data: dataIO.value,
-          //borderColor: Utils.CHART_COLORS.red,
-          //backgroundColor: Utils.transparentize(Utils.CHART_COLORS.red, 0.5),
+          borderColor: "rgb(255, 204, 204)",
           stack: "stack 0",
           type: "bar",
           yAxisID: "y2",
         },
         {
-          label: "ASSO I/O",
+          label: "ASSO I/O sec",
           data: assoIO.value,
-          //borderColor: Utils.CHART_COLORS.red,
+          borderColor: "rgb(255, 204, 204)",
           //backgroundColor: Utils.transparentize(Utils.CHART_COLORS.red, 0.5),
           stack: "stack 1",
           type: "bar",
           yAxisID: "y2",
         },
         {
-          label: "WORK I/O",
+          label: "WORK I/O sec",
           data: workIO.value,
-          //borderColor: Utils.CHART_COLORS.red,
-          // backgroundColor: Utils.transparentize(Utils.CHART_COLORS.red, 0.5),
+           backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(255, 159, 64, 0.2)'
+            ],
+            borderColor: [
+                'rgba(255,99,132,1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+           // backgroundColor: Utils.transparentize(Utils.CHART_COLORS.red, 0.5),
           stack: "stack 3",
           type: "bar",
           yAxisID: "y2",
@@ -193,7 +206,7 @@ export default defineComponent({
       options,
     });
     onMounted(() => {
-      db = store.getters.search(props.url);
+      db = SearchDatabases(props.url);
       if (timer == null) {
         timer = setInterval(loadCommandStat, 1000);
       }
@@ -205,6 +218,7 @@ export default defineComponent({
     });
     function loadCommandStat() {
       if (!db || db == null) {
+        db = SearchDatabases(props.url);
         return;
       }
       db.monitor().then((response) => {

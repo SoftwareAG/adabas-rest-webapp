@@ -67,6 +67,7 @@ import Sidebar from './Sidebar.vue';
 import store from '../store/index';
 import StatusBar from './StatusBar.vue';
 import Url from './Url.vue';
+import { SearchDatabases } from '@/adabas/admin';
 
 @Component({
   components: {
@@ -94,7 +95,7 @@ export default class AdatcpList extends Vue {
     };
   }
   created(): void {
-    this.$data.db = store.getters.search(this.url);
+    this.$data.db = SearchDatabases(this.url);
     this.$data.timer = setInterval(this.queryParameters, 5000);
     this.queryParameters();
   }

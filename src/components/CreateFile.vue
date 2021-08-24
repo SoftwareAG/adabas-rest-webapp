@@ -95,6 +95,8 @@ import { config } from "../store/config";
 import { authHeader } from "../user/auth-header";
 import store from "../store/index";
 import { ModalPlugin } from "bootstrap-vue";
+import { SearchDatabases } from '@/adabas/admin';
+
 Vue.use(ModalPlugin);
 
 @Component
@@ -169,7 +171,7 @@ export default class CreateFile extends Vue {
     };
   }
   created() {
-    this.$data.db = store.getters.search(this.url);
+    this.$data.db = SearchDatabases(this.url);
 
     // Predefined
     let x = this.$data.createFile.fdtDefinition.split("%");

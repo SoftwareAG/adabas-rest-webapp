@@ -31,6 +31,26 @@ interface AdabasAdminType {
     Version: string;
 }
 
+const AdminCommands = [
+    { command: "actstats", path: ["Statistics"] },
+    { command: "bfstats", path: ["Statistics"] },
+    { command: "bpstats", path: ["Statistics"] },
+    { command: "commandqueue", path: ["CommandQueue", "Commands"] },
+    { command: "userqueue", path: ["UserQueue", "UserQueueEntry"] },
+    { command: "holdqueue", path: ["HoldQueue"] },
+    { command: "commandstats", path: ["CommandStats", "Commands"] },
+    { command: "monitor", path: ["Statistics"] },
+    { command: "container", path: ["Container", "ContainerList"] },
+    { command: "file", path: ["Files"] },
+    { command: "parameterinfo", path: ["ParameterInfo", "Parameter"] },
+    { command: "threadtable", path: ["Threads"] },
+    { command: "ucb", path: ["UCB", "UCB"] },
+    { command: "gcb", path: [] },
+    { command: "cluster", path: [] },
+    { command: "tcp", path: [] },
+]
+
+
 /* 
  * This typescript class AdabasAdmin handles all database administration
  * and monitor tasks provided by Adabas REST server.
@@ -98,23 +118,23 @@ export class AdabasAdmin {
     }
     // Provide the activity statistics
     activityStats(): Promise<any> {
-        return triggerCallOnParameter("/adabas/database/" + this.status.Dbid + "/actstats", "Statistics");
-    }
-    // Provide Bufferpool statistics values
-    bfStats(): Promise<any> {
-        return triggerCall("/adabas/database/" + this.status.Dbid + "/bfstats");
+        return triggerCallCommandParameter(this.status.Dbid, 0);
     }
     // Provide Bufferflush statistics values
+    bfStats(): Promise<any> {
+        return triggerCallCommandParameter(this.status.Dbid, 1);
+    }
+    // Provide Bufferpool statistics values
     bpStats(): Promise<any> {
-        return triggerCallOnParameter("/adabas/database/" + this.status.Dbid + "/bpstats", "Statistics");
+        return triggerCallCommandParameter(this.status.Dbid, 2);
     }
     // Provide the current active command queue entries
     commandQueue(): Promise<any> {
-        return triggerCallOnArray("/adabas/database/" + this.status.Dbid + "/commandqueue", ["CommandQueue", "Commands"]);
+        return triggerCallCommandArray(this.status.Dbid, 3);
     }
     // Provide the current active user queue entries
     userQueue(): Promise<any> {
-        return triggerCallOnArray("/adabas/database/" + this.status.Dbid + "/userqueue", ["UserQueue", "UserQueueEntry"]);
+        return triggerCallCommandArray(this.status.Dbid, 4);
     }
     userQueueDetails(uqid: number): Promise<any> {
         return triggerCallOnParameter("/adabas/database/" + this.status.Dbid + "/userqueue/" + uqid, "");
@@ -141,23 +161,23 @@ export class AdabasAdmin {
     }
     // Provide the current active hold queue entries
     holdQueue(): Promise<any> {
-        return triggerCallOnArray("/adabas/database/" + this.status.Dbid + "/holdqueue", ["HoldQueue"]);
+        return triggerCallCommandArray(this.status.Dbid, 5);
     }
     // Provide the current command statistics showing the number of call per Adabas command
     commandStats(): Promise<any> {
-        return triggerCallOnArray("/adabas/database/" + this.status.Dbid + "/commandstats", ["CommandStats","Commands"]);
+        return triggerCallCommandArray(this.status.Dbid, 6);
     }
     // Provide the current monitor I/O statistics and the number of call per second
     monitor(): Promise<any> {
-        return triggerCall("/adabas/database/" + this.status.Dbid + "/monitor");
+        return triggerCallCommandParameter(this.status.Dbid, 7);
     }
     // Provide the container list with size
     containerList(): Promise<any> {
-        return triggerCallOnArray("/adabas/database/" + this.status.Dbid + "/container", ["Container", "ContainerList"]);
+        return triggerCallCommandArray(this.status.Dbid, 8);
     }
     // Get the Adabas file list of the Adabas database
     fileList(): Promise<any> {
-        return triggerCallOnArray("/adabas/database/" + this.status.Dbid + "/file", ["Files"]);
+        return triggerCallCommandArray(this.status.Dbid, 9);
     }
     // Get detailed file information of a file in the Adabas database
     fileInfo(file: number): Promise<any> {
@@ -165,7 +185,7 @@ export class AdabasAdmin {
     }
     // Get detailed database detailed parameter information
     parameterInfo(): Promise<any> {
-        return triggerCallOnArray("/adabas/database/" + this.status.Dbid + "/parameterinfo", ["ParameterInfo", "Parameter"]);
+        return triggerCallCommandArray(this.status.Dbid, 10);
     }
     // Get parameters (without metadata) of the Adabas database
     async parameters(staticType: boolean): Promise<any> {
@@ -183,18 +203,23 @@ export class AdabasAdmin {
     }
     // Get the current thread table usage of the Adabas database
     threadTable(): Promise<any> {
-        return triggerCallOnArray("/adabas/database/" + this.status.Dbid + "/threadtable", ["Threads"]);
+        return triggerCallCommandArray(this.status.Dbid, 11);
     }
     // Get the list of utility communication block (UCB) which are pending
     ucb(): Promise<any> {
-        return triggerCallOnArray("/adabas/database/" + this.status.Dbid + "/ucb", ["UCB", "UCB"]);
+        return triggerCallCommandArray(this.status.Dbid, 12);
     }
     // Get the general control block information of the Adabas database
     information(): Promise<any> {
-        return triggerCall("/adabas/database/" + this.status.Dbid + "/gcb");
+        return triggerCallCommand(this.status.Dbid, 13);
     }
-    cluster(): Promise<any> {
-        return triggerCall("/adabas/database/" + this.status.Dbid + "/cluster");
+     // Retrieve current Adabas cluster information
+     cluster(): Promise<any> {
+        return triggerCallCommand(this.status.Dbid, 14);
+    }
+    // Retrieve current Adabas TCP connections
+    async adatcp(): Promise<any> {
+        return triggerCallCommand(this.status.Dbid, 15);
     }
     // Delete the given Adabas file number (all data is removed as well)!!
     async deleteFile(file: number): Promise<any> {
@@ -337,10 +362,6 @@ export class AdabasAdmin {
         return f;
     }
     // Retrieve current Adabas Highwater mark information
-    async adatcp(): Promise<any> {
-        return triggerCall("/adabas/database/" + this.status.Dbid + "/tcp");
-    }
-    // Retrieve current Adabas Highwater mark information
     async highWaterMark(): Promise<any> {
         const response = await triggerCall("/adabas/database/" + this.status.Dbid + "/hwm");
         const highwater = ([] as any[]);
@@ -384,6 +405,17 @@ export class AdabasAdmin {
     checkpoints(from: string, to: string): Promise<any> {
         return triggerCallOnArray("/adabas/database/" + this.status.Dbid + "/checkpoints?end_time=" + to + "&start_time=" + from, ["Checkpoints"]);
     }
+}
+
+async function triggerCallCommand(dbid: number, index: number): Promise<any> {
+    return triggerCall("/adabas/database/" + dbid + "/" + AdminCommands[index].command);
+}
+
+async function triggerCallCommandParameter(dbid: number, index: number): Promise<any> {
+    return triggerCallOnParameter("/adabas/database/" + dbid + "/" + AdminCommands[index].command, AdminCommands[index].path[0]);
+}
+async function triggerCallCommandArray(dbid: number, index: number): Promise<any> {
+    return triggerCallOnArray("/adabas/database/" + dbid + "/" + AdminCommands[index].command, AdminCommands[index].path);
 }
 
 // This is a trigger call wrapper methods which takes JSON parameter and generates
@@ -469,4 +501,17 @@ export async function loadCluster(): Promise<any> {
     const response = await triggerCall("/adabas/cluster");
     store.commit('SET_STATUS', 'OK');
     return response;
+}
+
+// Trigger a call loading all database and create a list of AdabasAdmin instances
+// per stored database.
+export function SearchDatabases(url: any): any {
+    if (!url) {
+        return url;
+    }
+    var db = store.getters.search(url);
+    if (!db && db != null) {
+        loadDatabases();
+    }
+    return db;
 }

@@ -184,6 +184,7 @@ import store from '../store/index';
 import StatusBar from './StatusBar.vue';
 import Url from './Url.vue';
 import axios from 'axios';
+import { SearchDatabases } from '@/adabas/admin';
 
 @Component({
   components: {
@@ -249,7 +250,7 @@ export default class ParameterList extends Vue {
   }
   created() {
     console.log('Create ...' + this.url);
-    this.$data.db = store.getters.search(this.url);
+    this.$data.db = SearchDatabases(this.url);
     this.queryParameters();
   }
   queryParameters(): void {
@@ -257,7 +258,7 @@ export default class ParameterList extends Vue {
       this.$data.db = store
         .dispatch('INIT_DATABASES')
         .then((dbs) => {
-          return store.getters.search(this.url);
+          return SearchDatabases(this.url);
         })
         .catch((err) => {
           console.log('ERR: ' + JSON.stringify(err));

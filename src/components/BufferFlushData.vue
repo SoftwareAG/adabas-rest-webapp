@@ -127,6 +127,7 @@ import Sidebar from "./Sidebar.vue";
 import store from "../store/index";
 import StatusBar from "./StatusBar.vue";
 import Url from "./Url.vue";
+import { SearchDatabases } from '@/adabas/admin';
 
 export default defineComponent({
   name: "BufferFlushData",
@@ -146,7 +147,7 @@ export default defineComponent({
     const bufferflush = ref({ LStat: [] });
     let timer = null;
     let index = 1;
-    const labels = ref(["Commands"]);
+    const labels = ref(["Interval"]);
     const tableMetadata = {
       perPage: 20,
       currentPage: 1,
@@ -203,7 +204,7 @@ export default defineComponent({
       options,
     });
     onMounted(() => {
-      db = store.getters.search(props.url);
+      db = SearchDatabases(props.url);
       if (timer == null) {
         timer = setInterval(loadCommandStat, 1000);
       }
@@ -215,6 +216,7 @@ export default defineComponent({
     });
     function loadCommandStat() {
       if (!db || db == null) {
+        db = SearchDatabases(props.url);
         return;
       }
       db.bfStats().then((response) => {

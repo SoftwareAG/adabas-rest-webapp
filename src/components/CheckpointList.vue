@@ -114,6 +114,7 @@ import Sidebar from "./Sidebar.vue";
 import store from "../store/index";
 import StatusBar from "./StatusBar.vue";
 import Url from "./Url.vue";
+import { SearchDatabases } from '@/adabas/admin';
 
 @Component({
   components: {
@@ -160,7 +161,7 @@ export default class CheckpointList extends Vue {
   updateCheckpoints(): void {
     let to = this.$data.to + "+" + this.$data.toTime;
     let from = this.$data.from + "+" + this.$data.fromTime;
-    const db = store.getters.search(this.url);
+    const db = SearchDatabases(this.url);
     db.checkpoints(from, to).then((response: any) => {
       this.$data.checkpoints = response;
     });

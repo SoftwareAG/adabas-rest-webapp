@@ -181,6 +181,7 @@ import Sidebar from './Sidebar.vue';
 import store from '../store/index';
 import StatusBar from './StatusBar.vue';
 import Url from './Url.vue';
+import { SearchDatabases } from '@/adabas/admin';
 
 @Component({
   components: {
@@ -200,7 +201,7 @@ export default class BufferPoolData extends Vue {
     };
   }
   created() {
-    const db = store.getters.search(this.url);
+    const db = SearchDatabases(this.url);
     db.bpStats().then((response: any) => {
       this.$data.bufferpool = response;
       this.$data.bufferPoolSize = this.searchValue('Size');

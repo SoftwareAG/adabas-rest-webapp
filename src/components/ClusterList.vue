@@ -15,6 +15,7 @@
 
 <template>
   <div class="clusterlist p-2">
+    <Sidebar :url="url" />
     <b-card
       header="Adabas cluster"
       border-variant="secondary"

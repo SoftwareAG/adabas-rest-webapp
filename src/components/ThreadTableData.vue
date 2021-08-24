@@ -57,6 +57,7 @@ import Sidebar from './Sidebar.vue';
 import StatusBar from './StatusBar.vue';
 import store from '../store/index';
 import Url from './Url.vue';
+import { SearchDatabases } from '@/adabas/admin';
 
 @Component({
   components: {
@@ -83,7 +84,7 @@ export default class ThreadTableData extends Vue {
     };
   }
   created(): void {
-    this.$data.db = store.getters.search(this.url);
+    this.$data.db = SearchDatabases(this.url);
     this.loadThreadTable();
     this.$data.timer = setInterval(this.loadThreadTable, 5000);
   }

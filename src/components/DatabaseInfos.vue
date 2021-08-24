@@ -59,6 +59,7 @@ import StatusBar from './StatusBar.vue';
 import store from '../store/index';
 import Url from './Url.vue';
 import ErrorModal from '@/components/ErrorModal.vue';
+import { SearchDatabases } from '@/adabas/admin';
 
 @Component({
   components: {
@@ -115,7 +116,7 @@ export default class ParameterList extends Vue {
     };
   }
   created() {
-    this.$data.db = store.getters.search(this.url);
+    this.$data.db = SearchDatabases(this.url);
     this.queryInformation();
   }
   queryInformation(): void {

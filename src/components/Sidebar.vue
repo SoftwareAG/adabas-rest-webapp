@@ -92,6 +92,7 @@
 import { Component, Prop, Vue } from "vue-property-decorator";
 import store from "../store/index";
 import { BIconChevronDoubleLeft } from "bootstrap-vue";
+import { SearchDatabases } from '@/adabas/admin';
 
 @Component({
   components: {
@@ -106,7 +107,7 @@ export default class Sidebar extends Vue {
     };
   }
   created() {
-    this.$data.db = store.getters.search(this.url);
+    this.$data.db = SearchDatabases(this.url);
   }
   active() {
     //    console.log("Active sidebar db: "+JSON.stringify(this.$data.db));
