@@ -225,7 +225,8 @@ export default defineComponent({
         if (!response) {
           return;
         }
-        //console.log("MONITOR:" + JSON.stringify(response));
+        // console.log("MONITOR:" + JSON.stringify(response));
+        response = response.Statistics;
         let monitorElement = {};
         if (last != null) {
           // console.log(response.ApioCnt + " " + last.ApioCnt);

@@ -122,7 +122,7 @@ export class AdabasAdmin {
     }
     // Provide Bufferflush statistics values
     bfStats(): Promise<any> {
-        return triggerCallCommandParameter(this.status.Dbid, 1);
+        return triggerCallCommand(this.status.Dbid, 1);
     }
     // Provide Bufferpool statistics values
     bpStats(): Promise<any> {
@@ -169,7 +169,7 @@ export class AdabasAdmin {
     }
     // Provide the current monitor I/O statistics and the number of call per second
     monitor(): Promise<any> {
-        return triggerCallCommandParameter(this.status.Dbid, 7);
+        return triggerCallCommand(this.status.Dbid, 7);
     }
     // Provide the container list with size
     containerList(): Promise<any> {

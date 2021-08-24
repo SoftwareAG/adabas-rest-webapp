@@ -223,10 +223,10 @@ export default defineComponent({
         if (!response) {
           return;
         }
-        bufferflush.value = response;
+        // console.log("RESPONSE: "+JSON.stringify(response));
+        bufferflush.value = response.Statistics;
         data.value = [];
-        //console.log("RESPONSE: "+JSON.stringify(response));
-        response.LStat.forEach((l)=>{
+        response.Statistics.LStat.forEach((l)=>{
           data.value.push(l.FlushPagesSum);
         });
       });
