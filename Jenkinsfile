@@ -32,23 +32,24 @@ node('docker-builds') {
        ]])
     }
     docker.image('node:14.15.4-alpine').inside {
-    withEnv([
+      withEnv([
         'HOME=.',
-    ]){
-      stage('Install') {
-        sh 'rm -f node_modules dist;npm install'
-      }
-      stage('Build') {
-        sh 'npm run build'
+      ]){
+        stage('Install') {
+          sh 'rm -f node_modules dist;npm install'
+        }
+        stage('Build') {
+          sh 'npm run build'
+        }
       }
     }
     stage('Upload') {
       withEnv([
          'ARTIFACTORY_PASS='+env.NEXUS_USER+':'+env.NEXUS_PASS,
       ]){
+        sh 'hostname;ls /usr/bin/'
         sh 'cd dist;tar cfvz adabas-rest-webApp.tar.gz *'
         sh 'curl -v -u '+ARTIFACTORY_PASS+' -X POST "'+Artifactory+'/service/rest/v1/components?repository=maven-sag" -F maven2.groupId=com.softwareag.common -F maven2.artifactId=adabas-rest-go -F maven2.version=$(VERSION) -F maven2.asset1=@dist/adabas-rest-webApp.tar.gz -F maven2.asset1.extension=tar.gz'
       }
     }
-  }
 }
