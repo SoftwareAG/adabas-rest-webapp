@@ -348,6 +348,7 @@ export default class DatabaseList extends Vue {
         { label: 'Name', key: 'status.Name' },
         { label: 'Strukture Level', key: 'status.StructureLevel' },
         { label: 'Version', key: 'status.Version' },
+        { label: 'Location', key: 'status.Location' },
         { label: 'Active', key: 'status.Active' },
         'action',
         'show_details',
