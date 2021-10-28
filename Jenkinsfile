@@ -26,7 +26,7 @@ node('docker-builds') {
        ], doGenerateSubmoduleConfigurations: false, extensions: [
          [$class: 'CleanBeforeCheckout', deleteUntrackedNestedRepositories: true]
        ], submoduleCfg: [], userRemoteConfigs: [
-         [url: gitRepository]
+         [credentialsId: 'github-sag-tkn', url: gitRepository]
        ]])
     }
     docker.image('node:14.15.4-alpine').inside {
