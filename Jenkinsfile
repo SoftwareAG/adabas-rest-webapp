@@ -2,12 +2,10 @@ def ARTIFACTORY_CREDENTIALS = credentials('adatestNexus')
 
 properties([parameters([
       string(
-        defaultValue: 'https://softwareag.com/Adabas/adabas-rest-webapp-mirror.git',
         name: 'gitRepository',
         trim: true
       ),
       string(
-        defaultValue: 'https://softwareag.com:8081',
         name: 'Artifactory',
         trim: true
       ),
@@ -49,7 +47,7 @@ node('docker-builds') {
       ]){
         sh 'hostname;ls /usr/bin/'
         sh 'cd dist;tar cfvz adabas-rest-webApp.tar.gz *'
-        sh 'curl -v -u '+ARTIFACTORY_PASS+' -X POST "'+Artifactory+'/service/rest/v1/components?repository=maven-sag" -F maven2.groupId=com.softwareag.common -F maven2.artifactId=adabas-rest-go -F maven2.version=$(VERSION) -F maven2.asset1=@dist/adabas-rest-webApp.tar.gz -F maven2.asset1.extension=tar.gz'
+        sh 'curl -v -u '+ARTIFACTORY_PASS+' -X POST "'+Artifactory+'/service/rest/v1/components?repository=maven-sag" -F maven2.groupId=com.softwareag.common -F maven2.artifactId=adabas-rest-webApp -F maven2.version=$(VERSION) -F maven2.asset1=@dist/adabas-rest-webApp.tar.gz -F maven2.asset1.extension=tar.gz'
       }
     }
 }
