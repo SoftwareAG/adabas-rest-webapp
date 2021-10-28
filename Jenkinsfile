@@ -22,7 +22,7 @@ node('docker-builds') {
     }
     stage('Checkout') {
        checkout([$class: 'GitSCM', branches: [
-         [name: '*/master']
+         [name: gitbranch]
        ], doGenerateSubmoduleConfigurations: false, extensions: [
          [$class: 'CleanBeforeCheckout', deleteUntrackedNestedRepositories: true]
        ], submoduleCfg: [], userRemoteConfigs: [
