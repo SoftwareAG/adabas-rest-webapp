@@ -1,4 +1,4 @@
-def ARTIFACTORY_CREDENTIALS = credentials('adatestNexus')
+def version = '7.1.0.0.' + currentBuild.number
 
 properties([parameters([
       string(
@@ -44,12 +44,10 @@ node('docker-builds') {
       }
     }
     stage('Upload') {
-      withEnv([
-         'ARTIFACTORY_PASS='+env.NEXUS_USER+':'+env.NEXUS_PASS,
-      ]){
-        sh 'hostname;ls /usr/bin/'
-        sh 'cd dist;tar cfvz adabas-rest-webApp.tar.gz *'
-        sh 'curl -v -u '+ARTIFACTORY_PASS+' -X POST "'+artifactory+'/service/rest/v1/components?repository=maven-sag" -F maven2.groupId=com.softwareag.common -F maven2.artifactId=adabas-rest-webApp -F maven2.version=$(VERSION) -F maven2.asset1=@dist/adabas-rest-webApp.tar.gz -F maven2.asset1.extension=tar.gz'
+      withCredentials([usernamePassword(credentialsId: 'adatestNexus', 
+          passwordVariable: 'NEXUS_PASS', usernameVariable: 'NEXUS_USER')]) {
+          sh 'cd dist;tar cfvz adabas-rest-webApp.tar.gz *'
+          sh 'curl -v -u '+env.NEXUS_USER+':'+env.NEXUS_PASS+' -X POST "'+artifactory+'/service/rest/v1/components?repository=maven-sag" -F maven2.groupId=com.softwareag.common -F maven2.artifactId=adabas-rest-webApp -F maven2.version='+version+' -F maven2.asset1=@dist/adabas-rest-webApp.tar.gz -F maven2.asset1.extension=tar.gz'
       }
     }
 }

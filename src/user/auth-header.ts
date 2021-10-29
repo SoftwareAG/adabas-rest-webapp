@@ -34,7 +34,7 @@ export function authHeader(content: string) {
     if (user.token) {
         const bearerToken = 'Bearer ' + user.token;
 
-        axios.defaults.headers.common.Authorization = authHeader;
+        axios.defaults.headers.common.Authorization = response.Authorization;
         response.Authorization = bearerToken;
         return response;
     }
