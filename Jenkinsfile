@@ -2,12 +2,12 @@ def ARTIFACTORY_CREDENTIALS = credentials('adatestNexus')
 
 properties([parameters([
       string(
-        defaultValue: params.gitRepository ?:'your default value'
+        defaultValue: params.gitRepository ?:'your default value',
         name: 'gitRepository',
         trim: true
       ),
       string(
-        defaultValue: params.artifactory ?:'your default value'
+        defaultValue: params.artifactory ?:'your default value',
         name: 'artifactory',
         trim: true
       ),
