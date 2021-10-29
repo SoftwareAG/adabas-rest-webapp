@@ -157,12 +157,12 @@ export default class DatabaseClusterList extends Vue {
           store.commit("SET_STATUS", JSON.stringify(error.response));
           if (error.response.status == 401 || error.response.status == 403) {
             userService.logout();
-            location.reload(true);
+            location.reload();
           }
         } else {
           store.commit("SET_STATUS", JSON.stringify(error));
           userService.logout();
-          location.reload(true);
+          location.reload();
         }
         // throw error;
       });

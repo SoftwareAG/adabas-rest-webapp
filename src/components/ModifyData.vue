@@ -319,7 +319,7 @@ export default class ModifyData extends Vue {
         if (error.response) {
           if (error.response.status == 401 || error.response.status == 403) {
             userService.logout();
-            location.reload(true);
+            location.reload();
           }
         }
         throw error;

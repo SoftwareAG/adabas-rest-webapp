@@ -120,7 +120,7 @@ export default Vue.extend({
   methods: {
     logout() {
       userService.logout();
-      location.reload(true);
+      location.reload();
     },
   },
 });

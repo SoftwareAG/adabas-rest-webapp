@@ -84,10 +84,10 @@ export class AdabasAdmin {
                 .get(config.Url() + "/adabas/database/" + this.status.Dbid + "/nuclog", getConfig);
             return response.data.Log.Log;
         }
-        catch (error) {
+        catch (error:any) {
             if (error.response.status == 401 || error.response.status == 403) {
                 userService.logout();
-                location.reload(true);
+                location.reload();
             }
             throw error;
         }
@@ -106,11 +106,11 @@ export class AdabasAdmin {
             return axios
                 .delete(config.Url() + "/adabas/database/" + this.status.Dbid, getConfig);
         }
-        catch (error) {
+        catch (error: any) {
             if (error.response) {
                 if (error.response.status == 401 || error.response.status == 403) {
                     userService.logout();
-                    location.reload(true);
+                    location.reload();
                 }
             }
             throw error;
@@ -149,11 +149,11 @@ export class AdabasAdmin {
             return axios
                 .delete(config.Url() + "/adabas/database/" + this.status.Dbid + "/userqueue/" + uqid, getConfig);
         }
-        catch (error) {
+        catch (error: any) {
             if (error.response) {
                 if (error.response.status == 401 || error.response.status == 403) {
                     userService.logout();
-                    location.reload(true);
+                    location.reload();
                 }
             }
             throw error;
@@ -231,11 +231,11 @@ export class AdabasAdmin {
             return axios
                 .delete(config.Url() + "/adabas/database/" + this.status.Dbid + "/file/" + file, getConfig);
         }
-        catch (error) {
+        catch (error: any) {
             if (error.response) {
                 if (error.response.status == 401 || error.response.status == 403) {
                     userService.logout();
-                    location.reload(true);
+                    location.reload();
                 }
             }
             throw error;
@@ -253,7 +253,7 @@ export class AdabasAdmin {
                 if (error.response) {
                     if (error.response.status == 401 || error.response.status == 403) {
                         userService.logout();
-                        location.reload(true);
+                        location.reload();
                     }
                 }
                 throw error;
@@ -274,7 +274,7 @@ export class AdabasAdmin {
                 if (error.response) {
                     if (error.response.status == 401 || error.response.status == 403) {
                         userService.logout();
-                        location.reload(true);
+                        location.reload();
                     }
                 }
                 throw error;
@@ -295,7 +295,7 @@ export class AdabasAdmin {
                 if (error.response) {
                     if (error.response.status == 401 || error.response.status == 403) {
                         userService.logout();
-                        location.reload(true);
+                        location.reload();
                     }
                 }
                 throw error;
@@ -316,7 +316,7 @@ export class AdabasAdmin {
                 if (error.response) {
                     if (error.response.status == 401 || error.response.status == 403) {
                         userService.logout();
-                        location.reload(true);
+                        location.reload();
                     }
                 }
                 throw error;
@@ -332,11 +332,11 @@ export class AdabasAdmin {
             return axios
                 .put(config.Url() + "/adabas/database/" + this.status.Dbid + "/file/" + file + ":refresh", {}, getConfig);
         }
-        catch (error) {
+        catch (error: any) {
             if (error.response) {
                 if (error.response.status == 401 || error.response.status == 403) {
                     userService.logout();
-                    location.reload(true);
+                    location.reload();
                 }
             }
             throw error;
@@ -469,12 +469,12 @@ export async function triggerCall(resource: string): Promise<any> {
         store.commit('SET_RESPONSE', JSON.stringify(response));
         return response.data;
     }
-    catch (error) {
+    catch (error: any) {
         if (error.response) {
             store.commit('SET_STATUS', JSON.stringify(error.response));
             if (error.response.status == 401 || error.response.status == 403) {
                 userService.logout();
-                location.reload(true);
+                location.reload();
             }
         }
         else {

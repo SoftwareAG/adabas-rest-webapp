@@ -65,11 +65,11 @@ export class AdabasConfig {
             return axios
                 .delete(config.Url() + "/adabas/config/module/installation?installation=" + l, getConfig);
         }
-        catch (error) {
+        catch (error: any) {
             if (error.response) {
                 if (error.response.status == 401 || error.response.status == 403) {
                     userService.logout();
-                    location.reload(true);
+                    location.reload();
                 }
             }
             throw error;
@@ -84,11 +84,11 @@ export class AdabasConfig {
             return axios
                 .delete(config.Url() + "/adabas/config/mapping&url=" + l + "&file=" + f, getConfig);
         }
-        catch (error) {
+        catch (error: any) {
             if (error.response) {
                 if (error.response.status == 401 || error.response.status == 403) {
                     userService.logout();
-                    location.reload(true);
+                    location.reload();
                 }
             }
             throw error;
@@ -103,11 +103,11 @@ export class AdabasConfig {
             return axios
                 .delete(config.Url() + "/adabas/config/classic&url=" + l, getConfig);
         }
-        catch (error) {
+        catch (error: any) {
             if (error.response) {
                 if (error.response.status == 401 || error.response.status == 403) {
                     userService.logout();
-                    location.reload(true);
+                    location.reload();
                 }
             }
             throw error;
@@ -122,11 +122,11 @@ export class AdabasConfig {
             return axios
                 .delete(config.Url() + "/adabas/config/module/directories&url=" + l, getConfig);
         }
-        catch (error) {
+        catch (error: any) {
             if (error.response) {
                 if (error.response.status == 401 || error.response.status == 403) {
                     userService.logout();
-                    location.reload(true);
+                    location.reload();
                 }
             }
             throw error;
@@ -141,11 +141,11 @@ export class AdabasConfig {
             return axios
                 .delete(config.Url() + "/adabas/config/metric&url=" + l, getConfig);
         }
-        catch (error) {
+        catch (error: any) {
             if (error.response) {
                 if (error.response.status == 401 || error.response.status == 403) {
                     userService.logout();
-                    location.reload(true);
+                    location.reload();
                 }
             }
             throw error;
@@ -160,11 +160,11 @@ export class AdabasConfig {
             return axios
                 .put(config.Url() + "/adabas/config", c, getConfig);
         }
-        catch (error) {
+        catch (error: any) {
             if (error.response) {
                 if (error.response.status == 401 || error.response.status == 403) {
                     userService.logout();
-                    location.reload(true);
+                    location.reload();
                 }
             }
             throw error;
@@ -179,11 +179,11 @@ export class AdabasConfig {
             return axios
                 .post(config.Url() + "/adabas/config", getConfig);
         }
-        catch (error) {
+        catch (error: any) {
             if (error.response) {
                 if (error.response.status == 401 || error.response.status == 403) {
                     userService.logout();
-                    location.reload(true);
+                    location.reload();
                 }
             }
             throw error;

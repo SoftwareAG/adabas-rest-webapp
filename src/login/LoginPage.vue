@@ -172,7 +172,7 @@ export default {
         };
         localStorage.setItem("user", JSON.stringify(user));
         router.push(this.returnUrl);
-        location.reload(true);
+        location.reload();
         return;
       }
       this.loading = true;
@@ -180,7 +180,7 @@ export default {
         (user) => {
           router.push(this.returnUrl);
           if (this.returnUrl === "/") {
-            location.reload(true);
+            location.reload();
           }
         },
         (error) => {

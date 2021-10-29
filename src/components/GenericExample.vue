@@ -109,7 +109,7 @@ export default class GenericExample extends Vue {
           store.commit('SET_STATUS', JSON.stringify(error.response));
           if (error.response.status == 401 || error.response.status == 403) {
             userService.logout();
-            location.reload(true);
+            location.reload();
           }
         } else {
           store.commit('SET_STATUS', JSON.stringify(error));

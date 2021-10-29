@@ -33,8 +33,8 @@
     "@vue/cli-service": "~4.5.15",
     "sass": "^1.26.11",
     "sass-loader": "^10.0.2",
-    "typescript": "~4.3.5",
-    "vue-cli-plugin-bootstrap-vue": "~0.8.1",
+    "typescript": "~4.4.4",
+    "vue-cli-plugin-bootstrap-vue": "~0.8.2",
     "vue-template-compiler": "^2.6.14"
   }
 }

@@ -115,7 +115,7 @@ export default new Vuex.Store({
             if (response.status === 401 || response.status === 404) {
               // auto logout if 401 response returned from api
               userService.logout();
-              location.reload(true);
+              location.reload();
             }
 
             const error = response.statusText;
@@ -141,7 +141,7 @@ export default new Vuex.Store({
           if ((error.response.status == 401) || (error.response.status == 403)) {
             userService.logout();
             if (router.currentRoute.name !== 'login') {
-              location.reload(true);
+              location.reload();
             }
           }
           return error
@@ -161,7 +161,7 @@ export default new Vuex.Store({
             if (response.status === 401 || response.status === 404) {
               // auto logout if 401 response returned from api
               userService.logout();
-              location.reload(true);
+              location.reload();
             }
 
             const error = response.statusText;
@@ -187,7 +187,7 @@ export default new Vuex.Store({
           if ((error.response.status == 401) || (error.response.status == 403)) {
             userService.logout();
             if (router.currentRoute.name !== 'login') {
-              location.reload(true);
+              location.reload();
             }
           }
           return error
@@ -235,7 +235,7 @@ export default new Vuex.Store({
           if ((error.response.status == 401) || (error.response.status == 403)) {
             userService.logout();
             if (router.currentRoute.name !== 'login') {
-              location.reload(true);
+              location.reload();
             }
           }
           return error;
@@ -262,7 +262,7 @@ export default new Vuex.Store({
           if ((error.response.status == 401) || (error.response.status == 403)) {
             userService.logout();
             if (router.currentRoute.name !== 'login') {
-              location.reload(true);
+              location.reload();
             }
           }
           return error;
@@ -286,7 +286,7 @@ export default new Vuex.Store({
           if ((error.response.status == 401) || (error.response.status == 403)) {
             userService.logout();
             if (router.currentRoute.name !== 'login') {
-              location.reload(true);
+              location.reload();
             }
           }
           return error;
@@ -311,7 +311,7 @@ export default new Vuex.Store({
           context.commit('CLEAR_RECORDS', null);
           if ((error.response.status == 401) || (error.response.status == 403)) {
             userService.logout();
-            location.reload(true);
+            location.reload();
           }
           if (error.response.data.Error) {
             context.commit('SET_STATUS', JSON.stringify(error.response.data.Error));

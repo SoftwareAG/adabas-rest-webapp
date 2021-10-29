@@ -64,11 +64,11 @@ export class JobAdmin {
             return axios
                 .put(config.Url() + "/scheduler/job/" + this.status.Job.Name, {}, getConfig);
         }
-        catch (error) {
+        catch (error: any) {
             if (error.response) {
                 if (error.response.status == 401 || error.response.status == 403) {
                     userService.logout();
-                    location.reload(true);
+                    location.reload();
                 }
             }
             throw error;
@@ -86,11 +86,11 @@ export class JobAdmin {
             return axios
                 .delete(config.Url() + "/scheduler/job/" + this.status.Job.Name, getConfig);
         }
-        catch (error) {
+        catch (error: any) {
             if (error.response) {
                 if (error.response.status == 401 || error.response.status == 403) {
                     userService.logout();
-                    location.reload(true);
+                    location.reload();
                 }
             }
             throw error;
@@ -106,11 +106,11 @@ export class JobAdmin {
             return axios
                 .delete(config.Url() + "/scheduler/job/" + this.status.Job.Name + "/result/" + id, getConfig);
         }
-        catch (error) {
+        catch (error: any) {
             if (error.response) {
                 if (error.response.status == 401 || error.response.status == 403) {
                     userService.logout();
-                    location.reload(true);
+                    location.reload();
                 }
             }
             throw error;
@@ -129,11 +129,11 @@ export async function insertJob(job: any): Promise<any> {
         return axios
             .post(config.Url() + "/scheduler/job/", job, getConfig);
     }
-    catch (error) {
+    catch (error: any) {
         if (error.response) {
             if (error.response.status == 401 || error.response.status == 403) {
                 userService.logout();
-                location.reload(true);
+                location.reload();
             }
         }
         throw error;

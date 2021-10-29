@@ -23,8 +23,8 @@ import App from '../App.vue'
 export function Url() {
    // console.log('Mode:' + process.env.NODE_ENV);
    if (process.env.NODE_ENV === 'development') {
-      return 'https://localhost:61091'; // GO
-      // return 'http://localhost:8130'; // GO
+      // return 'https://localhost:61091'; // GO
+      return 'http://localhost:8130'; // GO
       // return 'http://localhost:8091'; // Java
    }
    return '.';
