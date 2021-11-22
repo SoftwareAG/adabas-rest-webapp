@@ -69,7 +69,7 @@ import { SearchDatabases } from '@/adabas/admin';
     ErrorModal,
   },
 })
-export default class ParameterList extends Vue {
+export default class DatabaseInfos extends Vue {
   @Prop(String) readonly url: string | undefined;
   @Provide() type = 'static';
   data() {

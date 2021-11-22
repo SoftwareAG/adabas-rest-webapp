@@ -35,7 +35,7 @@
             <b-col> <CreateDatabase /> </b-col>
           </b-row>
           <b-row
-            ><b-col sm="4">
+            ><b-col sm="10">
               <b-pagination
                 v-model="currentPage"
                 :total-rows="databases.length"
@@ -43,7 +43,11 @@
                 aria-controls="my-table"
               ></b-pagination>
             </b-col>
-            <b-col sm="8">
+         <b-col sm="2">
+              <b-form-select v-model="perPage" :options="perPageOptions" size="sm" class="mt-3"></b-form-select>
+          </b-col></b-row>
+          <b-row>
+            <b-col>
               <b-form-group
                 label="Filter"
                 label-cols-sm="3"
@@ -238,6 +242,13 @@
                       </b-dropdown-item>
                       <b-dropdown-item
                         size="sm"
+                        :to="'/plogstat/' + row.item.status.Dbid"
+                        class="mr-2"
+                      >
+                        PLOG
+                      </b-dropdown-item>
+                      <b-dropdown-item
+                        size="sm"
                         :to="'/threadtable/' + row.item.status.Dbid"
                         class="mr-2"
                       >
@@ -341,6 +352,7 @@ export default class DatabaseList extends Vue {
     return {
       perPage: 10,
       currentPage: 1,
+      perPageOptions: [10,20,50,100],
       filter: '',
       filterOn: [],
       fields: [
@@ -425,6 +437,7 @@ export default class DatabaseList extends Vue {
           'SET_STATUS',
           'Error calling' + operation + ':' + JSON.stringify(error),
         );
+        router.push('/nuclog/' + dbid.dbid());
       });
   }
   /*

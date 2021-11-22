@@ -14,52 +14,47 @@
  * limitations under the License.-->
 
 <template>
-  <div class="threadtabledata p-2">
+  <div class="databaseplogstats p-2">
     <Sidebar :url="url" />
     <b-card
-      :header="'Adabas Database thread table for database ' + url"
+      :header="'Adabas Database PLOG information for database ' + url"
       border-variant="secondary"
       header-border-variant="secondary"
     >
       <b-card-body>
-        <b-container fluid>
-          <b-row
-            ><b-col>
-              This page provides the list of Adabas database threads to be
-              monitored through this Adabas RESTful server.
+        <b-row>
+          <b-col>
+        <Url url="/adabas/database" />
+          </b-col>
+            <b-col class="text-right">
+              <b-button v-on:click="forceFEOF()">Force EOF</b-button>
             </b-col>
-          </b-row>
-          <b-row
-            ><b-col>
-              <Url url="/adabas/database" />
-            </b-col>
-          </b-row>
-          <b-row
-            ><b-col>
-              <b-table
-                striped
-                bordered
-                hover
-                small
-                :items="threads"
-                :fields="fields"
-              >
-                 <template v-slot:cell(CommandCount)="row">
-                  {{new Intl.NumberFormat().format(row.item.CommandCount)}}
-                </template>
-             </b-table>
-            </b-col> </b-row></b-container></b-card-body
-    ></b-card>
+        </b-row>
+        <b-row>
+        <b-table
+          class="w-100 p-3"
+          striped
+          bordered
+          hover
+          small
+          :items="infos"
+          :fields="fields"
+        ></b-table>
+        </b-row>
+      </b-card-body>
+    </b-card>
     <StatusBar />
+    <ErrorModal />
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Provide, Vue } from 'vue-property-decorator';
 import Sidebar from './Sidebar.vue';
 import StatusBar from './StatusBar.vue';
 import store from '../store/index';
 import Url from './Url.vue';
+import ErrorModal from '@/components/ErrorModal.vue';
 import { SearchDatabases } from '@/adabas/admin';
 
 @Component({
@@ -67,39 +62,39 @@ import { SearchDatabases } from '@/adabas/admin';
     Sidebar,
     StatusBar,
     Url,
+    ErrorModal,
   },
 })
-export default class ThreadTableData extends Vue {
+export default class DatabasePlogStat extends Vue {
   @Prop(String) readonly url: string | undefined;
+  @Provide() type = 'static';
   data() {
     return {
-      fields: [
-        'Thread',
-        'APU',
-        'CommandCode',
-        'CommandCount',
-        'File',
-        'Status',
-      ],
-      threads: [],
-      timer: '',
       db: null,
+      infos: [],
+      fields: ['Name', 'Value'],
     };
   }
-  created(): void {
+  created() {
     this.$data.db = SearchDatabases(this.url);
-    this.loadThreadTable();
-    this.$data.timer = setInterval(this.loadThreadTable, 5000);
+    this.queryInformation();
   }
-  loadThreadTable(): void {
-    if (this.$data.db && this.$data.db != null) {
-      this.$data.db.threadTable().then((response: any) => {
-        this.$data.threads = response;
+  queryInformation(): void {
+    this.$data.db.plogstats().then((response: any) => {
+      console.log(JSON.stringify(response));
+      this.$data.information = response.PLOG;
+      this.$data.DatabaseInfos = [];
+      Object.entries(response["PLOG"]).forEach((key: any) => {
+        this.$data.infos.push({ Name: key[0], Value: key[1] });
       });
-    }
+    });
   }
-  beforeDestroy(): void {
-    clearInterval(this.$data.timer);
+  getTypeItem(newtype: any): void {
+    console.log('Get type item ' + newtype);
+    this.queryInformation();
+  }
+  forceFEOF(newtype: any): void {
+    this.$data.db.feofplog();
   }
 }
 </script>

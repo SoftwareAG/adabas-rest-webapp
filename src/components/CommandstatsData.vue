@@ -18,6 +18,9 @@
             <b-col>
               <Url :url="'/adabas/database/' + url + '/cmdstats'" />
             </b-col>
+            <b-col class="text-right">
+              <b-button v-on:click="resetCommands()">Reset</b-button>
+            </b-col>
           </b-row>
           <b-row>
             <b-col sm="4" class="h-100 p-1">
@@ -202,6 +205,13 @@ export default defineComponent({
       clearInterval(timer);
       timer = null;
     });
+    function resetCommands() {
+     if (!db || db==null) {
+        db = SearchDatabases(props.url);
+        return;
+      }
+      db.commandStatsReset();
+    };
     function loadCommandStat() {
       if (!db || db==null) {
         db = SearchDatabases(props.url);
@@ -230,6 +240,7 @@ export default defineComponent({
       doughnutChartRef,
       barChartProps,
       barChartRef,
+      resetCommands,
       imgData,
     };
   },

@@ -43,6 +43,7 @@ import Bufferflush from '../admin_views/Bufferflush.vue'
 import Commandstats from '../admin_views/Commandstats.vue'
 import Monitor from '../admin_views/Monitor.vue'
 import DatabaseInfo from '../admin_views/DatabaseInfo.vue'
+import DatabasePlog from '../admin_views/DatabasePlog.vue'
 import Cluster from '../admin_views/Cluster.vue'
 import DatabaseCluster from '../admin_views/DatabaseCluster.vue'
 import Jobs from '../admin_views/Jobs.vue'
@@ -105,6 +106,11 @@ export default new Router({
       path: '/information/:url',
       name: 'Database information',
       component: DatabaseInfo, props: true
+    },
+    {
+      path: '/plogstat/:url',
+      name: 'Database PLOG statistics',
+      component: DatabasePlog, props: true
     },
     {
       path: '/parameters/:url',

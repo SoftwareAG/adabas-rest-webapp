@@ -40,15 +40,17 @@
             </b-col>
           </b-row>
           <b-row
-            ><b-col sm="4">
+            ><b-col sm="10">
               <b-pagination
                 v-model="currentPage"
                 :total-rows="files.length"
                 :per-page="perPage"
                 aria-controls="my-table"
               ></b-pagination>
-            </b-col>
-            <b-col sm="8">
+            </b-col><b-col sm="2">
+              <b-form-select v-model="perPage" :options="perPageOptions" size="sm" class="mt-3"></b-form-select>
+          </b-col></b-row><b-row>
+            <b-col sm="12">
               <b-form-group
                 label="Filter"
                 label-cols-sm="3"
@@ -90,6 +92,9 @@
                 :items="files"
                 :fields="fields"
               >
+                 <template v-slot:cell(RecordCount)="row">
+                  {{new Intl.NumberFormat().format(row.item.RecordCount)}}
+                </template>
                 <template v-slot:cell(action)="row">
                   <b-dropdown
                     size="sm"
@@ -261,8 +266,9 @@ export default class FilesList extends Vue {
       newNr: 500,
       currentFile: 0,
       perPage: 10,
+      perPageOptions: [10,20,50,100],
       currentPage: 1,
-      fields: ["FileNr", "Name", "RecordCount", "IsLob", "IsLobRoot", "action"],
+      fields: ["FileNr", "Name","Type", "RecordCount", "IsLob", "IsLobRoot", "action"],
       files: [],
       filter: "",
       filterOn: ["FileNr", "Name"],

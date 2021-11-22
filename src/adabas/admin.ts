@@ -48,6 +48,7 @@ const AdminCommands = [
     { command: "gcb", path: [] },
     { command: "cluster", path: [] },
     { command: "tcp", path: [] },
+    { command: "plog", path: ["PLOG"] },
 ]
 
 
@@ -167,6 +168,25 @@ export class AdabasAdmin {
     commandStats(): Promise<any> {
         return triggerCallCommandArray(this.status.Dbid, 6);
     }
+    commandStatsReset(): Promise<any> {
+        const getConfig = {
+            headers: authHeader("application/json"),
+            useCredentails: true,
+        };
+        try {
+            return axios
+                .delete(config.Url() + "/adabas/database/" + this.status.Dbid+"/commandstats", getConfig);
+        }
+        catch (error: any) {
+            if (error.response) {
+                if (error.response.status == 401 || error.response.status == 403) {
+                    userService.logout();
+                    location.reload();
+                }
+            }
+            throw error;
+        }
+    }
     // Provide the current monitor I/O statistics and the number of call per second
     monitor(): Promise<any> {
         return triggerCallCommand(this.status.Dbid, 7);
@@ -221,7 +241,23 @@ export class AdabasAdmin {
     async adatcp(): Promise<any> {
         return triggerCallCommand(this.status.Dbid, 15);
     }
-    // Delete the given Adabas file number (all data is removed as well)!!
+    // Get the PLOG stats of the Adabas database
+    plogstats(): Promise<any> {
+        return triggerCallCommand(this.status.Dbid, 16);
+    }
+    feofplog(): Promise<any> {
+        const getConfig = {
+            headers: authHeader("application/json"),
+            useCredentails: true,
+        };
+        return axios
+            .post(config.Url() + "/adabas/database/"
+                + this.status.Dbid + ":feofplog", {}, getConfig)
+            .catch((error: any) => {
+                console.log("Error "+JSON.stringify(error));
+            });
+    }
+   // Delete the given Adabas file number (all data is removed as well)!!
     async deleteFile(file: number): Promise<any> {
         const getConfig = {
             headers: authHeader("application/json"),
@@ -400,6 +436,26 @@ export class AdabasAdmin {
                 }
             });
         return highwater;
+    }
+    // Retrieve current Adabas Highwater mark information
+    async highWaterMarkReset(): Promise<any> {
+        const getConfig = {
+            headers: authHeader("application/json"),
+            useCredentails: true,
+        };
+        try {
+            return axios
+                .delete(config.Url() + "/adabas/database/" + this.status.Dbid+"/hwm", getConfig);
+        }
+        catch (error: any) {
+            if (error.response) {
+                if (error.response.status == 401 || error.response.status == 403) {
+                    userService.logout();
+                    location.reload();
+                }
+            }
+            throw error;
+        }
     }
     // Retrieve a list of checkpoints in the database in an given time frame
     checkpoints(from: string, to: string): Promise<any> {

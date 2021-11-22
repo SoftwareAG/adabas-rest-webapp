@@ -32,6 +32,9 @@
             <b-col>
               <Url url="/adabas/database" />
             </b-col>
+            <b-col class="text-right">
+              <b-button v-on:click="resetHWM()">Reset</b-button>
+            </b-col>
           </b-row>
           <b-row>
             <b-col>
@@ -45,6 +48,15 @@
               >
                 <template v-slot:cell(Time)="row">
                   {{new Date(row.item.Time).toUTCString()}}
+                </template>
+                <template v-slot:cell(size)="row">
+                  {{new Intl.NumberFormat().format(row.item.Size)}}
+                </template>
+                <template v-slot:cell(high)="row">
+                  {{new Intl.NumberFormat().format(row.item.High)}}
+                </template>
+                <template v-slot:cell(inuse)="row">
+                  {{new Intl.NumberFormat().format(row.item.InUse)}}
                 </template>
                 <template v-slot:cell(statistics)="row">
                   <b-progress
@@ -107,6 +119,9 @@ export default class ParameterList extends Vue {
     this.$data.db.highWaterMark().then((response: any) => {
       this.$data.highwater = response;
     });
+  }
+  resetHWM(): void {
+    this.$data.db.highWaterMarkReset();
   }
   beforeDestroy(): void {
     clearInterval(this.$data.timer);

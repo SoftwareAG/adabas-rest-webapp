@@ -27,14 +27,28 @@
           start long running Adabas utility tasks.
         </p>
         <CreateJob msg="ABC" />
-        <Url url="/adabas/database" />
+        <Url url="/scheduler/jobs" />
+        <b-row>
+          <b-col sm="5">
+              <b-pagination
+                v-model="currentPage"
+                :total-rows="jobs.length"
+                :per-page="perPage"
+                aria-controls="my-table"
+              ></b-pagination></b-col>
+          <b-col sm="1">
+              <b-form-select v-model="perPage" :options="perPageOptions" size="sm" class="mt-3"></b-form-select>
+          </b-col></b-row>
         <b-row>
           <b-col sm="6">
             <b-table
+              id="my-table"
               class="w-100 p-3"
               striped
               bordered
               hover
+              :per-page="perPage"
+              :current-page="currentPage"
               small
               selectable
               select-mode="single"
@@ -167,6 +181,9 @@ export default class JobList extends Vue {
   data() {
     const maxDate = new Date();
     return {
+      perPage: 10,
+      currentPage: 1,
+      perPageOptions: [10,20,50,100],
       selectedJob: null,
       selectedExecution: null,
       fields: [
