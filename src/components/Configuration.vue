@@ -404,9 +404,31 @@
                         ></b-icon-x-circle>
                       </div> </template></b-table></b-col></b-row
             ></b-container>
-          </b-tab> </b-tabs></b-card-body
+          </b-tab> 
+          <b-tab title="Job Store">
+            <b-container>
+              <b-row class="my-1">
+                <b-col sm="2">Job store file location:</b-col>
+                <b-col sm="9">
+                  <b-form-input v-model="config.JobStore.config" /> </b-col
+              ></b-row>
+              <b-row class="my-1">
+                <b-col sm="2">Job store database:</b-col>
+                <b-col sm="9">
+                  <b-form-input v-model="config.JobStore.Database.url" /> </b-col
+              ></b-row>
+              <b-row class="my-1">
+                <b-col sm="2">Job store file:</b-col>
+                <b-col sm="9">
+                  <b-form-input v-model="config.JobStore.Database.file" /> </b-col
+              ></b-row>
+            </b-container>
+          </b-tab>
+          </b-tabs></b-card-body
       ><b-button @click="adaptChanges()" variant="outline-primary"
         >Apply</b-button
+      ><b-button @click="storeChanges()" variant="outline-primary"
+        >Store</b-button
       ></b-card
     >
   </div>
@@ -682,6 +704,12 @@ export default class Configuration extends Vue {
   adaptChanges() {
     console.log('Apply changes');
     return this.$data.c.putConfig(this.$data.config).then((result: any) => {
+      console.log('Applying ...');
+    });
+  }
+  storeChanges() {
+    console.log('Store changes');
+    return this.$data.c.store().then((result: any) => {
       console.log('Storing ...');
     });
   }

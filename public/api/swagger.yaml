@@ -15,7 +15,7 @@ info:
   license:
     name: Software AG
     url: "http://documentation.softwareag.com/legal/general_license.txt"
-  version: 7.1.0.0.20032021
+  version: 7.1.0.0.28082021
 host: "localhost:8130"
 basePath: /
 paths:
@@ -609,6 +609,64 @@ paths:
           description: Authorization error
         "403":
           description: Role access denied
+  /adabas/config/jobs:
+    get:
+      security:
+        - BasicAuth: []
+        - hasRole: [admin]
+      description: Read  Adabas job configuration section
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      tags:
+        - Environment
+      operationId: getJobsConfig
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: "#/definitions/JobStore"
+        "400":
+          description: Database error evaluating list
+          schema:
+            $ref: "#/definitions/Error"
+        "401":
+          description: Authorization error
+        "403":
+          description: Role access denied
+    put:
+      security:
+        - BasicAuth: []
+        - hasRole: [admin]
+      description: Set the ADADATADIR
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      tags:
+        - Environment
+      parameters:
+        - name: jobConfig
+          in: body
+          schema:
+            $ref: "#/definitions/JobStore"
+      operationId: setJobsConfig
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Database configuration setting fail
+          schema:
+            $ref: "#/definitions/Error"
+        "401":
+          description: Authorization error
+        "403":
+          description: Role access denied
   /adabas/license:
     post:
       security:
@@ -1039,7 +1097,27 @@ paths:
           description: Database name
           name: name
           in: query
-          required: true
+          required: false
+        - type: boolean
+          description: Enable or disable eventing
+          name: eventing
+          in: query
+          required: false
+        - type: integer
+          description: Set Write Limit
+          name: writelimit
+          in: query
+          required: false
+        - type: boolean
+          description: Lock database
+          name: lock
+          in: query
+          required: false
+        - type: boolean
+          description: External database backup (true=prepare false=continue)
+          name: externalbackup
+          in: query
+          required: false
       responses:
         "200":
           description: "Successful response, with database status"
@@ -1070,7 +1148,7 @@ paths:
         - application/xml
       tags:
         - OnlineOffline
-      operationId: databaseOperations
+      operationId: databasePostOperations
       parameters:
         - type: string
           description: >-
@@ -1186,6 +1264,70 @@ paths:
           description: "Successful response, with Adabas Buffer Pool statistics"
           schema:
             $ref: "#/definitions/BufferPoolStats"
+        "400":
+          description: Database not available/unknown
+          schema:
+            $ref: "#/definitions/Error"
+        "401":
+          description: Authorization error
+        "403":
+          description: Role access denied
+  "/adabas/database/{dbid}/bfstats":
+    get:
+      security:
+        - BasicAuth: []
+        - hasRole: [admin]
+      description: Retrieve Adabas buffer flush statistics
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      tags:
+        - Online
+      operationId: getDatabaseBfStats
+      parameters:
+        - $ref: "#/parameters/targetParam"
+      responses:
+        "200":
+          description: "Successful response, with Adabas Buffer Flush statistics"
+          schema:
+            $ref: "#/definitions/BufferFlushStats"
+        "400":
+          description: Database not available/unknown
+          schema:
+            $ref: "#/definitions/Error"
+        "401":
+          description: Authorization error
+        "403":
+          description: Role access denied
+  "/adabas/database/{dbid}/monitor":
+    get:
+      security:
+        - BasicAuth: []
+        - hasRole: [admin]
+      description: Retrieve Adabas monitor statistics
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      tags:
+        - Online
+      operationId: getDatabaseMonitor
+      parameters:
+        - $ref: "#/parameters/targetParam"
+      responses:
+        "200":
+          description: "Successful response, with Adabas monitor statistics"
+          schema:
+            $ref: "#/definitions/AdaMonStats"
+        "202":
+          description: "Successful response, with Adabas monitor statistics list"
+          schema:
+            $ref: "#/definitions/AdaMonStatsList"
         "400":
           description: Database not available/unknown
           schema:
@@ -1354,6 +1496,35 @@ paths:
           description: "Successful response, with Adabas command statistics"
           schema:
             $ref: "#/definitions/CommandStats"
+        "400":
+          description: Database not available/unknown
+          schema:
+            $ref: "#/definitions/Error"
+        "401":
+          description: Authorization error
+        "403":
+          description: Role access denied
+    delete:
+      security:
+        - BasicAuth: []
+        - hasRole: [admin]
+      description: Reset Adabas command statistics
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      tags:
+        - Online
+      operationId: resetCommandStats
+      parameters:
+        - $ref: "#/parameters/targetParam"
+      responses:
+        "200":
+          description: "Successful response, with reseted Adabas command statistics"
+          schema:
+            $ref: "#/definitions/StatusResponse"
         "400":
           description: Database not available/unknown
           schema:
@@ -1651,7 +1822,7 @@ paths:
         - type: string
           description: >-
             File number and operation separated by ':' Possible operations are -
-            refresh renumber
+            refresh renumber rename addlob
           name: file_operation
           in: path
           required: true
@@ -1937,6 +2108,35 @@ paths:
           description: Authorization error
         "403":
           description: Role access denied
+    delete:
+      security:
+        - BasicAuth: []
+        - hasRole: [admin]
+      description: Reset Adabas high water statistics
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      tags:
+        - Online
+      operationId: resetHighWaterMarks
+      parameters:
+        - $ref: "#/parameters/targetParam"
+      responses:
+        "200":
+          description: "Successful response, with reseted Adabas Highwater Mark statistics"
+          schema:
+            $ref: "#/definitions/StatusResponse"
+        "400":
+          description: Database not available/unknown
+          schema:
+            $ref: "#/definitions/Error"
+        "401":
+          description: Authorization error
+        "403":
+          description: Role access denied
   "/adabas/database/{dbid}/nuclog":
     get:
       security:
@@ -1953,7 +2153,7 @@ paths:
         - OnlineOffline
       operationId: getDatabaseNucleusLog
       parameters:
-        - $ref: "#/parameters/dbidParam"
+        - $ref: "#/parameters/targetParam"
       responses:
         "200":
           description: "Successful response, with Adabas Nucleus Log"
@@ -2246,6 +2446,36 @@ paths:
           description: Authorization error
         "403":
           description: Role access denied
+  "/adabas/database/{dbid}/plog":
+    get:
+      security:
+        - BasicAuth: []
+        - hasRole: [admin]
+      description: Retrieve the current PLOG statistcs of Adabas PLOG
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      tags:
+        - Online
+      operationId: getPLOGStats
+      parameters:
+        - $ref: "#/parameters/targetParam"
+      responses:
+        "200":
+          description: "Successful response, with status of Adabas PLOG."
+          schema:
+            $ref: "#/definitions/PLOG"
+        "400":
+          description: Database error evaluating TCP list
+          schema:
+            $ref: "#/definitions/Error"
+        "401":
+          description: Authorization error
+        "403":
+          description: Role access denied
   "/adabas/database/{dbid}/tcp":
     get:
       security:
@@ -2270,6 +2500,43 @@ paths:
             $ref: "#/definitions/TCP"
         "400":
           description: Database error evaluating TCP list
+          schema:
+            $ref: "#/definitions/Error"
+        "401":
+          description: Authorization error
+        "403":
+          description: Role access denied
+    delete:
+      security:
+        - BasicAuth: []
+        - hasRole: [admin]
+      description: Disconnect ADATCP connection in the database with the given dbid
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      tags:
+        - Online
+      operationId: disconnectTCP
+      parameters:
+        - $ref: "#/parameters/dbidParam"
+        - type: integer
+          description: First entry of ADATCP connection ID
+          name: start_id
+          in: query
+        - type: integer
+          description: Last entry of ADATCP connection ID
+          name: end_id
+          in: query
+      responses:
+        "200":
+          description: "Successful response, when database ADATCP connections init is send"
+          schema:
+            $ref: "#/definitions/StatusResponse"
+        "400":
+          description: Database not available
           schema:
             $ref: "#/definitions/Error"
         "401":
@@ -2425,11 +2692,6 @@ paths:
           name: queueid
           in: path
           required: true
-        - type: number
-          description: If range of users this is the user id end User Queue entry
-          name: toqueueid
-          in: query
-          required: false
         - $ref: "#/parameters/rfc3339Param"
       responses:
         "200":
@@ -2465,6 +2727,11 @@ paths:
           name: queueid
           in: path
           required: true
+        - type: number
+          description: If range of users this is the user id end User Queue entry
+          name: toqueueid
+          in: query
+          required: false
       responses:
         "200":
           description: "Successful response, a User queue is stopped"
@@ -2888,7 +3155,10 @@ paths:
       operationId: browse
       parameters:
         - $ref: "#/parameters/locationParam"
-        - $ref: "#/parameters/fileReferenceParam"
+        - type: string
+          description: Identifier of the file location
+          name: file
+          in: query
       responses:
         "200":
           description: "Successful response, with list of known databases."
@@ -3051,6 +3321,61 @@ paths:
           description: Role access denied
         "404":
           description: Location not available/unknown
+          schema:
+            $ref: "#/definitions/Error"
+  "/video/db/{dbid}/{file}/{isn}/{field}":
+    get:
+      security:
+        - BasicAuth: []
+        - hasRole: [user]
+      description: Retrieves a video stream of a specific ISN of a Map definition
+      produces:
+        - video/mp4
+        - video/mov
+      tags:
+        - ClassicDatabaseAccess
+      operationId: getVideo
+      parameters:
+        - $ref: "#/parameters/targetParam"
+        - type: string
+          description: Remote node reference
+          name: reference
+          in: query
+        - type: integer
+          description: Database file
+          name: file
+          in: path
+          required: true
+        - type: integer
+          description: Specific ISN number
+          name: isn
+          in: path
+          required: true
+        - type: string
+          description: Specific the field to be streamed
+          name: field
+          in: path
+          required: true
+        - type: string
+          description: Specific the field containing the mimetype
+          name: mimetypeField
+          in: query
+          required: true
+        - $ref: "#/parameters/searchParam"
+      responses:
+        "200":
+          description: "Successful response, retrieve the field information."
+          schema:
+            type: file
+        "401":
+          description: Unauthorized access
+          headers:
+            WWW_Authenticate:
+              type: string
+        "403":
+          description: The requested data was forbidden.
+        "404":
+          description: Could not read the specified field.
           schema:
             $ref: "#/definitions/Error"
   /rest/db:
@@ -4430,6 +4755,44 @@ paths:
           description: Database not available/unknown
           schema:
             $ref: "#/definitions/Error"
+  "/scheduler/job/{jobName}/full":
+    get:
+      security:
+        - BasicAuth: []
+        - hasRole: [admin]
+      description: Retrieves a full job definition
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      tags:
+        - Scheduler
+      operationId: getJobFullInfo
+      parameters:
+        - type: string
+          description: Job Name to be requested
+          name: jobName
+          in: path
+          required: true
+      responses:
+        "200":
+          description: "Successful response, with list of known databases."
+          schema:
+            $ref: "#/definitions/JobFull"
+        "400":
+          description: Environment evaluation error
+          schema:
+            $ref: "#/definitions/Error"
+        "401":
+          description: Authorization error
+        "403":
+          description: Role access denied
+        "404":
+          description: Database not available/unknown
+          schema:
+            $ref: "#/definitions/Error"
   "/scheduler/jobs/{jobName}/result":
     get:
       security:
@@ -4819,6 +5182,92 @@ paths:
           description: Database not available/unknown
           schema:
             $ref: "#/definitions/Error"
+  /redirect:
+    get:
+      security:
+        - BasicAuth: []
+        - hasRole: [admin]
+      description: redirect to remote cluster entry
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      tags:
+        - Proxy
+      operationId: getProxyRedirect
+      parameters:
+        - name: name
+          in: query
+          description: destination node
+          required: true
+          type: string
+        - name: x
+          in: query
+          description: destination path
+          required: true
+          type: string
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Database error evaluating list
+        "401":
+          description: Authorization error
+        "403":
+          description: Role access denied
+    put:
+      security:
+        - BasicAuth: []
+        - hasRole: [admin]
+      description: Store configuration
+      consumes:
+        - application/json
+        - application/xml
+        - text/plain
+      produces:
+        - application/json
+        - application/xml
+      tags:
+        - Environment
+      operationId: putProxyRedirect
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Database error evaluating list
+          schema:
+            $ref: "#/definitions/Error"
+        "401":
+          description: Authorization error
+        "403":
+          description: Role access denied
+    post:
+      security:
+        - BasicAuth: []
+        - hasRole: [admin]
+      description: Store configuration
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      tags:
+        - Environment
+      operationId: postProxyRedirect
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Database error evaluating list
+          schema:
+            $ref: "#/definitions/Error"
+        "401":
+          description: Authorization error
+        "403":
+          description: Role access denied
 definitions:
   Server:
     type: object
@@ -4985,6 +5434,8 @@ definitions:
         type: object
       adabas:
         type: object
+      passThrough:
+        type: object
   ActivityStats:
     type: object
     properties:
@@ -5106,6 +5557,282 @@ definitions:
           Size:
             type: integer
           WriteLimit:
+            type: integer
+  BufferFlushStats:
+    type: object
+    properties:
+      Statistics:
+        type: object
+        properties:
+          Flags:
+            type: integer
+          LStat:
+            type: array
+            items:
+              $ref: "#/definitions/BfStats"
+          Mem:
+            type: integer
+          FlushCounter:
+            type: array
+            items:
+              type: integer
+  BfStats:
+    type: object
+    properties:
+      StartTime:
+        type: string
+        format: date-time
+      DiffStartIO:
+        type: integer
+      DiffSyncFiles:
+        type: integer
+      DiffEndBf:
+        type: integer
+      NoEntries:
+        type: integer
+      FlushPagesSum:
+        type: integer
+      WriteLimit:
+        type: integer
+      ListEntryLockReject:
+        type: integer
+      Flag:
+        type: integer
+      SyncTimeIndex:
+        type: integer
+      SyncTimeData:
+        type: integer
+      SyncTimeJournal:
+        type: integer
+      NumBlocks:
+        type: integer
+      NumIOs:
+        type: integer
+  AdaMonStatsList:
+    type: object
+    properties:
+      Statistics:
+        type: array
+        items: 
+          $ref: "#/definitions/AdaMonEntry"
+  AdaMonEntry:
+    type: object
+    properties:
+      Target:
+        type: string
+      Monitor:
+        $ref: "#/definitions/AdaMonStats"
+  AdaMonStats:
+    type: object
+    properties:
+      Statistics:
+        type: object
+        properties:
+          AcmdCnt:
+            type: integer
+            x-omitempty: false
+          RcmdCnt:
+            type: integer
+            x-omitempty: false
+          RrecCnt:
+            type: integer
+            x-omitempty: false
+          RrepCnt:
+            type: integer
+            x-omitempty: false
+          AaioCnt:
+            type: integer
+            x-omitempty: false
+          AdioCnt:
+            type: integer
+            x-omitempty: false
+          AwioCnt:
+            type: integer
+            x-omitempty: false
+          AtioCnt:
+            type: integer
+            x-omitempty: false
+          ApioCnt:
+            type: integer
+            x-omitempty: false
+          AthbCnt:
+            type: integer
+            x-omitempty: false
+          AbflCnt:
+            type: integer
+            x-omitempty: false
+          AbfrCnt:
+            type: array
+            items:
+              type: integer
+          AlbpCnt:
+            type: integer
+            x-omitempty: false
+          ApbpCnt:
+            type: integer
+            x-omitempty: false
+          Atiming:
+              $ref: "#/definitions/IOTimings"
+  IOTimings:
+    type: object
+    properties:
+        Active:
+          type: boolean
+        Adcnt:
+          type: integer
+        Adsumdur:
+          type: integer
+        Arcnt:
+          type: array
+          items:
+            type: integer
+        Artmax:
+          type: array
+          items:
+            type: integer
+        Arsumdur:
+          type: array
+          items:
+            type: integer
+        Awcnt:
+          type: array
+          items:
+            type: integer
+        Awtmax:
+          type: array
+          items:
+            type: integer
+        Awsumdur:
+          type: array
+          items:
+            type: integer
+        Drcnt:
+          type: array
+          items:
+            type: integer
+        Drtmax:
+          type: array
+          items:
+            type: integer
+        Drsumdur:
+          type: array
+          items:
+            type: integer
+        Dwcnt:
+          type: array
+          items:
+            type: integer
+        Dwtmax:
+          type: array
+          items:
+            type: integer
+        Dwsumdur:
+          type: array
+          items:
+            type: integer
+        Wocnt:
+          type: integer
+        Wosumdur:
+          type: integer
+        Wrcnt:
+          type: integer
+        Wrtmax:
+          type: integer
+        Wrsumdur:
+          type: integer
+        Wwcnt:
+          type: integer
+        Wwtmax:
+          type: integer
+        Wwsumdur:
+          type: integer
+        Plcnt:
+          type: integer
+        Plsumdur:
+          type: integer
+        Prcnt:
+          type: array
+          items:
+            type: integer
+        Prtmax:
+          type: array
+          items:
+            type: integer
+        Prsumdur:
+          type: array
+          items:
+            type: integer
+        Pwcnt:
+          type: array
+          items:
+            type: integer
+        Pwtmax:
+          type: array
+          items:
+            type: integer
+        Pwsumdur:
+          type: array
+          items:
+            type: integer
+        Ixcnt:
+          type: integer
+        Ixsumdur:
+          type: integer
+        Sxcnt:
+          type: integer
+        Sxsumdur:
+          type: integer
+        Socnt:
+          type: integer
+        Sosumdur:
+          type: integer
+        Srcnt:
+          type: array
+          items:
+            type: integer
+        Srtmax:
+          type: array
+          items:
+            type: integer
+        Srsumdur:
+          type: array
+          items:
+            type: integer
+        Swcnt:
+          type: array
+          items:
+            type: integer
+        Swtmax:
+          type: array
+          items:
+            type: integer
+        Swsumdur:
+          type: array
+          items:
+            type: integer
+        Trcnt:
+          type: array
+          items:
+            type: integer
+        Trtmax:
+          type: array
+          items:
+            type: integer
+        Trsumdur:
+          type: array
+          items:
+            type: integer
+        Twcnt:
+          type: array
+          items:
+            type: integer
+        Twtmax:
+          type: array
+          items:
+            type: integer
+        Twsumdur:
+          type: array
+          items:
             type: integer
   Checkpoint:
     type: object
@@ -5352,6 +6079,8 @@ definitions:
         type: integer
       Version:
         type: string
+      Location:
+        type: string
   DatabaseStatus:
     properties:
       Database:
@@ -5422,6 +6151,8 @@ definitions:
       Id:
         type: integer
       Log:
+        type: string
+      StartedBy:
         type: string
       Scheduled:
         type: string
@@ -5734,8 +6465,10 @@ definitions:
     properties:
       Flags:
         type: string
+        x-omitempty: false
       Format:
         type: string
+        x-omitempty: false
       Length:
         type: integer
         x-omitempty: false
@@ -5749,6 +6482,18 @@ definitions:
           $ref: "#/definitions/SubField"
         x-nullable: true
       Type:
+        type: string
+      CollationAttribute:
+        type: string
+      CollationParent:
+        type: string
+      ForeignField:
+        type: string
+      ReferentialFile:
+        type: integer
+      PrimaryField:
+        type: string
+      ReferentialType:
         type: string
   File:
     type: object
@@ -6007,6 +6752,11 @@ definitions:
         $ref: "#/definitions/Job"
       Status:
         type: string
+  JobFull:
+    type: object
+    properties:
+      Job:
+        $ref: "#/definitions/JobDefinition"
   JobDescription:
     type: object
     properties:
@@ -6494,6 +7244,39 @@ definitions:
         type: array
         items:
           type: integer
+  PLOG:
+    type: object
+    properties:
+      PLOG:
+        type: object
+        properties:
+          Time:
+            type: string
+            format: date-time
+          Duration:
+            type: string
+          UsedSpace:
+            type: integer
+          TotalSpace:
+            type: integer
+          SectorSize:
+            type: integer
+          LogNr:
+            type: integer
+          EnvironmentCount:
+            type: integer
+          ExtensionNr:
+            type: integer
+          DeviceCount:
+            type: integer
+          Flags:
+            type: string
+          UEX2:
+            type: string
+          Device:
+            type: string
+          CurrentName:
+            type: string
   TCP:
     type: object
     properties:
@@ -6765,10 +7548,9 @@ definitions:
           Content:
             type: string
       JobStore:
-        type: object
-        properties:
-          config:
-            type: string
+        $ref: "#/definitions/JobStore"
+      Cluster:
+        $ref: "#/definitions/ClusterConfig"
       Mapping:
         type: object
         properties:
@@ -6823,6 +7605,13 @@ definitions:
             type: array
             items:
               $ref: "#/definitions/DatabaseConfig"
+  JobStore:
+    type: object
+    properties:
+      config:
+        type: string
+      Database:
+        $ref: "#/definitions/DatabaseConfig"
   DatabaseConfig:
     type: object
     properties:
@@ -6836,6 +7625,20 @@ definitions:
       deleted:
         type: boolean
         default: false
+  ClusterConfig:
+    type: object
+    properties:
+      Nodes:
+        type: array
+        items:
+          type: object
+          properties:           
+            Name:
+              type: string
+            Web:
+              type: string
+            Group:
+              type: string
   Cluster:
     type: object
     properties:

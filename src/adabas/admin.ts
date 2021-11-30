@@ -241,6 +241,26 @@ export class AdabasAdmin {
     async adatcp(): Promise<any> {
         return triggerCallCommand(this.status.Dbid, 15);
     }
+    // Stop the user queue entry
+    closeConnection(tcpid: number) {
+        const getConfig = {
+            headers: authHeader("application/json"),
+            useCredentails: true,
+        };
+        try {
+            return axios
+                .delete(config.Url() + "/adabas/database/" + this.status.Dbid + "/tcp?start_id=" + tcpid, getConfig);
+        }
+        catch (error: any) {
+            if (error.response) {
+                if (error.response.status == 401 || error.response.status == 403) {
+                    userService.logout();
+                    location.reload();
+                }
+            }
+            throw error;
+        }
+    }
     // Get the PLOG stats of the Adabas database
     plogstats(): Promise<any> {
         return triggerCallCommand(this.status.Dbid, 16);

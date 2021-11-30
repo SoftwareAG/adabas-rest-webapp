@@ -177,7 +177,7 @@ export class AdabasConfig {
         };
         try {
             return axios
-                .post(config.Url() + "/adabas/config", getConfig);
+                .post(config.Url() + "/adabas/config","", getConfig);
         }
         catch (error: any) {
             if (error.response) {

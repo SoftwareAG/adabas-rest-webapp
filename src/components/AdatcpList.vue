@@ -52,6 +52,15 @@
                     class="mb-3"
                   ></b-progress>
                 </template>
+                <template v-slot:cell(stop)="row">
+                  <div class="mx-auto text-center">
+                    <b-icon-x-circle
+                      scale="2"
+                      variant="danger"
+                      v-on:click="stopConnection(row.item)"
+                    ></b-icon-x-circle>
+                  </div>
+                </template>
               </b-table>
             </b-col>
           </b-row>
@@ -68,11 +77,13 @@ import store from '../store/index';
 import StatusBar from './StatusBar.vue';
 import Url from './Url.vue';
 import { SearchDatabases } from '@/adabas/admin';
+import { BIconXCircle } from "bootstrap-vue";
 
 @Component({
   components: {
     StatusBar,
     Sidebar,
+    BIconXCircle,
     Url,
   },
 })
@@ -89,6 +100,7 @@ export default class AdatcpList extends Vue {
         'RemoteIP',
         'RemoteUser',
         'RemotePort',
+        'Stop',
       ],
       adatcp: [] as any[],
       timer: '',
@@ -106,6 +118,10 @@ export default class AdatcpList extends Vue {
   }
   beforeDestroy(): void {
     clearInterval(this.$data.timer);
+  }
+  stopConnection(tcp: any): void {
+    console.log("TCP: "+JSON.stringify(tcp));
+    this.$data.db.closeConnection(tcp.ID);
   }
 }
 </script>
