@@ -474,6 +474,13 @@ export default class Configuration extends Vue {
           Directories: [],
           Installation: [],
         },
+        JobStore: {
+          config: '',
+          Database: {
+            url: '',
+            file: 0
+          }
+        },
         Server: {
           Content: './static',
           LogLocation: { directory: 'logs/server.log', level: 'info' },
@@ -511,6 +518,13 @@ export default class Configuration extends Vue {
   created(): void {
     this.$data.c = new AdabasConfig();
     this.$data.c.read().then((c: any) => {
+      if (!c.JobStore) {
+        c.JobStore = {config:"",Database:{url:"",file:0}}
+      } else {
+        if (!c.JobStore.Database) {
+          c.JobStore.Database = {url:"",file:0}
+        }
+      }
       this.$data.config = c;
       this.$data.originConfig = JSON.parse(JSON.stringify(c));
     });
