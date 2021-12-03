@@ -362,6 +362,34 @@ paths:
           description: Authorization error
         "403":
           description: Role access denied
+  /adabas/config/cluster:
+    get:
+      security:
+        - BasicAuth: []
+        - hasRole: [admin]
+      description: Get the cluster node entries
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      tags:
+        - Environment
+      operationId: getServerConfigCluster
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: "#/definitions/ClusterConfig"
+        "400":
+          description: Database error evaluating list
+          schema:
+            $ref: "#/definitions/Error"
+        "401":
+          description: Authorization error
+        "403":
+          description: Role access denied
   /adabas/config/classic:
     get:
       security:
@@ -6673,14 +6701,15 @@ definitions:
     properties:
       high:
         type: integer
-        x-isnullable: false
+        x-nullable: false
       inuse:
         type: integer
-        x-isnullable: false
+        x-nullable: false
       time:
         type: string
         format: date-time
-        x-isnullable: false
+        x-nullable: true
+        x-omitempty: false
   HoldQueue:
     type: object
     properties:
