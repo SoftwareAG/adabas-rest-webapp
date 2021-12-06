@@ -32,7 +32,7 @@
             </b-col>
           </b-row>
           <b-row
-            ><b-col> Select Path</b-col
+            ><b-col sm="2"> Select Path:</b-col
             ><b-col>
               <b-form-select
                 v-model="selected"
@@ -40,58 +40,96 @@
               ></b-form-select> </b-col
           ></b-row>
           <b-row
-            ><b-col> Upload</b-col
-            ><b-col>
+            ><b-col sm="2"> Upload file to remote:</b-col
+            ><b-col sm="8">
               <b-form-file
                 v-model="uploadFile"
                 :state="Boolean(uploadFile)"
                 placeholder="Choose a file or drop it here..."
                 drop-placeholder="Drop file here..."
               ></b-form-file></b-col
-            ><b-col> <b-button>Upload</b-button> </b-col></b-row
+            ><b-col sm="2">
+              <b-button @click="upload()">Upload</b-button>
+            </b-col></b-row
           >
-          <b-table
-            striped
-            bordered
-            hover
-            small
-            selectable
-            select-mode="single"
-            @row-selected="onRowSelected"
-            :items="files"
-            :fields="fields"
-            primary-key="Name"
-            sort-by="Type"
-            :sort-compare="sortingChanged"
-          >
-            <template v-slot:cell(Size)="row">
-              <div v-if="row.item.Type != 'Directory'">
-                {{ new Intl.NumberFormat().format(row.item.Size) }}
-              </div>
-            </template>
-            <template v-slot:cell(Modified)="row">
-              <div v-if="row.item.Modified">
-                {{ new Date(row.item.Modified).toUTCString() }}
-              </div>
-            </template>
-            <template v-slot:cell(Operation)="row">
-              <b-button-group class="mr-1">
-                <b-button class="mr-1"
-                  v-if="row.item.Type != 'Directory' && row.item.Size < 100000"
-                  @click="show(row.item.Name)"
-                  v-b-modal.modal-xl
-                  variant="primary"
-                  >Show</b-button
-                >
-                <b-button class="mr-1"
-                  v-if="row.item.Type != 'Directory'"
-                  @click="download(row.item.Name)"
-                  variant="primary"
-                  >Download</b-button
-                ></b-button-group
+          <b-row
+            ><b-col sm="10">
+              <b-pagination
+                v-model="currentPage"
+                :total-rows="files.length"
+                :per-page="perPage"
+                aria-controls="my-table"
+              ></b-pagination>
+            </b-col>
+            <b-col sm="2">
+              <b-form-select
+                v-model="perPage"
+                :options="perPageOptions"
+                size="sm"
+                class="mt-3"
+              ></b-form-select> </b-col
+          ></b-row>
+          <b-row
+            ><b-col>
+              <b-table
+                striped
+                bordered
+                hover
+                :per-page="perPage"
+                :current-page="currentPage"
+                small
+                selectable
+                select-mode="single"
+                @row-selected="onRowSelected"
+                :items="files"
+                :fields="fields"
+                primary-key="Name"
+                sort-by="Type"
+                :sort-compare="sortingChanged"
               >
-            </template>
-          </b-table>
+                <template v-slot:cell(Size)="row">
+                  <div v-if="row.item.Type != 'Directory'">
+                    {{ new Intl.NumberFormat().format(row.item.Size) }}
+                  </div>
+                </template>
+                <template v-slot:cell(Modified)="row">
+                  <div v-if="row.item.Modified">
+                    {{ new Date(row.item.Modified).toUTCString() }}
+                  </div>
+                </template>
+                <template v-slot:cell(Operation)="row">
+                  <b-button-group class="mr-1">
+                    <b-button
+                      class="mr-1"
+                      v-if="
+                        row.item.Type != 'Directory' && row.item.Size < 100000
+                      "
+                      @click="show(row.item.Name)"
+                      v-b-modal.modal-xl
+                      variant="primary"
+                      >Show</b-button
+                    >
+                    <b-button
+                      class="mr-1"
+                      v-if="row.item.Type != 'Directory'"
+                      @click="download(row.item.Name)"
+                      variant="primary"
+                      >Download</b-button
+                    >
+                    <b-button
+                      class="mr-1"
+                      v-if="
+                        row.item.Type != 'Directory' && row.item.Size < 100000
+                      "
+                      @click="deleteFile(row.item.Name)"
+                      variant="primary"
+                      >Delete</b-button
+                    ></b-button-group
+                  >
+                </template>
+              </b-table></b-col
+            >
+          </b-row>
         </b-container></b-card-body
       ></b-card
     >
@@ -117,12 +155,16 @@ export default class FileBrowser extends Vue {
   @Prop(String) readonly url: string | undefined;
   data() {
     return {
+      perPage: 10,
+      currentPage: 1,
+      perPageOptions: [10, 20, 50, 100],
       selected: null,
+      selectedFile: null,
       timer: "",
       options: [],
       files: [],
       uploadFile: null,
-      filedata: "AC",
+      filedata: "Loading data ...",
       path: "/",
       browser: null as FilePathBrowser | null,
       fields: [
@@ -171,22 +213,30 @@ export default class FileBrowser extends Vue {
       } else {
         b.addPath(this.$data.path);
       }
-      this.$data.browser
-        .filesQuery()
-        .then((response: any) => {
-          console.log("Got response ---");
-          this.$data.current = this.$data.path;
-          this.$data.files = response.Content;
-          this.$data.files.push({ Name: "..", Type: "Directory" });
-          this.$data.path = "";
-        })
-        .catch((error: any) => {
-          console.log("ERROR:" + JSON.stringify(error));
-        });
+      this.refreshDirectory();
     }
+  }
+  refreshDirectory() {
+    this.$data.browser
+      .filesQuery()
+      .then((response: any) => {
+        this.$data.current = this.$data.path;
+        this.$data.files = response.Content;
+        this.$data.files.push({ Name: "..", Type: "Directory" });
+        this.$data.path = "";
+      })
+      .catch((error: any) => {
+        console.log("Refresh ERROR:" + JSON.stringify(error));
+      });
   }
   sortingChanged(a: any, b: any, key: any) {
     let result = 0;
+    if (a["Name"] === "..") {
+      return -1;
+    }
+    if (b["Name"] === "..") {
+      return 1;
+    }
     if (key === "day") {
       let day1 = a[key].toLowerCase();
       let day2 = b[key].toLowerCase();
@@ -204,10 +254,19 @@ export default class FileBrowser extends Vue {
     return a["Name"] - b["Name"];
   }
   onRowSelected(items: any) {
-    console.log("Selected " + JSON.stringify(items));
     if (items.length == 0) {
       return;
     }
+    console.log(
+      "Selected " +
+        JSON.stringify(items) +
+        " " +
+        JSON.stringify(this.$data.selected)
+    );
+    if (this.$data.selectedFile == items[0]) {
+      return;
+    }
+    this.$data.selectedFile = items[0];
     if (items[0].Name == "..") {
       this.$data.path = "..";
       this.loadDirectory();
@@ -222,16 +281,41 @@ export default class FileBrowser extends Vue {
     }
   }
   show(fileName: string) {
-    console.log("Download " + fileName);
-    this.$data.browser.download(fileName).then((response: any) => {
+    console.log("Read " + fileName);
+    this.$data.filedata = "Loading data ...";
+    this.$data.browser.read(fileName).then((response: any) => {
       this.$data.filedata = response;
     });
   }
   download(fileName: string) {
     console.log("Download " + fileName);
+    this.$data.browser.download(fileName);
   }
   upload() {
+    console.log("Upload " + this.$data.uploadFile.Name);
     this.$data.browser.upload(this.$data.uploadFile);
+  }
+  deleteFile(fileName: string) {
+    console.log("Delete " + fileName);
+    this.$bvModal
+      .msgBoxConfirm("Really delete file " + fileName + "?")
+      .then((value) => {
+        if (value == true) {
+          this.$data.browser
+            .deleteFile(fileName)
+            .then((value: any) => {
+              console.log("File deleted");
+            })
+            .catch((err: any) => {
+              console.log("Error deleting file");
+            });
+          this.refreshDirectory();
+        }
+      })
+      .catch((err) => {
+        // An error occurred
+        console.log("Error: " + JSON.stringify(err));
+      });
   }
 }
 </script>

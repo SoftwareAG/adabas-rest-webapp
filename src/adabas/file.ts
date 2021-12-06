@@ -51,19 +51,56 @@ export class FilePathBrowser {
     async filesQuery(): Promise<any> {
         return triggerCall("/file/browse/" + this.current + "?file=" + this.filePath());
     }
-    async download(file: string): Promise<any> {
-        return triggerCall("/file/access/" + this.current + "?file=" + this.filePath() + "/" + file);
+    async read(fileName: string): Promise<any> {
+        return triggerCall("/file/access/" + this.current + "?file=" + this.filePath() + "/" + fileName);
+    }
+    async download(fileName: string): Promise<any> {
+        var h = authHeader("application/json");
+        const getConfig = {
+            headers: authHeader("application/json"),
+        };
+        axios.get(
+            config.Url() + "/file/access/" + this.current + "?file=" + this.filePath() + "/" + fileName,
+            { responseType: 'blob', headers: h }
+        ).then((response) => {
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', fileName); //or any other extension
+            document.body.appendChild(link);
+            link.click();
+        });
     }
     async upload(file: File): Promise<any> {
         const getConfig = {
             headers: authHeader("multipart/form-data"),
         };
+        console.log("Upload file...");
         let fileData = new FormData();
-        fileData.append("FileKey", file);
+        fileData.append("uploadFile", file);
         return axios
             .post(
                 config.Url() + "/file/access/" + this.current + "?file=" + this.filePath() + "/" + file.name,
                 fileData,
+                getConfig
+            )
+            .then(function (response) {
+                console.log(response);
+            })
+            .catch(function (error) {
+                console.log(
+                    error.response.statusText + ":" + JSON.stringify(error.response)
+                );
+            });
+    }
+    async deleteFile(fileName: string): Promise<any> {
+        const getConfig = {
+            headers: authHeader("application/json"),
+        };
+        console.log("Delete file...");
+        return axios
+            .delete(
+                config.Url() + "/file/access/" + this.current + "?file=" + this.filePath() + "/" + fileName,
                 getConfig
             )
             .then(function (response) {
