@@ -23,7 +23,7 @@
         alt="Responsive image"
       ></b-img>
     </div>
-    <h2>Adabas WebApp Login</h2>
+    <h2>Adabas REST-Console Login</h2>
     <form @submit.prevent="handleSubmit">
       <div>
         <table class="table table-striped">

@@ -44,6 +44,7 @@
           >
           <b-nav-item-dropdown text="Configure REST server" right>
             <b-dropdown-item to="/configuration/">Configuration</b-dropdown-item>
+            <b-dropdown-item to="/browser/">File Browser</b-dropdown-item>
             <b-dropdown-item to="/log/">RESTful Log</b-dropdown-item>
           </b-nav-item-dropdown>
           <b-nav-item-dropdown text="Examples" right>

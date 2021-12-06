@@ -254,7 +254,7 @@
                     bordered
                     hover
                     small
-                    :items="config.Module.Directories"
+                    :items="config.Module.FileAccess.Directories"
                     :fields="fileFields"
                   >
                     <template v-slot:cell(delete)="row">
@@ -471,7 +471,9 @@ export default class Configuration extends Vue {
         Metrics: { Database: [] },
         Module: {
           AdabasData: '',
-          Directories: [],
+          FileAccess: {
+            Directories: [],
+          },
           Installation: [],
         },
         JobStore: {
@@ -564,7 +566,7 @@ export default class Configuration extends Vue {
   }
   del_directories(location: string): void {
     console.log('Delete directories : ' + location);
-    this.$data.config.Module.Directories.forEach((element: any) => {
+    this.$data.config.Module.FileAccess.Directories.forEach((element: any) => {
       if (element.location === location) {
         element.Deleted = true;
       }
@@ -654,7 +656,7 @@ export default class Configuration extends Vue {
         }
         break;
       case 'filetransfer':
-        this.$data.config.Module.Directories.push({
+        this.$data.config.Module.FileAccess.Directories.push({
           location: this.$data.location,
           name: this.$data.fileTransferName,
           changed: true,

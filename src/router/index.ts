@@ -27,6 +27,7 @@ import Metadata from '../views/Metadata.vue'
 import LoginPage from '../login/LoginPage.vue';
 import Databases from '../admin_views/Databases.vue'
 import Containers from '../admin_views/Containers.vue'
+import Browser from '../admin_views/Browser.vue'
 import Files from '../admin_views/Files.vue'
 import Userqueue from '../admin_views/Userqueue.vue'
 import Commandqueue from '../admin_views/Commandqueue.vue'
@@ -71,6 +72,11 @@ export default new Router({
       path: '/map',
       name: 'Map',
       component: Map
+    },
+    {
+      path: '/browser',
+      name: 'Browser',
+      component: Browser
     },
     {
       path: '/modify',

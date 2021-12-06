@@ -14,24 +14,22 @@
  * limitations under the License.-->
 
 <template>
-  <div class="nuclog">
+  <div class="browser">
     <MyHeader></MyHeader>
-    <NucleusLog :url="url" />
+    <FileBrowser />
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Vue } from 'vue-property-decorator';
 import MyHeader from '@/components/Header.vue';
-import NucleusLog from '@/components/NucleusLog.vue';
+import FileBrowser from '@/components/FileBrowser.vue';
 
 @Component({
   components: {
     MyHeader,
-    NucleusLog,
+    FileBrowser,
   },
 })
-export default class NucLog extends Vue {
-      @Prop(String) readonly url: string | undefined;
-}
+export default class Browser extends Vue {}
 </script>
