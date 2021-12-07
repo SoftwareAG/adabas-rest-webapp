@@ -46,6 +46,20 @@
             >Database id in the range of greater 0 and smaller as
             65536</b-form-text
           >
+        <b-form-input
+            v-model="inputUrl"
+            type="text"
+            :state="urlState()"
+            aria-describedby="input-liveurl-help input-liveurl-feedback"
+            id="nested-url"
+            trim
+          ></b-form-input>
+          <b-form-invalid-feedback id="input-liveurl-feedback">
+            URL not correct
+          </b-form-invalid-feedback>
+          <b-form-text id="input-liveurl-help"
+            >Either empty or it need to be a ADATCP URL</b-form-text
+          >
         </b-form-group>
         <b-collapse id="mapFile-collapse">
           <b-form-group
@@ -254,7 +268,7 @@
                     bordered
                     hover
                     small
-                    :items="config.Module.FileAccess.Directories"
+                    :items="config.Module.Directories"
                     :fields="fileFields"
                   >
                     <template v-slot:cell(delete)="row">
@@ -454,6 +468,7 @@ export default class Configuration extends Vue {
       fileTransferName: '',
       location: '',
       dbid: '0' as string,
+      inputUrl: '',
       file: 100 as number,
       mapFileDisplay: false,
       modalType: '',
@@ -471,9 +486,7 @@ export default class Configuration extends Vue {
         Metrics: { Database: [] },
         Module: {
           AdabasData: '',
-          FileAccess: {
-            Directories: [],
-          },
+          Directories: [],
           Installation: [],
         },
         JobStore: {
@@ -596,6 +609,12 @@ export default class Configuration extends Vue {
   }
   dbidState() {
     return this.$data.dbid > 0 && this.$data.dbid < 64536 ? true : false;
+  }
+  urlState() {
+    if (this.$data.inputUrl == "") {
+      return true;
+    }
+    return /^adatcp[s]?:\/\/[\w\.]*:\d*$/.test(this.$data.inputUrl);
   }
   fileState() {
     return this.$data.file > 0 && this.$data.file < 64536 ? true : false;
