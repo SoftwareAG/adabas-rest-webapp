@@ -15,7 +15,7 @@
 
 <template>
   <div class="filesbrowser p-2">
-    <b-modal id="modal-xl" size="xl" title="File data">
+    <b-modal id="modal-xl" size="xl" ok-only title="File content:">
       <pre>{{ filedata }}</pre>
     </b-modal>
     <b-card
