@@ -46,7 +46,7 @@
             >Database id in the range of greater 0 and smaller as
             65536</b-form-text
           >
-        <b-form-input
+          <b-form-input
             v-model="inputUrl"
             type="text"
             :state="urlState()"
@@ -175,46 +175,80 @@
         <label> The configuration are applied when the action is set. </label>
         <b-tabs content-class="mt-3">
           <b-tab title="Server services" active>
-            <b-container fluid>
-              <b-row class="my-1">
-                <b-col sm="11">
-                  The content location contains this web application to handle a
-                  number of configurations. The location may be changed to
-                  disable this web application. This need to be done manually
-                  changing the config.xml file.</b-col
-                ></b-row
-              >
-              <b-row class="my-1">
-                <b-col sm="2"> Content location:</b-col>
-                <b-col sm="9">
-                  <b-form-input
-                    readonly
-                    v-model="config.Server.Content"
-                  /> </b-col
-              ></b-row>
-              <b-row class="my-1">
-                <b-col sm="2"> Log location:</b-col>
-                <b-col sm="2">
-                  <b-form-select
-                    v-model="config.Server.LogLocation.level"
-                    :options="options"
-                  ></b-form-select>
-                </b-col>
-                <b-col sm="7">
-                  <b-form-input
-                    v-model="config.Server.LogLocation.directory"
-                  /> </b-col
-              ></b-row>
-              <b-row class="my-1"
-                ><b-col>
-                  <b-table
-                    striped
-                    bordered
-                    hover
-                    small
-                    :items="config.Server.Service"
-                    :fields="serviceFields"/></b-col></b-row
-            ></b-container>
+            <b-card
+              header="Server configuration"
+              header-class="info-header"
+            >
+              <b-card-body>
+                <b-container fluid>
+                  <b-row class="my-1">
+                    <b-col sm="11">
+                      The content location contains this web application to
+                      handle a number of configurations. The location may be
+                      changed to disable this web application. This need to be
+                      done manually changing the config.xml file.</b-col
+                    ></b-row
+                  >
+                  <b-row class="my-1">
+                    <b-col sm="2"> Content location:</b-col>
+                    <b-col sm="9">
+                      <b-form-input
+                        readonly
+                        v-model="config.Server.Content"
+                      /> </b-col
+                  ></b-row>
+                  <b-row class="my-1">
+                    <b-col sm="2"> Log location:</b-col>
+                    <b-col sm="2">
+                      <b-form-select
+                        v-model="config.Server.LogLocation.level"
+                        :options="options"
+                      ></b-form-select>
+                    </b-col>
+                    <b-col sm="7">
+                      <b-form-input
+                        v-model="config.Server.LogLocation.directory"
+                      /> </b-col
+                  ></b-row>
+                  <b-row class="my-1"
+                    ><b-col>
+                      <b-table
+                        striped
+                        bordered
+                        hover
+                        small
+                        :items="config.Server.Service"
+                        :fields="serviceFields" /></b-col></b-row
+                ></b-container> </b-card-body
+            ></b-card>
+            <b-card
+              header-class="info-header"
+              header="Job Store"
+              size="sm"
+              ><b-card-body>
+                <b-container>
+                  <b-row>
+                    <b-col sm="2">Job store file location:</b-col>
+                    <b-col sm="9">
+                      <b-form-input v-model="config.JobStore.config" /> </b-col
+                  ></b-row>
+                  <b-row>
+                    <b-col sm="2">Job store database:</b-col>
+                    <b-col sm="9">
+                      <b-form-input
+                        v-model="config.JobStore.Database.url"
+                      /> </b-col
+                  ></b-row>
+                  <b-row>
+                    <b-col sm="2">Job store file:</b-col>
+                    <b-col sm="9">
+                      <b-form-input
+                        v-model="config.JobStore.Database.file"
+                      /> </b-col
+                  ></b-row>
+                </b-container>
+              </b-card-body>
+            </b-card>
           </b-tab>
           <b-tab title="Suite installations">
             <b-container fluid>
@@ -281,68 +315,78 @@
                       </div> </template></b-table></b-col></b-row
             ></b-container>
           </b-tab>
-          <b-tab title="Map repositories">
-            <b-button
-              v-b-toggle.mapFile-collapse
-              v-b-modal.modal-db
-              @click="showMsgOk('map')"
-              variant="outline-primary"
-              >Add</b-button
-            >
-            <b-table
-              striped
-              bordered
-              hover
-              small
-              :items="config.Mapping.Database"
-              :fields="mapFields"
-            >
-              <template v-slot:cell(delete)="row">
-                <div class="mx-auto text-center">
-                  <b-icon-x-circle
-                    scale="2"
-                    variant="danger"
-                    v-on:click="del_mapping(row.item.url, row.item.file)"
-                  ></b-icon-x-circle>
-                </div> </template
-            ></b-table>
-          </b-tab>
-          <b-tab title="Classic database access">
-            <b-container fluid>
-              <b-row
-                ><b-col align="right" sm="1">
-                  <b-checkbox checked="config.DatabaseAccess.global" /> </b-col
-                ><b-col align="left" sm="10">
-                  Provide access to all classic database ids (global)
-                </b-col></b-row
-              >
-              <b-row class="my-1"
-                ><b-col>
-                  <b-button
-                    @click="showMsgOk('classic')"
-                    variant="outline-primary"
-                    >Add</b-button
+          <b-tab title="Data access">
+            <b-card
+              header-class="info-header"
+              header="Map repositories"
+              ><b-card-body>
+                <b-button
+                  v-b-toggle.mapFile-collapse
+                  v-b-modal.modal-db
+                  @click="showMsgOk('map')"
+                  variant="outline-primary"
+                  >Add</b-button
+                >
+                <b-table
+                  striped
+                  bordered
+                  hover
+                  small
+                  :items="config.Mapping.Database"
+                  :fields="mapFields"
+                >
+                  <template v-slot:cell(delete)="row">
+                    <div class="mx-auto text-center">
+                      <b-icon-x-circle
+                        scale="2"
+                        variant="danger"
+                        v-on:click="del_mapping(row.item.url, row.item.file)"
+                      ></b-icon-x-circle>
+                    </div> </template
+                ></b-table> </b-card-body
+            ></b-card>
+            <b-card
+              header="Classic database access"
+              header-class="info-header"
+              ><b-card-body>
+                <b-container fluid>
+                  <b-row
+                    ><b-col align="right" sm="1">
+                      <b-checkbox
+                        checked="config.DatabaseAccess.global"
+                      /> </b-col
+                    ><b-col align="left" sm="10">
+                      Provide access to all classic database ids (global)
+                    </b-col></b-row
                   >
-                </b-col></b-row
-              ><b-row
-                ><b-col>
-                  <b-table
-                    striped
-                    bordered
-                    hover
-                    small
-                    :items="config.DatabaseAccess.Database"
-                    :fields="accessFields"
-                  >
-                    <template v-slot:cell(delete)="row">
-                      <div class="mx-auto text-center">
-                        <b-icon-x-circle
-                          scale="2"
-                          variant="danger"
-                          v-on:click="del_access(row.item.url)"
-                        ></b-icon-x-circle>
-                      </div> </template></b-table></b-col></b-row
-            ></b-container>
+                  <b-row class="my-1"
+                    ><b-col>
+                      <b-button
+                        @click="showMsgOk('classic')"
+                        variant="outline-primary"
+                        >Add</b-button
+                      >
+                    </b-col></b-row
+                  ><b-row
+                    ><b-col>
+                      <b-table
+                        striped
+                        bordered
+                        hover
+                        small
+                        :items="config.DatabaseAccess.Database"
+                        :fields="accessFields"
+                      >
+                        <template v-slot:cell(delete)="row">
+                          <div class="mx-auto text-center">
+                            <b-icon-x-circle
+                              scale="2"
+                              variant="danger"
+                              v-on:click="del_access(row.item.url)"
+                            ></b-icon-x-circle>
+                          </div> </template></b-table></b-col></b-row
+                ></b-container> </b-card-body
+            ></b-card>
           </b-tab>
           <b-tab title="Database metrics tracked">
             <b-container fluid>
@@ -374,7 +418,7 @@
                       </div> </template></b-table></b-col></b-row
             ></b-container>
           </b-tab>
-          <b-tab title="User">
+          <b-tab title="User Authorization">
             <b-container
               ><b-row
                 ><b-col>
@@ -418,27 +462,7 @@
                         ></b-icon-x-circle>
                       </div> </template></b-table></b-col></b-row
             ></b-container>
-          </b-tab> 
-          <b-tab title="Job Store">
-            <b-container>
-              <b-row class="my-1">
-                <b-col sm="2">Job store file location:</b-col>
-                <b-col sm="9">
-                  <b-form-input v-model="config.JobStore.config" /> </b-col
-              ></b-row>
-              <b-row class="my-1">
-                <b-col sm="2">Job store database:</b-col>
-                <b-col sm="9">
-                  <b-form-input v-model="config.JobStore.Database.url" /> </b-col
-              ></b-row>
-              <b-row class="my-1">
-                <b-col sm="2">Job store file:</b-col>
-                <b-col sm="9">
-                  <b-form-input v-model="config.JobStore.Database.file" /> </b-col
-              ></b-row>
-            </b-container>
-          </b-tab>
-          </b-tabs></b-card-body
+          </b-tab> </b-tabs></b-card-body
       ><b-button @click="adaptChanges()" variant="outline-primary"
         >Apply</b-button
       ><b-button @click="storeChanges()" variant="outline-primary"
@@ -493,8 +517,8 @@ export default class Configuration extends Vue {
           config: '',
           Database: {
             url: '',
-            file: 0
-          }
+            file: 0,
+          },
         },
         Server: {
           Content: './static',
@@ -504,8 +528,8 @@ export default class Configuration extends Vue {
       },
       originConfig: null,
       user: {
-        readPermission: "",
-        writePermission:"",
+        readPermission: '',
+        writePermission: '',
         Users: [],
       },
       originUser: null,
@@ -534,10 +558,10 @@ export default class Configuration extends Vue {
     this.$data.c = new AdabasConfig();
     this.$data.c.read().then((c: any) => {
       if (!c.JobStore) {
-        c.JobStore = {config:"",Database:{url:"",file:0}}
+        c.JobStore = { config: '', Database: { url: '', file: 0 } };
       } else {
         if (!c.JobStore.Database) {
-          c.JobStore.Database = {url:"",file:0}
+          c.JobStore.Database = { url: '', file: 0 };
         }
       }
       this.$data.config = c;
@@ -611,7 +635,7 @@ export default class Configuration extends Vue {
     return this.$data.dbid > 0 && this.$data.dbid < 64536 ? true : false;
   }
   urlState() {
-    if (this.$data.inputUrl == "") {
+    if (this.$data.inputUrl == '') {
       return true;
     }
     return /^adatcp[s]?:\/\/[\w\.]*:\d*$/.test(this.$data.inputUrl);
@@ -662,7 +686,7 @@ export default class Configuration extends Vue {
                 return false;
               }
               return true;
-            },
+            }
           );
           if (!notFound) {
             return;
@@ -693,7 +717,7 @@ export default class Configuration extends Vue {
                 return false;
               }
               return true;
-            },
+            }
           );
           if (!notFound) {
             return;
@@ -715,7 +739,7 @@ export default class Configuration extends Vue {
                   return false;
                 }
                 return true;
-              },
+              }
             );
             if (!notFound) {
               return;
@@ -756,9 +780,12 @@ export default class Configuration extends Vue {
 h3 {
   margin: 40px 0 0;
 }
+.info-header {
+  font-size: 12px;
+}
 .card-header {
   font-weight: bold;
-  font-size: 18px;
+  //font-size: 18px;
 }
 ul {
   list-style-type: none;

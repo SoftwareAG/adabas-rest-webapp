@@ -8,6 +8,7 @@ module.exports = {
           entry: 'src/main.ts',
           title: 'Adabas REST-Console',
         },
-      }
+      },
+      publicPath: '.'
 };
 
