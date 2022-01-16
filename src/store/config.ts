@@ -21,13 +21,16 @@ import Vue from 'vue';
 import App from '../App.vue'
 
 export function Url() {
-   console.log('Ref:' + window.location.origin+window.location.pathname);
    if (process.env.NODE_ENV === 'development') {
       // return 'https://localhost:61091'; // GO
       return 'http://localhost:8130'; // GO
       // return 'http://localhost:8091'; // Java
    }
-   return window.location.origin+window.location.pathname;
+   let ref = window.location.origin+window.location.pathname;
+   console.log('Ref before:' + ref);
+   ref.replace('/+$','')
+   console.log('Ref after:' + ref);
+   return ref;
 }
 
 export function AppName() {
