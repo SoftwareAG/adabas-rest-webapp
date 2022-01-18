@@ -291,7 +291,27 @@ export default class ParameterList extends Vue {
   getParameterInfo() {
     this.$data.db.parameterInfo().then((response: any) => {
       this.$data.parameters.forEach((element: any) => {
-        let v = response.filter((f: any) => f.Acronym === element.Name);
+        let name = element.Name;
+        switch (element.Name) {
+          case 'ADATCPATB':
+            name = 'TCPATB';
+            break;
+          case 'ADATCPCONNECTIONS':
+            name = 'TCPCONNECTIONS';
+            break;
+          case 'ADATCPPORT':
+            name = 'PORTNUMBER';
+            break;
+          case 'ADATCPRECEIVER':
+            name = 'TCPRECEIVER';
+            break;
+          case 'SSLPORT':
+            name = 'SSLPORTNUMBER';
+            break;
+          default:
+            break;
+        }
+        let v = response.filter((f: any) => f.Acronym === name);
         if (v.length > 0) {
           element.Description = v[0].Description;
           element.OnlineValue = v[0].OnlineValue;

@@ -223,7 +223,6 @@ export default defineComponent({
         if (!response) {
           return;
         }
-        // console.log("RESPONSE: "+JSON.stringify(response));
         bufferflush.value = response.Statistics;
         data.value = [];
         response.Statistics.LStat.forEach((l)=>{

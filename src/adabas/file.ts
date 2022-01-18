@@ -21,6 +21,7 @@ import { triggerCall } from "./admin";
 import { authHeader } from "../user/auth-header";
 import axios, { AxiosResponse } from "axios";
 import { config } from "../store/config";
+import { userService } from "../user/service";
 
 export class FilePathBrowser {
     private current = "";
@@ -91,6 +92,12 @@ export class FilePathBrowser {
                 console.log(
                     error.response.statusText + ":" + JSON.stringify(error.response)
                 );
+                if (error.response) {
+                    if (error.response.status == 401 || error.response.status == 403) {
+                        userService.logout();
+                        location.reload();
+                    }
+                }
             });
     }
     async deleteFile(fileName: string): Promise<any> {
@@ -110,6 +117,12 @@ export class FilePathBrowser {
                 console.log(
                     error.response.statusText + ":" + JSON.stringify(error.response)
                 );
+                if (error.response) {
+                    if (error.response.status == 401 || error.response.status == 403) {
+                        userService.logout();
+                        location.reload();
+                    }
+                }
             });
     }
 }

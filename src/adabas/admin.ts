@@ -85,7 +85,7 @@ export class AdabasAdmin {
                 .get(config.Url() + "/adabas/database/" + this.status.Dbid + "/nuclog", getConfig);
             return response.data.Log.Log;
         }
-        catch (error:any) {
+        catch (error: any) {
             if (error.response.status == 401 || error.response.status == 403) {
                 userService.logout();
                 location.reload();
@@ -175,7 +175,7 @@ export class AdabasAdmin {
         };
         try {
             return axios
-                .delete(config.Url() + "/adabas/database/" + this.status.Dbid+"/commandstats", getConfig);
+                .delete(config.Url() + "/adabas/database/" + this.status.Dbid + "/commandstats", getConfig);
         }
         catch (error: any) {
             if (error.response) {
@@ -233,8 +233,8 @@ export class AdabasAdmin {
     information(): Promise<any> {
         return triggerCallCommand(this.status.Dbid, 13);
     }
-     // Retrieve current Adabas cluster information
-     cluster(): Promise<any> {
+    // Retrieve current Adabas cluster information
+    cluster(): Promise<any> {
         return triggerCallCommand(this.status.Dbid, 14);
     }
     // Retrieve current Adabas TCP connections
@@ -274,10 +274,16 @@ export class AdabasAdmin {
             .post(config.Url() + "/adabas/database/"
                 + this.status.Dbid + ":feofplog", {}, getConfig)
             .catch((error: any) => {
-                console.log("Error "+JSON.stringify(error));
+                console.log("Error " + JSON.stringify(error));
+                if (error.response) {
+                    if (error.response.status == 401 || error.response.status == 403) {
+                        userService.logout();
+                        location.reload();
+                    }
+                }
             });
     }
-   // Delete the given Adabas file number (all data is removed as well)!!
+    // Delete the given Adabas file number (all data is removed as well)!!
     async deleteFile(file: number): Promise<any> {
         const getConfig = {
             headers: authHeader("application/json"),
@@ -452,7 +458,7 @@ export class AdabasAdmin {
                     }
                 }
                 else {
-                    console.log("Unknown " + element);
+                    console.log("Unknown HWM parameter: " + element);
                 }
             });
         return highwater;
@@ -465,7 +471,7 @@ export class AdabasAdmin {
         };
         try {
             return axios
-                .delete(config.Url() + "/adabas/database/" + this.status.Dbid+"/hwm", getConfig);
+                .delete(config.Url() + "/adabas/database/" + this.status.Dbid + "/hwm", getConfig);
         }
         catch (error: any) {
             if (error.response) {

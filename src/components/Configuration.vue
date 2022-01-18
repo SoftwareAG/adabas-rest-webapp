@@ -584,7 +584,6 @@ export default class Configuration extends Vue {
   del_installation(location: string): void {
     console.log('Delete installation : ' + location);
     this.$data.config.Module.Installation.forEach((element: any) => {
-      console.log('Installation -> ' + JSON.stringify(element));
       if (element.Location === location) {
         console.log('Remove -> ' + location);
         element.Deleted = true;
