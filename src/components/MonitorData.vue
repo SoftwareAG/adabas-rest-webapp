@@ -223,7 +223,7 @@ export default defineComponent({
     onMounted(() => {
       db = SearchDatabases(props.url);
       if (timer == null) {
-        timer = setInterval(loadCommandStat, 1000);
+        timer = setInterval(loadCommandStat, 5000);
       }
       loadCommandStat();
     });
