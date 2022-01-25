@@ -16,7 +16,7 @@
 <template>
   <div class="footer">
       <b-container fluid class="bg-light text-dark w-100">
-        <b-row><b-col class="text-left">Adabas REST Console {{webAppVersion}}</b-col>
+        <b-row><b-col class="text-left">Adabas REST-Console {{webAppVersion}}</b-col>
         <b-col  class="text-right">
           Adabas RESTfull application with REST server version: {{version}}
         </b-col></b-row>
