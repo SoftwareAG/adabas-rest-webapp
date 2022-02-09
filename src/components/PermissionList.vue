@@ -318,17 +318,17 @@ export default class PermissionList extends Vue {
     }
     if (this.$data.operations.length == 0) {
       this.$data.db.resourceList('operation').then((response: any) => {
-        this.$data.roles = [];
+        this.$data.operations = [];
         response.forEach((element: any) => {
-          this.$data.roles.push(element.Operation);
+          this.$data.operations.push(element.Operation);
         });
       });
     }
     if (this.$data.objects.length == 0) {
-      this.$data.db.resourceList('objects').then((response: any) => {
-        this.$data.roles = [];
+      this.$data.db.resourceList('object').then((response: any) => {
+        this.$data.objects = [];
         response.forEach((element: any) => {
-          this.$data.roles.push(element.Object);
+          this.$data.objects.push(element.Object);
         });
       });
     }
