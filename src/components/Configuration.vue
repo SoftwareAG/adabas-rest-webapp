@@ -451,7 +451,7 @@
                       <b-form-input v-model="row.item.readPermission" />
                     </template>
                     <template v-slot:cell(writePermission)="row">
-                      <b-form-input v-model="row.item.writePermission" />
+    <b-form-select v-model="selected" :options="options" size="sm" class="mt-3"></b-form-select>
                     </template>
                     <template v-slot:cell(delete)="row">
                       <div class="mx-auto text-center">

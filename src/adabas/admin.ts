@@ -49,6 +49,9 @@ const AdminCommands = [
     { command: "cluster", path: [] },
     { command: "tcp", path: [] },
     { command: "plog", path: ["PLOG"] },
+    { command: "permission", path: ["RBAC"] },
+    { command: "permission?list=userrole", path: ["RBAC"] },
+    { command: "permission/", path: ["RBAC"] },
 ]
 
 
@@ -198,6 +201,58 @@ export class AdabasAdmin {
     // Get the Adabas file list of the Adabas database
     fileList(): Promise<any> {
         return triggerCallCommandArray(this.status.Dbid, 9);
+    }
+    // Create resource
+    createRBACResource(resource:string,name:string): Promise<any> {
+        const getConfig = {
+            headers: authHeader("application/json"),
+            useCredentails: true,
+        };
+        try {
+            return axios
+                .put(config.Url() + "/adabas/database/" + this.status.Dbid + "/permission/" + resource+"/"+name,{}, getConfig);
+        }
+        catch (error: any) {
+            if (error.response) {
+                if (error.response.status == 401 || error.response.status == 403) {
+                    userService.logout();
+                    location.reload();
+                }
+            }
+            throw error;
+        }
+    }
+    // Get the Adabas RBAC permission list of the Adabas database
+    grantRBAC(def: any): Promise<any> {
+        const getConfig = {
+            headers: authHeader("application/json"),
+            useCredentails: true,
+        };
+        try {
+            return axios
+                .put(config.Url() + "/adabas/database/" + this.status.Dbid + "/permission/" ,def, getConfig);
+        }
+        catch (error: any) {
+            if (error.response) {
+                if (error.response.status == 401 || error.response.status == 403) {
+                    userService.logout();
+                    location.reload();
+                }
+            }
+            throw error;
+        }
+    }
+    // Get the Adabas RBAC permission list of the Adabas database
+    permissionList(): Promise<any> {
+        return triggerCallCommandArray(this.status.Dbid, 17);
+    }
+    // Get the Adabas RBAC permission list of the Adabas database
+    resourceList(resource:string): Promise<any> {
+        return triggerCallOnArray("/adabas/database/" + this.status.Dbid + "/permission/"+resource  , ["RBAC"]);
+    }
+    // Get the Adabas RBAC user role list of the Adabas database
+    userRoleList(): Promise<any> {
+        return triggerCallCommandArray(this.status.Dbid, 18);
     }
     // Get detailed file information of a file in the Adabas database
     fileInfo(file: number): Promise<any> {

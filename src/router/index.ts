@@ -29,6 +29,7 @@ import Databases from '../admin_views/Databases.vue'
 import Containers from '../admin_views/Containers.vue'
 import Browser from '../admin_views/Browser.vue'
 import Files from '../admin_views/Files.vue'
+import Permission from '../admin_views/Permission.vue'
 import Userqueue from '../admin_views/Userqueue.vue'
 import Commandqueue from '../admin_views/Commandqueue.vue'
 import Holdqueue from '../admin_views/Holdqueue.vue'
@@ -132,6 +133,11 @@ export default new Router({
       path: '/files/:url',
       name: 'Database Files',
       component: Files, props: true
+    },
+    {
+      path: '/permission/:url',
+      name: 'Role-Based-Access Permission',
+      component: Permission, props: true
     },
     {
       path: '/userqueue/:url',

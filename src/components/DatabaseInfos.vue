@@ -44,7 +44,11 @@
           small
           :items="infos"
           :fields="fields"
-        ></b-table>
+        >
+          <template v-slot:cell(Name)="data">
+           <div class="toCapitalFirst">{{ data.value }}</div>
+          </template>
+        </b-table>
       </b-card-body>
     </b-card>
     <StatusBar />
@@ -129,17 +133,27 @@ export default class DatabaseInfos extends Vue {
         'Architecture',
         'Date',
         'Flags',
-        'Last changed',
-        'PLOG count',
+        'PLOGCount',
+        'PLOGExtent',
         'CurrentPLOGNumber',
-        'Files loaded',
+        'CurrentCLOGNumber',
+        'MaxFileNumberLoaded',
+        'TimeStampReplication',
         'TimeStampLog',
         'MaxFileNumber',
         'SecurityFile',
         'CheckpointFile',
         'ETDataFile',
+        'Encrypted',
+        'EncryptAlgorithm',
+        'EncryptKMSTarget',
+        'RBACSecurity',
+        'RBACSystemFile',
       ].forEach((element: string) => {
-        this.$data.infos.push({ Name: element, Value: response.Gcb[element] });
+        this.$data.infos.push({
+          Name: element,
+          Value: response.Gcb[element],
+        });
       });
       this.$data.information = response;
     });
@@ -179,6 +193,9 @@ export default class DatabaseInfos extends Vue {
 <style scoped lang="scss">
 h3 {
   margin: 40px 0 0;
+}
+.toCapitalFirst {
+  text-transform: capitalize;
 }
 .card-header {
   font-weight: bold;

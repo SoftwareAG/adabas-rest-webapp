@@ -24,6 +24,7 @@
         <b-nav-item :to="'/nuclog/' + url">Nucleus Log</b-nav-item>
         <b-nav-item :to="'/containers/' + url">Containers</b-nav-item>
         <b-nav-item :to="'/files/' + url">Files</b-nav-item>
+        <b-nav-item :disabled="!active()" :to="'/permission/' + url">Permissions</b-nav-item>
         <b-nav-text>Statistics</b-nav-text>
         <b-nav-item :disabled="!active()" :to="'/highwater/' + url"
           >High Watermark</b-nav-item

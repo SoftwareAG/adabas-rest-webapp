@@ -43,9 +43,14 @@
                 aria-controls="my-table"
               ></b-pagination>
             </b-col>
-         <b-col sm="2">
-              <b-form-select v-model="perPage" :options="perPageOptions" size="sm" class="mt-3"></b-form-select>
-          </b-col></b-row>
+            <b-col sm="2">
+              <b-form-select
+                v-model="perPage"
+                :options="perPageOptions"
+                size="sm"
+                class="mt-3"
+              ></b-form-select> </b-col
+          ></b-row>
           <b-row>
             <b-col>
               <b-form-group
@@ -99,12 +104,8 @@
                   }}</router-link>
                 </template>
                 <template v-slot:[`cell(status.Active)`]="row">
-                  <div v-if="row.item.online()">
-                    Online
-                  </div>
-                  <div v-else>
-                    Offline
-                  </div>
+                  <div v-if="row.item.online()">Online</div>
+                  <div v-else>Offline</div>
                 </template>
                 <template v-slot:cell(action)="row">
                   <div v-if="row.item.status.Active">
@@ -183,6 +184,14 @@
                   >
                     Files
                   </b-button>
+                  <b-button  v-if="row.item.status.Active"
+                    size="sm"
+                    variant="outline-primary"
+                    :to="'/permission/' + row.item.status.Dbid"
+                    class="mr-2"
+                  >
+                    Permissions
+                  </b-button>
                   <div v-if="row.item.status.Active">
                     <b-dropdown
                       size="sm"
@@ -205,7 +214,8 @@
                       >
                         Command statistics
                       </b-dropdown-item>
-                      <b-dropdown-item :disabled="!isMonitor(row.item)"
+                      <b-dropdown-item
+                        :disabled="!isMonitor(row.item)"
                         size="sm"
                         :to="'/monitor/' + row.item.status.Dbid"
                         class="mr-2"
@@ -219,7 +229,8 @@
                       >
                         Buffer Pool
                       </b-dropdown-item>
-                     <b-dropdown-item :disabled="!isMonitor(row.item)"
+                      <b-dropdown-item
+                        :disabled="!isMonitor(row.item)"
                         size="sm"
                         :to="'/bufferflush/' + row.item.status.Dbid"
                         class="mr-2"
@@ -352,7 +363,7 @@ export default class DatabaseList extends Vue {
     return {
       perPage: 10,
       currentPage: 1,
-      perPageOptions: [10,20,50,100],
+      perPageOptions: [10, 20, 50, 100],
       filter: '',
       filterOn: [],
       fields: [
@@ -427,7 +438,7 @@ export default class DatabaseList extends Vue {
       .then((response: any) => {
         store.commit(
           'SET_STATUS',
-          "Calling operation '" + operation + "' initiated...",
+          "Calling operation '" + operation + "' initiated..."
         );
         console.log('Route to ' + dbid.dbid());
         router.push('/nuclog/' + dbid.dbid());
@@ -435,7 +446,7 @@ export default class DatabaseList extends Vue {
       .catch((error: any) => {
         store.commit(
           'SET_STATUS',
-          'Error calling' + operation + ':' + JSON.stringify(error),
+          'Error calling' + operation + ':' + JSON.stringify(error)
         );
         router.push('/nuclog/' + dbid.dbid());
       });
@@ -463,7 +474,7 @@ export default class DatabaseList extends Vue {
           footerClass: 'p-2',
           hideHeaderClose: false,
           centered: true,
-        },
+        }
       )
       .then((value) => {
         if (value) {
@@ -493,7 +504,7 @@ export default class DatabaseList extends Vue {
     return;
   }
   isMonitor(item: any): boolean {
-    if (item.status.StructureLevel>21) {
+    if (item.status.StructureLevel > 21) {
       return true;
     }
     return false;
