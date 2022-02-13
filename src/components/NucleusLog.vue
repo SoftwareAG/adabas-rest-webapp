@@ -32,10 +32,18 @@
             ><b-col> <Url url="/adabas/database" /> </b-col
           ></b-row>
           <b-row
+            ><b-col sm="2">
+           Select:
+            </b-col><b-col sm="10">
+              <b-form-select v-on:change="changeLog()" v-model="selected" :options="nucleusOptions"></b-form-select>
+            </b-col></b-row>
+          <b-row
             ><b-col>
-              <b-alert show variant="secondary"
+   <b-overlay :show="show" rounded="sm">
+               <b-alert show variant="secondary"
                 ><pre>{{ log }}</pre></b-alert
               >
+   </b-overlay>
             </b-col></b-row
           ></b-container
         ></b-card-body
@@ -66,20 +74,31 @@ export default class DatabaseList extends Vue {
     return {
       log: '' as string,
       db: null,
+      selected: 'adanuc.log',
+      nucleusOptions: ["adanuc.log"] as string[],
+      show: true,
     };
   }
   created() {
     this.$data.db = SearchDatabases(this.url);
     this.$data.timer = setInterval(this.loadNucleus, 5000);
     this.loadNucleus();
+    this.$data.db.nucleusLogList().then((response: any) => {
+      this.$data.nucleusOptions = response.NucleusLogs;
+    });
   }
   loadNucleus() {
-    this.$data.db.nucleusLog().then((response: any) => {
+    this.$data.db.nucleusLog(this.$data.selected).then((response: any) => {
       this.$data.log = response;
+      this.$data.show = false;
     });
   }
   beforeDestroy() {
     clearInterval(this.$data.timer);
+  }
+  changeLog() {
+    this.$data.show = false;
+    this.loadNucleus();
   }
 }
 </script>

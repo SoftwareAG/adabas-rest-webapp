@@ -184,7 +184,8 @@
                   >
                     Files
                   </b-button>
-                  <b-button  v-if="row.item.status.Active"
+                  <b-button
+                    v-if="row.item.status.Active"
                     size="sm"
                     variant="outline-primary"
                     :to="'/permission/' + row.item.status.Dbid"
@@ -433,6 +434,7 @@ export default class DatabaseList extends Vue {
    */
 
   operation(dbid: AdabasAdmin, operation: string): void {
+    router.push('/nuclog/' + dbid.dbid());
     dbid
       .callOperation(operation)
       .then((response: any) => {
@@ -441,14 +443,13 @@ export default class DatabaseList extends Vue {
           "Calling operation '" + operation + "' initiated..."
         );
         console.log('Route to ' + dbid.dbid());
-        router.push('/nuclog/' + dbid.dbid());
       })
       .catch((error: any) => {
+        // router.push('/nuclog/' + dbid.dbid());
         store.commit(
           'SET_STATUS',
           'Error calling' + operation + ':' + JSON.stringify(error)
         );
-        router.push('/nuclog/' + dbid.dbid());
       });
   }
   /*

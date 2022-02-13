@@ -175,10 +175,7 @@
         <label> The configuration are applied when the action is set. </label>
         <b-tabs content-class="mt-3">
           <b-tab title="Server services" active>
-            <b-card
-              header="Server configuration"
-              header-class="info-header"
-            >
+            <b-card header="Server configuration" header-class="info-header">
               <b-card-body>
                 <b-container fluid>
                   <b-row class="my-1">
@@ -221,10 +218,7 @@
                         :fields="serviceFields" /></b-col></b-row
                 ></b-container> </b-card-body
             ></b-card>
-            <b-card
-              header-class="info-header"
-              header="Job Store"
-              size="sm"
+            <b-card header-class="info-header" header="Job Store" size="sm"
               ><b-card-body>
                 <b-container>
                   <b-row>
@@ -316,9 +310,7 @@
             ></b-container>
           </b-tab>
           <b-tab title="Data access">
-            <b-card
-              header-class="info-header"
-              header="Map repositories"
+            <b-card header-class="info-header" header="Map repositories"
               ><b-card-body>
                 <b-button
                   v-b-toggle.mapFile-collapse
@@ -345,9 +337,7 @@
                     </div> </template
                 ></b-table> </b-card-body
             ></b-card>
-            <b-card
-              header="Classic database access"
-              header-class="info-header"
+            <b-card header="Classic database access" header-class="info-header"
               ><b-card-body>
                 <b-container fluid>
                   <b-row
@@ -451,7 +441,12 @@
                       <b-form-input v-model="row.item.readPermission" />
                     </template>
                     <template v-slot:cell(writePermission)="row">
-    <b-form-select v-model="selected" :options="options" size="sm" class="mt-3"></b-form-select>
+                      <b-form-select
+                        v-model="selected"
+                        :options="options"
+                        size="sm"
+                        class="mt-3"
+                      ></b-form-select>
                     </template>
                     <template v-slot:cell(delete)="row">
                       <div class="mx-auto text-center">

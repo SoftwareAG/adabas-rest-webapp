@@ -52,6 +52,7 @@ const AdminCommands = [
     { command: "permission", path: ["RBAC"] },
     { command: "permission?list=userrole", path: ["RBAC"] },
     { command: "permission/", path: ["RBAC"] },
+    { command: "nuclog/?list=true", path: ["NucleusLogs"] },
 ]
 
 
@@ -77,15 +78,19 @@ export class AdabasAdmin {
         return this.status.Name;
     }
     // Provide text file of Nucleus Log
-    async nucleusLog(): Promise<any> {
+    nucleusLogList(): Promise<any> {
+        return triggerCallCommand(this.status.Dbid, 20);
+    }
+    // Provide text file of Nucleus Log
+    async nucleusLog(s:string): Promise<any> {
         const getConfig = {
             headers: authHeader("application/json"),
             useCredentails: true,
         };
-        store.commit('SET_URL', { url: config.Url() + "/adabas/database/" + this.status.Dbid + "/nuclog", method: "get" });
+        store.commit('SET_URL', { url: config.Url() + "/adabas/database/" + this.status.Dbid + "/nuclog?name="+s, method: "get" });
         try {
             const response = await axios
-                .get(config.Url() + "/adabas/database/" + this.status.Dbid + "/nuclog", getConfig);
+                .get(config.Url() + "/adabas/database/" + this.status.Dbid + "/nuclog?name="+s, getConfig);
             return response.data.Log.Log;
         }
         catch (error: any) {
