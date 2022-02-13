@@ -65,7 +65,7 @@
               >Descriptor read</b-dropdown-item
             >
           </b-nav-item-dropdown>
-          <b-nav-item target="_blank" href="/api/">Swagger API</b-nav-item>
+          <b-nav-item target="_blank" href="/docs">Swagger API</b-nav-item>
         </b-navbar-nav>
         <b-navbar-nav class="ml-auto" right>
           <b-nav-item v-on:click="logout"
