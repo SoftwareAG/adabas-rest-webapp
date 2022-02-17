@@ -228,6 +228,35 @@ export class AdabasAdmin {
         }
     }
     // Get the Adabas RBAC permission list of the Adabas database
+    assignRole(user: string,role:string): Promise<any> {
+        var def = {
+            Definition: [
+              {
+                Assignment: 'grant',
+                User: user,
+                Role: role,
+              },
+            ],
+          };
+        const getConfig = {
+                headers: authHeader("application/json"),
+                useCredentails: true,
+            };
+            try {
+                return axios
+                    .put(config.Url() + "/adabas/database/" + this.status.Dbid + "/permission/" ,def, getConfig);
+            }
+            catch (error: any) {
+                if (error.response) {
+                    if (error.response.status == 401 || error.response.status == 403) {
+                        userService.logout();
+                        location.reload();
+                    }
+                }
+                throw error;
+            }
+        }    
+    // Get the Adabas RBAC permission list of the Adabas database
     grantRBAC(def: any): Promise<any> {
         const getConfig = {
             headers: authHeader("application/json"),

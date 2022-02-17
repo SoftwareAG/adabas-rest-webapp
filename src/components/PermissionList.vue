@@ -34,6 +34,24 @@
               <Url :url="'/adabas/database' + url + '/file'" />
             </b-col>
           </b-row>
+          <b-row>
+            <b-col sm="2">
+              <b-button v-b-modal.modal-create variant="outline-primary"
+                >Create resource</b-button
+              > </b-col
+            ><b-col sm="2">
+              <b-button v-b-modal.modal-grant variant="outline-primary"
+                >Grant resource</b-button
+              > </b-col
+            ><b-col sm="2">
+              <b-button v-b-modal.modal-assign variant="outline-primary"
+                >Assign role</b-button
+              >
+            </b-col>
+            <b-col sm="6" class="text-right">
+              <b-button variant="outline-primary">Refresh</b-button>
+            </b-col>
+          </b-row>
           <b-row
             ><b-col sm="10">
               <b-tabs content-class="mt-3">
@@ -118,20 +136,7 @@
                           class="mt-3"
                         ></b-form-select> </b-col></b-row
                     ><b-row>
-                      <b-col sm="2">
-                        <b-button
-                          v-b-modal.modal-create
-                          variant="outline-primary"
-                          >Create resource</b-button
-                        > </b-col
-                      ><b-col sm="2">
-                        <b-button
-                          v-b-modal.modal-grant
-                          variant="outline-primary"
-                          >Grant resource</b-button
-                        >
-                      </b-col>
-                      <b-col sm="8">
+                      <b-col sm="12">
                         <b-form-group
                           label="Filter"
                           label-cols-sm="3"
@@ -213,18 +218,24 @@
       id="modal-grant"
       size="lg"
       title="Create Adabas Role-Base resource"
-      @ok="createResource"
+      @ok="grantResource"
       no-stacking
     >
       <p>Create Adabas Role-based Access resource</p>
       <b-container>
         <b-row>
           <b-col sm="2">Object:</b-col>
-          <b-col sm="9">
+          <b-col sm="4">
             <b-form-select
               v-model="newObject"
               :options="objects"
             ></b-form-select> </b-col
+          ><b-col sm="5">
+            <b-form-input
+              type="number"
+              v-model="fnr"
+              placeholder="Adabas File"
+            ></b-form-input></b-col
         ></b-row>
         <b-row>
           <b-col sm="2">Operation:</b-col>
@@ -232,6 +243,46 @@
             <b-form-select
               v-model="newOperation"
               :options="operations"
+            ></b-form-select>
+          </b-col>
+        </b-row>
+        <b-row>
+          <b-col sm="2">Assign to Role:</b-col>
+          <b-col sm="9">
+            <b-form-select
+              v-model="newRole"
+              :options="roles"
+            ></b-form-select> </b-col
+        ></b-row>
+      </b-container>
+      <template #modal-footer="{ ok, cancel, hide }">
+        <b>Custom Footer</b>
+        <!-- Emulate built in modal footer ok and cancel button actions -->
+        <b-button size="sm" variant="success" @click="ok()"> Grant </b-button>
+        <b-button size="sm" variant="danger" @click="cancel()">
+          Revoke
+        </b-button>
+        <!-- Button with custom close trigger value -->
+        <b-button size="sm" variant="outline-secondary" @click="hide('forget')">
+          Forget it
+        </b-button>
+      </template>
+    </b-modal>
+       <b-modal
+      id="modal-assign"
+      size="lg"
+      title="Assignn Adabas Role-Base resource to user"
+      @ok="assignUser"
+      no-stacking
+    >
+      <p>Assign Adabas Role-based Access resource</p>
+      <b-container>
+        <b-row>
+          <b-col sm="2">Assign to User:</b-col>
+          <b-col sm="9">
+            <b-form-select
+              v-model="newName"
+              :options="users"
             ></b-form-select> </b-col
         ></b-row>
         <b-row>
@@ -243,6 +294,18 @@
             ></b-form-select> </b-col
         ></b-row>
       </b-container>
+      <template #modal-footer="{ ok, cancel, hide }">
+        <b>Custom Footer</b>
+        <!-- Emulate built in modal footer ok and cancel button actions -->
+        <b-button size="sm" variant="success" @click="ok()"> Grant </b-button>
+        <b-button size="sm" variant="danger" @click="cancel()">
+          Revoke
+        </b-button>
+        <!-- Button with custom close trigger value -->
+        <b-button size="sm" variant="outline-secondary" @click="hide('forget')">
+          Forget it
+        </b-button>
+      </template>
     </b-modal>
     <StatusBar />
   </div>
@@ -278,6 +341,7 @@ export default class PermissionList extends Vue {
       operations: [],
       objects: [],
       roles: [],
+      users: [],
       fields: ['Operation', 'Object', 'Role'],
       userRoleFields: ['User', 'Role'],
       options: ['User', 'Role', 'Object', 'Operation'],
@@ -290,6 +354,7 @@ export default class PermissionList extends Vue {
       newRole: '',
       newObject: '',
       newOperation: '',
+      fnr: undefined as number | undefined,
     };
   }
   created(): void {
@@ -318,7 +383,7 @@ export default class PermissionList extends Vue {
     }
     if (this.$data.operations.length == 0) {
       this.$data.db.resourceList('operation').then((response: any) => {
-        this.$data.operations = [];
+        this.$data.operations = ['any'];
         response.forEach((element: any) => {
           this.$data.operations.push(element.Operation);
         });
@@ -329,6 +394,15 @@ export default class PermissionList extends Vue {
         this.$data.objects = [];
         response.forEach((element: any) => {
           this.$data.objects.push(element.Object);
+        });
+      });
+    }
+    if (this.$data.users.length == 0) {
+      this.$data.db.resourceList('user').then((response: any) => {
+        this.$data.users = [];
+        response.forEach((element: any) => {
+        console.log("USER: "+JSON.stringify(element)+'->'+element.User);
+          this.$data.users.push(element.User);
         });
       });
     }
@@ -366,6 +440,12 @@ export default class PermissionList extends Vue {
         },
       ],
     };
+    if (this.$data.fnr) {
+      var s = '000000000' + this.$data.fnr;
+      s = s.substr(s.length - 8);
+
+      def.Definition[0].Object = 'FILE.' + s;
+    }
     this.$data.db.grantRBAC(def);
   }
   reloadResource() {
