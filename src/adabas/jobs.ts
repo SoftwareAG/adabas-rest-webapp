@@ -161,3 +161,7 @@ export async function loadExecutions(jobName: string, from: Date, to: Date): Pro
     });
     return executions;
 }
+
+export async function loadJobDefinition(jobName: string): Promise<any> {
+    return await triggerCall("/scheduler/job/" + jobName);
+}
