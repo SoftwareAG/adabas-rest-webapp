@@ -40,7 +40,7 @@ const AdminCommands = [
     { command: "holdqueue", path: ["HoldQueue"] },
     { command: "commandstats", path: ["CommandStats", "Commands"] },
     { command: "monitor", path: ["Statistics"] },
-    { command: "container", path: ["Container", "ContainerList"] },
+    { command: "container", path: ["Container"] },
     { command: "file", path: ["Files"] },
     { command: "parameterinfo", path: ["ParameterInfo", "Parameter"] },
     { command: "threadtable", path: ["Threads"] },
@@ -201,7 +201,7 @@ export class AdabasAdmin {
     }
     // Provide the container list with size
     containerList(): Promise<any> {
-        return triggerCallCommandArray(this.status.Dbid, 8);
+        return triggerCallCommand(this.status.Dbid, 8);
     }
     // Get the Adabas file list of the Adabas database
     fileList(): Promise<any> {

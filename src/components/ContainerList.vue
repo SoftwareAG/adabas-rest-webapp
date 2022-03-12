@@ -17,7 +17,7 @@
   <div class="containerlist p-2">
     <Sidebar :url="url" />
     <b-card
-      :header="'Adabas Database containers for database ' + url"
+      :header="'Adabas Database containers and Free Space Table data for database ' + url"
       border-variant="secondary"
       header-border-variant="secondary"
     >
@@ -26,7 +26,7 @@
           <b-row
             ><b-col>
               This page provides the list of Adabas database containers to be
-              administrate through this Adabas RESTful server.
+              administrate through this Adabas RESTful server. The Free Space table is in an extra table.
             </b-col></b-row
           >
           <b-row
@@ -34,7 +34,9 @@
           ></b-row>
           <b-row
             ><b-col>
-              <b-table
+          <b-tabs content-class="mt-3">
+          <b-tab title="Container" active>
+            <b-table
                 striped
                 bordered
                 hover
@@ -46,6 +48,22 @@
                   {{ calculate(row.item) }}
                 </template>
               </b-table>
+          </b-tab>
+          <b-tab title="Free Space Table">
+            <b-table
+                striped
+                bordered
+                hover
+                small
+                :items="fst"
+                :fields="fstFields"
+              >
+                <template v-slot:cell(BlockSize)="row">
+                  {{ row.item.BlockSize }}KB
+                </template>
+              </b-table>
+          </b-tab>
+          </b-tabs>
             </b-col></b-row
           >
         </b-container>
@@ -70,7 +88,7 @@ import { SearchDatabases } from '@/adabas/admin';
     Url,
   },
 })
-export default class DatabaseList extends Vue {
+export default class ContainerList extends Vue {
   @Prop(String) readonly url: string | undefined;
   data() {
     return {
@@ -85,13 +103,22 @@ export default class DatabaseList extends Vue {
         'FirstUnusedRabn',
         { label: 'Size', key: 'calc' },
       ],
+      fstFields: [
+         'Type',
+         'FirstRABN',
+         'LastRABN',
+         'BlockSize'
+      ],
       containers: [],
+      fst: [],
     };
   }
   created() {
     const db = SearchDatabases(this.url);
     db.containerList().then((response: any) => {
-      this.$data.containers = response;
+      console.log(JSON.stringify(response));
+      this.$data.containers = response.Container.ContainerList;
+      this.$data.fst = response.Container.FreeSpaceTable;
     });
   }
   calculate(container: any): string {

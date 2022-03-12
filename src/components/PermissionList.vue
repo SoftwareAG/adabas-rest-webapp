@@ -118,7 +118,7 @@
                         </b-table></b-col></b-row
                   ></b-container>
                 </b-tab>
-                <b-tab title="User roles" active>
+                <b-tab title="User roles">
                   <b-container>
                     <b-row
                       ><b-col sm="10">
