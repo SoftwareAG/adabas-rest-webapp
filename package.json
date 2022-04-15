@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@types/chart.js": "^2.9.23",
-    "axios": "^0.21.1",
+    "axios": "^0.21.2",
     "bootstrap-vue": "^2.16.0",
     "chart.js": "^2.9.4",
     "highlight.js": "^10.4.1",
