@@ -18,7 +18,7 @@
     "chart.js": "^3.6.1",
     "ejs": "^3.1.8",
     "eventsource": "^2.0.2",
-    "follow-redirects": "~1.14.9",
+    "follow-redirects": "^1.15.1",
     "glob-parent": "^6.0.2",
     "jquery": "^3.6.0",
     "minimist": "^1.2.6",
