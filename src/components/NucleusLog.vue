@@ -16,46 +16,50 @@
 <template>
   <div class="nucleuslog p-2">
     <Sidebar :url="url" />
-    <div class="card">
-      <div class="card-header h5">
-        Adabas Databases Nucleus log of database {{ url }}
-      </div>
-      <div class="card-body">
+    <b-card
+      :header="'Adabas Databases Nucleus log of database ' + url"
+      border-variant="secondary"
+      header-border-variant="secondary"
+    >
+      <b-card-body>
         <b-container fluid>
-          <b-row>
-            <b-col class="font-weight-bold text-center h1">
-              Adabas nucleus log
-            </b-col>
-          </b-row>
           <b-row
             ><b-col>
-              This page provide Adabas database nucleus log/output.
+              This page provides the Adabas database nucleus log output.
             </b-col></b-row
           >
           <b-row
-            ><b-col>
-              <Url url="/adabas/database" /> </b-col
+            ><b-col> <Url url="/adabas/database" /> </b-col
           ></b-row>
           <b-row
+            ><b-col sm="2">
+           Select:
+            </b-col><b-col sm="10">
+              <b-form-select v-on:change="changeLog()" v-model="selected" :options="nucleusOptions"></b-form-select>
+            </b-col></b-row>
+          <b-row
             ><b-col>
-              <b-alert show variant="secondary"
+   <b-overlay :show="show" rounded="sm">
+               <b-alert show variant="secondary"
                 ><pre>{{ log }}</pre></b-alert
               >
+   </b-overlay>
             </b-col></b-row
           ></b-container
-        >
-      </div>
-    </div>
+        ></b-card-body
+      ></b-card
+    >
     <StatusBar />
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import Sidebar from "./Sidebar.vue";
-import StatusBar from "./StatusBar.vue";
-import Url from "./Url.vue";
-import store from "../store/index";
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import Sidebar from './Sidebar.vue';
+import StatusBar from './StatusBar.vue';
+import Url from './Url.vue';
+import store from '../store/index';
+import { SearchDatabases } from '@/adabas/admin';
 
 @Component({
   components: {
@@ -68,22 +72,33 @@ export default class DatabaseList extends Vue {
   @Prop(String) readonly url: string | undefined;
   data() {
     return {
-      log: "" as string,
+      log: '' as string,
       db: null,
+      selected: 'adanuc.log',
+      nucleusOptions: ["adanuc.log"] as string[],
+      show: true,
     };
   }
   created() {
-    this.$data.db = store.getters.search(this.url);
+    this.$data.db = SearchDatabases(this.url);
     this.$data.timer = setInterval(this.loadNucleus, 5000);
     this.loadNucleus();
+    this.$data.db.nucleusLogList().then((response: any) => {
+      this.$data.nucleusOptions = response.NucleusLogs;
+    });
   }
   loadNucleus() {
-    this.$data.db.nucleusLog().then((response: any) => {
+    this.$data.db.nucleusLog(this.$data.selected).then((response: any) => {
       this.$data.log = response;
+      this.$data.show = false;
     });
   }
   beforeDestroy() {
     clearInterval(this.$data.timer);
+  }
+  changeLog() {
+    this.$data.show = false;
+    this.loadNucleus();
   }
 }
 </script>
@@ -92,6 +107,10 @@ export default class DatabaseList extends Vue {
 <style scoped lang="scss">
 h3 {
   margin: 40px 0 0;
+}
+.card-header {
+  font-weight: bold;
+  font-size: 18px;
 }
 ul {
   list-style-type: none;

@@ -18,22 +18,33 @@
 */
 
 import Vue from 'vue';
-
+import App from '../App.vue'
 
 export function Url() {
-   // console.log('Mode:' + process.env.NODE_ENV);
    if (process.env.NODE_ENV === 'development') {
-      // return 'http://localhost:8130'; // GO
-      return 'http://localhost:8091'; // Java
+         // return 'https://localhost:61091'; // GO
+         return 'http://localhost:8130'; // GO
+      // return 'http://localhost:8091'; // Java
    }
-   return '.';
+   let ref = window.location.origin+window.location.pathname;
+   console.log('Ref before:' + ref + ':');
+   ref =  ref.replace(/\/+$/g,'')
+   console.log('Ref after:' + ref + ':');
+   return ref;
+}
+
+export function AppName() {
+   if (process.env.NODE_ENV === 'development') {
+      return '/';
+   }
+   return '/app';
 }
 
 export function Version(): string {
    if (process.env.NODE_ENV === 'development') {
       return 'dev';
    }
-   return 'v1.0.0';
+   return App.version;
 }
 
 export const config = {

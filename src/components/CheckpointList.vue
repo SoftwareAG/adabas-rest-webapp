@@ -15,24 +15,18 @@
 
 <template>
   <div class="checkpointlist p-2">
-    <div class="card">
-      <div class="card-header h5">Checkpoint List</div>
-      <div class="card-body">
+    <Sidebar :url="url" />
+    <b-card
+      :header="'Checkpoint List of Adabas database ' + url"
+      border-variant="secondary"
+      header-border-variant="secondary"
+    >
+      <b-card-body>
         <b-container fluid>
-          <b-row>
-            <b-col class="font-weight-bold text-center h1">
-              Adabas checkpoint list
-            </b-col>
-          </b-row>
           <b-row
             ><b-col>
-              This page provide the list of Adabas database checkpoint list to
+              This page provides the list of Adabas database checkpoint to
               be administrate through this Adabas RESTful server.
-            </b-col>
-          </b-row>
-          <b-row
-            ><b-col>
-              <Sidebar :url="url" />
             </b-col>
           </b-row>
           <b-row
@@ -108,10 +102,8 @@
                 :items="checkpoints"
                 :fields="fields"
               >
-              </b-table> </b-col></b-row
-        ></b-container>
-      </div>
-    </div>
+              </b-table> </b-col></b-row></b-container></b-card-body
+    ></b-card>
     <StatusBar />
   </div>
 </template>
@@ -122,6 +114,7 @@ import Sidebar from "./Sidebar.vue";
 import store from "../store/index";
 import StatusBar from "./StatusBar.vue";
 import Url from "./Url.vue";
+import { SearchDatabases } from '@/adabas/admin';
 
 @Component({
   components: {
@@ -168,7 +161,7 @@ export default class CheckpointList extends Vue {
   updateCheckpoints(): void {
     let to = this.$data.to + "+" + this.$data.toTime;
     let from = this.$data.from + "+" + this.$data.fromTime;
-    const db = store.getters.search(this.url);
+    const db = SearchDatabases(this.url);
     db.checkpoints(from, to).then((response: any) => {
       this.$data.checkpoints = response;
     });
@@ -201,6 +194,10 @@ export default class CheckpointList extends Vue {
 <style scoped lang="scss">
 h3 {
   margin: 40px 0 0;
+}
+.card-header {
+  font-weight: bold;
+  font-size: 18px;
 }
 ul {
   list-style-type: none;

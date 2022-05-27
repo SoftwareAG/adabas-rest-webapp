@@ -16,20 +16,16 @@
 <template>
   <div class="ucblist p-2">
     <Sidebar :url="url" />
-    <div class="card">
-      <div class="card-header h5">
-        Adabas Database UCB list for database {{ url }}
-      </div>
-      <div class="card-body">
+    <b-card
+      :header="'Adabas Database UCB list for database ' + url"
+      border-variant="secondary"
+      header-border-variant="secondary"
+    >
+      <b-card-body>
         <b-container fluid>
-          <b-row>
-            <b-col class="font-weight-bold text-center h1">
-              Adabas hold queue
-            </b-col>
-          </b-row>
           <b-row
             ><b-col>
-              This page provide the list of Adabas database utility control
+              This page provides the list of Adabas database utility control
               block active in the database.
             </b-col>
           </b-row>
@@ -54,19 +50,20 @@
               </b-table>
             </b-col>
           </b-row></b-container
-        >
-      </div>
-    </div>
+        ></b-card-body
+      ></b-card
+    >
     <StatusBar />
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import Sidebar from "./Sidebar.vue";
-import StatusBar from "./StatusBar.vue";
-import Url from "./Url.vue";
-import store from "../store/index";
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import Sidebar from './Sidebar.vue';
+import StatusBar from './StatusBar.vue';
+import Url from './Url.vue';
+import store from '../store/index';
+import { SearchDatabases } from '@/adabas/admin';
 
 @Component({
   components: {
@@ -79,19 +76,25 @@ export default class UCBList extends Vue {
   @Prop(String) readonly url: string | undefined;
   data() {
     return {
-      fields: ["Count", "DBMode", "Date", "Id", "Sequence", "files"],
+      fields: ['Count', 'DBMode', 'Date', 'Id', 'Sequence', 'files'],
       ucb: [],
+      timer: '',
+      db: null,
     };
   }
   created() {
-    const db = store.getters.search(this.url);
-    db.ucb().then((response: any) => {
+    this.$data.db = SearchDatabases(this.url);
+    this.$data.timer = setInterval(this.loadUCBList, 5000);
+    this.loadUCBList();
+  }
+  loadUCBList() {
+    this.$data.db.ucb().then((response: any) => {
       this.$data.ucb = response;
     });
   }
   listUcbFiles(count: number, ucbFiles: any) {
     if (count === -1) {
-      return ["*"];
+      return ['*'];
     }
     let f = [] as string[];
     ucbFiles.forEach((element: any) => {
@@ -106,6 +109,10 @@ export default class UCBList extends Vue {
 <style scoped lang="scss">
 h3 {
   margin: 40px 0 0;
+}
+.card-header {
+  font-weight: bold;
+  font-size: 18px;
 }
 ul {
   list-style-type: none;

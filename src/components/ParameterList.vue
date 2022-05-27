@@ -16,20 +16,16 @@
 <template>
   <div class="parameterlist p-2">
     <Sidebar :url="url" />
-    <div class="card">
-      <div class="card-header h5">
-        Adabas Database parameters for database {{ url }}
-      </div>
-      <div class="card-body">
+    <b-card
+      :header="'Parameters for Adabas Database ' + url"
+      border-variant="secondary"
+      header-border-variant="secondary"
+    >
+      <b-card-body>
         <b-container fluid>
           <b-row>
-            <b-col class="font-weight-bold text-center h1">
-              Adabas Parameters
-            </b-col>
-          </b-row>
-          <b-row>
             <b-col>
-              This page provide the list of Adabas database parameters to be
+              This page provides the parameters of Adabas database to be
               administrate through this Adabas RESTful server.
             </b-col>
           </b-row>
@@ -123,7 +119,7 @@
                           aria-controls="flavours"
                           @change="toggleAll"
                         >
-                          {{ allSelected ? "Un-select All" : "Select All" }}
+                          {{ allSelected ? 'Un-select All' : 'Select All' }}
                         </b-form-checkbox>
                       </template>
 
@@ -172,22 +168,23 @@
               </b-table> </b-col
           ></b-row>
         </b-container>
-      </div>
-    </div>
+      </b-card-body>
+    </b-card>
     <StatusBar />
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Provide, Vue } from "vue-property-decorator";
-import { authHeader } from "../user/auth-header";
-import { config } from "../store/config";
-import { userService } from "../user/service";
-import Sidebar from "./Sidebar.vue";
-import store from "../store/index";
-import StatusBar from "./StatusBar.vue";
-import Url from "./Url.vue";
-import axios from "axios";
+import { Component, Prop, Provide, Vue } from 'vue-property-decorator';
+import { authHeader } from '../user/auth-header';
+import { config } from '../store/config';
+import { userService } from '../user/service';
+import Sidebar from './Sidebar.vue';
+import store from '../store/index';
+import StatusBar from './StatusBar.vue';
+import Url from './Url.vue';
+import axios from 'axios';
+import { SearchDatabases } from '@/adabas/admin';
 
 @Component({
   components: {
@@ -198,90 +195,90 @@ import axios from "axios";
 })
 export default class ParameterList extends Vue {
   @Prop(String) readonly url: string | undefined;
-  @Provide() type = "static";
+  @Provide() type = 'static';
   data() {
     return {
       allSelected: false,
       indeterminate: false,
-      filter: "",
-      filterOn: ["Name", "Description"],
+      filter: '',
+      filterOn: ['Name', 'Description'],
       fields: [
-        { key: "Name", sortable: true },
-        { key: "Description", sortable: true },
-        "MinValue",
-        "MaxValue",
-        { key: "OrgValue", label: "Original value" },
-        { key: "edit", label: "Edited" },
-        "changed",
+        { key: 'Name', sortable: true },
+        { key: 'Description', sortable: true },
+        'MinValue',
+        'MaxValue',
+        { key: 'OrgValue', label: 'Original value' },
+        { key: 'edit', label: 'Edited' },
+        'changed',
       ],
       options: [
-        { value: "static", text: "Static parameters" },
-        { value: "dynamic", text: "Dynamic parameters" },
+        { value: 'static', text: 'Static parameters' },
+        { value: 'dynamic', text: 'Dynamic parameters' },
       ],
       parameters: [] as any[],
       optionOptionsOffline: [
-        { text: "Auto Expand", value: "AUTO_EXPAND" },
-        { text: "Utilities only", value: "UTILITIES_ONLY" },
-        { text: "Local utilities", value: "LOCAL_UTILITIES" },
-        { text: "Open required", value: "OPEN_REQUIRED" },
-        { text: "Fault teolerant AR", value: "FAULT_TOLERANT_AR" },
-        { text: "Autorestart only", value: "AUTORESTART_ONLY" },
-        { text: "Read-only", value: "READONLY" },
-        { text: "XA", value: "XA" },
-        { text: "Truncation", value: "TRUNCATION" },
-        { text: "Deactivate dynamic options", value: "DEACTIVATE" },
-        { text: "NO PLOG replication", value: "NOPLOG_REPLICATION" },
+        { text: 'Auto Expand', value: 'AUTO_EXPAND' },
+        { text: 'Utilities only', value: 'UTILITIES_ONLY' },
+        { text: 'Local utilities', value: 'LOCAL_UTILITIES' },
+        { text: 'Open required', value: 'OPEN_REQUIRED' },
+        { text: 'Fault teolerant AR', value: 'FAULT_TOLERANT_AR' },
+        { text: 'Autorestart only', value: 'AUTORESTART_ONLY' },
+        { text: 'Read-only', value: 'READONLY' },
+        { text: 'XA', value: 'XA' },
+        { text: 'Truncation', value: 'TRUNCATION' },
+        { text: 'Deactivate dynamic options', value: 'DEACTIVATE' },
+        { text: 'NO PLOG replication', value: 'NOPLOG_REPLICATION' },
       ],
       optionOptionsOnline: [
-        { text: "Utilities only", value: "UTILITIES_ONLY" },
-        { text: "Local utilities", value: "LOCAL_UTILITIES" },
+        { text: 'Utilities only', value: 'UTILITIES_ONLY' },
+        { text: 'Local utilities', value: 'LOCAL_UTILITIES' },
       ],
       optionOptions: [],
       spaOptions: [],
       spaLogging: [],
-      loggingParameters: ["CB", "FB", "RB", "SB", "VB", "IB", "BD", "AR"],
+      loggingParameters: ['CB', 'FB', 'RB', 'SB', 'VB', 'IB', 'BD', 'AR'],
       spaUserexits: [],
       userexitsParameters: [
-        { text: "Userexit 1", value: 1 },
-        { text: "Userexit 2", value: 2 },
-        { text: "Userexit 4", value: 4 },
-        { text: "Userexit 11", value: 11 },
-        { text: "Userexit 14", value: 14 },
+        { text: 'Userexit 1', value: 1 },
+        { text: 'Userexit 2', value: 2 },
+        { text: 'Userexit 4', value: 4 },
+        { text: 'Userexit 11', value: 11 },
+        { text: 'Userexit 14', value: 14 },
       ],
       db: null,
     };
   }
   created() {
-    console.log("Create ..." + this.url);
-    this.$data.db = store.getters.search(this.url);
+    console.log('Create ...' + this.url);
+    this.$data.db = SearchDatabases(this.url);
     this.queryParameters();
   }
   queryParameters(): void {
     if (!this.$data.db) {
       this.$data.db = store
-        .dispatch("INIT_DATABASES")
+        .dispatch('INIT_DATABASES')
         .then((dbs) => {
-          return store.getters.search(this.url);
+          return SearchDatabases(this.url);
         })
         .catch((err) => {
-          console.log("ERR: " + JSON.stringify(err));
+          console.log('ERR: ' + JSON.stringify(err));
           return undefined;
         });
     }
     if (!this.$data.db) {
       return;
     }
-    let doStaticType = this.type == "static";
+    let doStaticType = this.type == 'static';
     this.$data.db.parameters(doStaticType).then((response: any) => {
       this.$data.parameters = response;
       this.$data.parameters.forEach((element: any) => {
         element.OrgValue = element.Value;
       });
-      let p = this.$data.parameters.filter((i: any) => i.Name === "OPTIONS");
+      let p = this.$data.parameters.filter((i: any) => i.Name === 'OPTIONS');
       this.parseOptions(p[0].Value);
-      p = this.$data.parameters.filter((i: any) => i.Name === "LOGGING");
+      p = this.$data.parameters.filter((i: any) => i.Name === 'LOGGING');
       this.parseLogging(p[0].Value);
-      p = this.$data.parameters.filter((i: any) => i.Name === "USEREXITS");
+      p = this.$data.parameters.filter((i: any) => i.Name === 'USEREXITS');
       this.parseUserexits(p[0].Value);
       if (doStaticType) {
         this.$data.optionOptions = this.$data.optionOptionsOffline;
@@ -294,7 +291,27 @@ export default class ParameterList extends Vue {
   getParameterInfo() {
     this.$data.db.parameterInfo().then((response: any) => {
       this.$data.parameters.forEach((element: any) => {
-        let v = response.filter((f: any) => f.Acronym === element.Name);
+        let name = element.Name;
+        switch (element.Name) {
+          case 'ADATCPATB':
+            name = 'TCPATB';
+            break;
+          case 'ADATCPCONNECTIONS':
+            name = 'TCPCONNECTIONS';
+            break;
+          case 'ADATCPPORT':
+            name = 'PORTNUMBER';
+            break;
+          case 'ADATCPRECEIVER':
+            name = 'TCPRECEIVER';
+            break;
+          case 'SSLPORT':
+            name = 'SSLPORTNUMBER';
+            break;
+          default:
+            break;
+        }
+        let v = response.filter((f: any) => f.Acronym === name);
         if (v.length > 0) {
           element.Description = v[0].Description;
           element.OnlineValue = v[0].OnlineValue;
@@ -305,7 +322,7 @@ export default class ParameterList extends Vue {
             element.MaxValue = v[0].MaxValue;
           }
         } else {
-          element.Description = "<not available>";
+          element.Description = '<not available>';
         }
       });
       (this.$refs.paraTable as any).refresh();
@@ -316,15 +333,15 @@ export default class ParameterList extends Vue {
     this.queryParameters();
   }
   parseOptions(value: string) {
-    let s = value.split(",");
+    let s = value.split(',');
     this.$data.spaOptions = s;
   }
   parseLogging(value: string) {
-    let s = value.split(",");
+    let s = value.split(',');
     this.$data.spaLogging = s;
   }
   parseUserexits(value: string) {
-    let s = value.split(",");
+    let s = value.split(',');
     this.$data.spaUserexits = s;
   }
   submit(item: any) {
@@ -338,51 +355,51 @@ export default class ParameterList extends Vue {
     }
     let changeUrl =
       config.Url() +
-      "/adabas/database/" +
+      '/adabas/database/' +
       this.$data.db.dbid() +
-      "/parameter?type=" +
+      '/parameter?type=' +
       this.type;
     changedParameter.forEach((element: any) => {
       switch (element.Name) {
-        case "LOGGING":
+        case 'LOGGING':
           changeUrl =
             changeUrl +
-            "&" +
+            '&' +
             element.Name +
-            "=" +
+            '=' +
             JSON.stringify(this.$data.spaLogging);
           break;
-        case "OPTIONS":
+        case 'OPTIONS':
           changeUrl =
             changeUrl +
-            "&" +
+            '&' +
             element.Name +
-            "=" +
+            '=' +
             JSON.stringify(this.$data.spaOptions);
           break;
-        case "USEREXITS":
+        case 'USEREXITS':
           changeUrl =
             changeUrl +
-            "&" +
+            '&' +
             element.Name +
-            "=" +
+            '=' +
             JSON.stringify(this.$data.spaUserexits);
           break;
         default:
-          changeUrl = changeUrl + "&" + element.Name + "=" + element.Value;
+          changeUrl = changeUrl + '&' + element.Name + '=' + element.Value;
           break;
       }
     });
     const getConfig = {
-      headers: authHeader("application/json"),
+      headers: authHeader('application/json'),
       useCredentails: true,
     };
     return axios.put(changeUrl, {}, getConfig).catch((error: any) => {
-      store.commit("SET_STATUS", JSON.stringify(error));
+      store.commit('SET_STATUS', JSON.stringify(error));
       if (error.response) {
         if (error.response.status == 401 || error.response.status == 403) {
           userService.logout();
-          location.reload(true);
+          location.reload();
         }
       }
       throw error;
@@ -398,6 +415,10 @@ export default class ParameterList extends Vue {
 <style scoped lang="scss">
 h3 {
   margin: 40px 0 0;
+}
+.card-header {
+  font-weight: bold;
+  font-size: 18px;
 }
 ul {
   list-style-type: none;

@@ -42,8 +42,9 @@
             label-for="nested-dbid"
           >
             <b-form-input
-              v-model="createDatabase.Dbid"
+              v-model.number="createDatabase.Dbid"
               id="nested-dbid"
+              type="number"
             ></b-form-input>
           </b-form-group>
           <b-form-group
@@ -79,7 +80,7 @@
             label-for="nested-checkpoint"
           >
             <b-form-input
-              v-model="createDatabase.CheckpointFile"
+              v-model.number="createDatabase.CheckpointFile"
               id="nested-checkpoint"
               type="number"
             ></b-form-input>
@@ -92,7 +93,7 @@
             label-for="nested-security"
           >
             <b-form-input
-              v-model="createDatabase.SecurityFile"
+              v-model.number="createDatabase.SecurityFile"
               id="nested-security"
               type="number"
             ></b-form-input>
@@ -104,7 +105,7 @@
             label-for="nested-user"
           >
             <b-form-input
-              v-model="createDatabase.UserFile"
+              v-model.number="createDatabase.UserFile"
               id="nested-user"
               type="number"
             ></b-form-input>
@@ -304,7 +305,7 @@ export default class CreateDatabase extends Vue {
             Path: "${ADADATADIR}/db${DBID}/WORK.${DBID}",
           },
         ],
-        Dbid: 75,
+        Dbid: 75 as number,
         LoadDemo: true,
         Name: "DEMODB",
       },

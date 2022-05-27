@@ -16,20 +16,16 @@
 <template>
   <div class="fileslist p-2">
     <Sidebar :url="url" />
-    <div class="card">
-      <div class="card-header h5">
-        Adabas Database files for database {{ url }}
-      </div>
-      <div class="card-body">
+    <b-card
+      :header="'Adabas Database files for database ' + url"
+      border-variant="secondary"
+      header-border-variant="secondary"
+    >
+      <b-card-body>
         <b-container fluid>
           <b-row>
-            <b-col class="font-weight-bold text-center h1">
-              Adabas File list
-            </b-col>
-          </b-row>
-          <b-row>
             <b-col>
-              This page provide the list of Adabas database files to be
+              This page provides the list of Adabas database files to be
               administrate through this Adabas RESTful server.
             </b-col>
           </b-row>
@@ -44,15 +40,17 @@
             </b-col>
           </b-row>
           <b-row
-            ><b-col sm="4">
+            ><b-col sm="10">
               <b-pagination
                 v-model="currentPage"
                 :total-rows="files.length"
                 :per-page="perPage"
                 aria-controls="my-table"
               ></b-pagination>
-            </b-col>
-            <b-col sm="8">
+            </b-col><b-col sm="2">
+              <b-form-select v-model="perPage" :options="perPageOptions" size="sm" class="mt-3"></b-form-select>
+          </b-col></b-row><b-row>
+            <b-col sm="12">
               <b-form-group
                 label="Filter"
                 label-cols-sm="3"
@@ -94,6 +92,9 @@
                 :items="files"
                 :fields="fields"
               >
+                 <template v-slot:cell(RecordCount)="row">
+                  {{new Intl.NumberFormat().format(row.item.RecordCount)}}
+                </template>
                 <template v-slot:cell(action)="row">
                   <b-dropdown
                     size="sm"
@@ -103,24 +104,38 @@
                   >
                     <b-dropdown-item
                       size="sm"
-                      variant="info"
+                      variant="outline-primary"
                       v-on:click="infoDeleteFile(row.item)"
                       class="mr-2"
                       >Delete</b-dropdown-item
                     >
                     <b-dropdown-item
                       size="sm"
-                      variant="info"
+                      variant="outline-primary"
                       v-on:click="infoRenumberFile(row.item)"
+                      class="mr-2"
+                      >Add LOB file</b-dropdown-item
+                    >
+                    <b-dropdown-item
+                      size="sm"
+                      variant="outline-primary"
+                      v-on:click="infoAddLob(row.item)"
                       class="mr-2"
                       >Renumber</b-dropdown-item
                     >
                     <b-dropdown-item
                       size="sm"
-                      variant="info"
+                      variant="outline-primary"
                       v-on:click="refreshFile(row.item)"
                       class="mr-2"
                       >Refresh</b-dropdown-item
+                    >
+                    <b-dropdown-item
+                      size="sm"
+                      variant="outline-primary"
+                      v-on:click="infoRenameFile(row.item)"
+                      class="mr-2"
+                      >Rename</b-dropdown-item
                     >
                   </b-dropdown>
                 </template>
@@ -188,9 +203,9 @@
               </div>
             </b-col></b-row
           ></b-container
-        >
-      </div>
-    </div>
+        ></b-card-body
+      ></b-card
+    >
     <b-modal
       id="modal-renumber"
       size="lg"
@@ -199,7 +214,27 @@
       no-stacking
     >
       <p>Renumber Adabas file {{ currentFile }}</p>
-      <b-form-input v-model="newNr"></b-form-input>
+      <b-form-input v-model.number="newNr"></b-form-input>
+    </b-modal>
+        <b-modal
+      id="modal-addlob"
+      size="lg"
+      title="Add Large Object File for Adabas File"
+      @ok="addLobFile"
+      no-stacking
+    >
+      <p>Add Large Object LOB file for Adabas file {{ currentFile }}</p>
+      <b-form-input v-model.number="newNr"></b-form-input>
+    </b-modal>
+            <b-modal
+      id="modal-rename"
+      size="lg"
+      title="Rename Adabas File"
+      @ok="renameFile"
+      no-stacking
+    >
+      <p>Rename Adabas file {{ currentFile }}</p>
+      <b-form-input v-model.trim="newName"></b-form-input>
     </b-modal>
     <StatusBar />
   </div>
@@ -212,6 +247,7 @@ import store from "../store/index";
 import StatusBar from "./StatusBar.vue";
 import CreateFile from "./CreateFile.vue";
 import Url from "./Url.vue";
+import { SearchDatabases } from '@/adabas/admin';
 
 @Component({
   components: {
@@ -230,8 +266,9 @@ export default class FilesList extends Vue {
       newNr: 500,
       currentFile: 0,
       perPage: 10,
+      perPageOptions: [10,20,50,100],
       currentPage: 1,
-      fields: ["FileNr", "Name", "RecordCount", "IsLob", "IsLobRoot", "action"],
+      fields: ["FileNr", "Name","Type", "RecordCount", "IsLob", "IsLobRoot", "action"],
       files: [],
       filter: "",
       filterOn: ["FileNr", "Name"],
@@ -285,7 +322,7 @@ export default class FilesList extends Vue {
     };
   }
   created(): void {
-    this.$data.db = store.getters.search(this.url);
+    this.$data.db = SearchDatabases(this.url);
     this.$data.timer = setInterval(this.loadFiles, 15000);
     if (this.$data.db === undefined) {
       store.dispatch("SYNC_ADMIN_DBS");
@@ -295,7 +332,7 @@ export default class FilesList extends Vue {
   }
   loadFiles(): void {
     if (this.$data.db === undefined) {
-      this.$data.db = store.getters.search(this.url);
+      this.$data.db = SearchDatabases(this.url);
       if (this.$data.db === undefined) {
         return;
       }
@@ -383,6 +420,17 @@ export default class FilesList extends Vue {
     console.log("Renumber " + item.FileNr);
     this.$root.$emit("bv::show::modal", "modal-renumber", "#btnShow");
   }
+  infoRenameFile(item: any): void {
+    this.$data.currentFile = item.FileNr;
+    this.$data.newName = item.Name;
+    console.log("Rename " + item.FileNr);
+    this.$root.$emit("bv::show::modal", "modal-rename", "#btnShow");
+  }
+  infoAddLob(item: any): void {
+    this.$data.currentFile = item.FileNr;
+    console.log("Add Lob file " + item.FileNr);
+    this.$root.$emit("bv::show::modal", "modal-addlob", "#btnShow");
+  }
   renumberFile(): void {
     console.log(
       "Renumber " + this.$data.currentFile + " to " + this.$data.newNr
@@ -391,6 +439,24 @@ export default class FilesList extends Vue {
       this.$data.db.renumberFile(this.$data.currentFile, this.$data.newNr);
     }
     this.$data.newNr = 0;
+  }
+  addLobFile(): void {
+    console.log(
+      "Add LOB file for " + this.$data.currentFile + " with " + this.$data.newNr
+    );
+    if (this.$data.newNr > 0) {
+      this.$data.db.addLobFile(this.$data.currentFile, this.$data.newNr);
+    }
+    this.$data.newNr = 0;
+  }
+  renameFile(): void {
+    console.log(
+      "Renamer " + this.$data.currentFile + " with " + this.$data.newName
+    );
+    if (this.$data.newName != "") {
+      this.$data.db.renameFile(this.$data.currentFile, this.$data.newName);
+    }
+    this.$data.newName = "";
   }
   refreshFile(item: any): void {
     this.$data.currentFile = item.FileNr;
@@ -439,6 +505,10 @@ export default class FilesList extends Vue {
 <style scoped lang="scss">
 h3 {
   margin: 40px 0 0;
+}
+.card-header {
+  font-weight: bold;
+  font-size: 18px;
 }
 ul {
   list-style-type: none;

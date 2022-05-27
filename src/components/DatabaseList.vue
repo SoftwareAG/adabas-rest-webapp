@@ -15,20 +15,16 @@
 
 <template>
   <div class="databaselist p-2">
-    <div class="card">
-      <div class="card-header h5">
-        Adabas Databases list available to administrate
-      </div>
-      <div class="card-body">
+    <b-card
+      header="List of local Adabas Databases available for administration"
+      border-variant="secondary"
+      header-border-variant="secondary"
+    >
+      <b-card-body>
         <b-container fluid>
           <b-row>
-            <b-col class="font-weight-bold text-center h1">
-              Adabas Database list
-            </b-col>
-          </b-row>
-          <b-row>
             <b-col>
-              This page provide access to the list of Adabas database to be
+              This page provides access to the list of Adabas database to be
               administrate through this Adabas RESTful server.
             </b-col>
           </b-row>
@@ -39,7 +35,7 @@
             <b-col> <CreateDatabase /> </b-col>
           </b-row>
           <b-row
-            ><b-col sm="4">
+            ><b-col sm="10">
               <b-pagination
                 v-model="currentPage"
                 :total-rows="databases.length"
@@ -47,7 +43,16 @@
                 aria-controls="my-table"
               ></b-pagination>
             </b-col>
-            <b-col sm="8">
+            <b-col sm="2">
+              <b-form-select
+                v-model="perPage"
+                :options="perPageOptions"
+                size="sm"
+                class="mt-3"
+              ></b-form-select> </b-col
+          ></b-row>
+          <b-row>
+            <b-col>
               <b-form-group
                 label="Filter"
                 label-cols-sm="3"
@@ -93,16 +98,14 @@
                 :items="databases"
                 :fields="fields"
               >
-                <template v-slot:cell(status.Name)="row">
-                  <router-link :to="'/information/'+row.item.status.Dbid">{{row.item.status.Name}}</router-link>
+                <template v-slot:[`cell(status.Name)`]="row">
+                  <router-link :to="'/information/' + row.item.status.Dbid">{{
+                    row.item.status.Name
+                  }}</router-link>
                 </template>
-                <template v-slot:cell(status.Active)="row">
-                  <div v-if="row.item.online()">
-                    Online
-                  </div>
-                  <div v-else>
-                    Offline
-                  </div>
+                <template v-slot:[`cell(status.Active)`]="row">
+                  <div v-if="row.item.online()">Online</div>
+                  <div v-else>Offline</div>
                 </template>
                 <template v-slot:cell(action)="row">
                   <div v-if="row.item.status.Active">
@@ -149,22 +152,22 @@
                   </div>
                 </template>
                 <template v-slot:cell(show_details)="row">
-                    <b-button
-                      size="sm"
-                      variant="outline-primary"
-                      :to="'/parameters/' + row.item.status.Dbid"
-                      class="mr-2"
-                    >
-                      Parameters
-                    </b-button>
-                    <b-button
-                      size="sm"
-                      :to="'/containers/' + row.item.status.Dbid"
-                      class="mr-2"
-                      variant="outline-primary"
-                    >
-                      Containers
-                    </b-button>
+                  <b-button
+                    size="sm"
+                    variant="outline-primary"
+                    :to="'/parameters/' + row.item.status.Dbid"
+                    class="mr-2"
+                  >
+                    Parameters
+                  </b-button>
+                  <b-button
+                    size="sm"
+                    :to="'/containers/' + row.item.status.Dbid"
+                    class="mr-2"
+                    variant="outline-primary"
+                  >
+                    Containers
+                  </b-button>
                   <b-button
                     size="sm"
                     variant="outline-primary"
@@ -180,6 +183,15 @@
                     class="mr-2"
                   >
                     Files
+                  </b-button>
+                  <b-button
+                    v-if="row.item.status.Active"
+                    size="sm"
+                    variant="outline-primary"
+                    :to="'/permission/' + row.item.status.Dbid"
+                    class="mr-2"
+                  >
+                    Permissions
                   </b-button>
                   <div v-if="row.item.status.Active">
                     <b-dropdown
@@ -204,11 +216,27 @@
                         Command statistics
                       </b-dropdown-item>
                       <b-dropdown-item
+                        :disabled="!isMonitor(row.item)"
+                        size="sm"
+                        :to="'/monitor/' + row.item.status.Dbid"
+                        class="mr-2"
+                      >
+                        Monitor statistics
+                      </b-dropdown-item>
+                      <b-dropdown-item
                         size="sm"
                         :to="'/bufferpool/' + row.item.status.Dbid"
                         class="mr-2"
                       >
                         Buffer Pool
+                      </b-dropdown-item>
+                      <b-dropdown-item
+                        :disabled="!isMonitor(row.item)"
+                        size="sm"
+                        :to="'/bufferflush/' + row.item.status.Dbid"
+                        class="mr-2"
+                      >
+                        Buffer Flush
                       </b-dropdown-item>
                       <b-dropdown-item
                         size="sm"
@@ -226,10 +254,31 @@
                       </b-dropdown-item>
                       <b-dropdown-item
                         size="sm"
+                        :to="'/plogstat/' + row.item.status.Dbid"
+                        class="mr-2"
+                      >
+                        PLOG
+                      </b-dropdown-item>
+                      <b-dropdown-item
+                        size="sm"
                         :to="'/threadtable/' + row.item.status.Dbid"
                         class="mr-2"
                       >
                         Thread Table
+                      </b-dropdown-item>
+                      <b-dropdown-item
+                        size="sm"
+                        :to="'/adatcp/' + row.item.status.Dbid"
+                        class="mr-2"
+                      >
+                        TCP connection
+                      </b-dropdown-item>
+                      <b-dropdown-item
+                        size="sm"
+                        :to="'/cluster/' + row.item.status.Dbid"
+                        class="mr-2"
+                      >
+                        Cluster
                       </b-dropdown-item>
                     </b-dropdown>
                     <b-dropdown
@@ -284,22 +333,22 @@
                 </template> </b-table></b-col
           ></b-row>
         </b-container>
-      </div>
-    </div>
+      </b-card-body>
+    </b-card>
     <StatusBar />
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import { AdabasAdmin } from "../adabas/admin";
-import { userService } from "../user/service";
-import CreateDatabase from "./CreateDatabase.vue";
-import { BIconXCircle } from "bootstrap-vue";
-import store from "../store/index";
-import StatusBar from "./StatusBar.vue";
-import Url from "./Url.vue";
-import router from "../router/index";
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import { AdabasAdmin } from '../adabas/admin';
+import { userService } from '../user/service';
+import CreateDatabase from './CreateDatabase.vue';
+import { BIconXCircle } from 'bootstrap-vue';
+import store from '../store/index';
+import StatusBar from './StatusBar.vue';
+import Url from './Url.vue';
+import router from '../router/index';
 
 @Component({
   components: {
@@ -315,21 +364,23 @@ export default class DatabaseList extends Vue {
     return {
       perPage: 10,
       currentPage: 1,
-      filter: "",
+      perPageOptions: [10, 20, 50, 100],
+      filter: '',
       filterOn: [],
       fields: [
-        { label: "Dbid", key: "status.Dbid" },
-        { label: "Name", key: "status.Name" },
-        { label: "Strukture Level", key: "status.StructureLevel" },
-        { label: "Version", key: "status.Version" },
-        { label: "Active", key: "status.Active" },
-        "action",
-        "show_details",
-        "Delete",
+        { label: 'Dbid', key: 'status.Dbid' },
+        { label: 'Name', key: 'status.Name' },
+        { label: 'Strukture Level', key: 'status.StructureLevel' },
+        { label: 'Version', key: 'status.Version' },
+        { label: 'Location', key: 'status.Location' },
+        { label: 'Active', key: 'status.Active' },
+        'action',
+        'show_details',
+        'Delete',
       ],
       databases: [] as AdabasAdmin[],
-      timer: "",
-      jsonString: "<No data received>",
+      timer: '',
+      jsonString: '<No data received>',
     };
   }
   created() {
@@ -342,24 +393,24 @@ export default class DatabaseList extends Vue {
    */
   loadDatabases(): void {
     store
-      .dispatch("SYNC_ADMIN_DBS")
+      .dispatch('SYNC_ADMIN_DBS')
       .then((response: any) => {
         this.$data.databases = response;
         this.$data.jsonString = JSON.stringify(response);
-        store.commit("SET_STATUS", "Database list received...");
+        store.commit('SET_STATUS', 'Database list received...');
       })
       .catch((error: any) => {
-        console.log("ERROR DBLIST: " + JSON.stringify(error));
+        console.log('ERROR DBLIST: ' + JSON.stringify(error));
         if (error.response) {
-          store.commit("SET_STATUS", JSON.stringify(error.response));
+          store.commit('SET_STATUS', JSON.stringify(error.response));
           if (error.response.status == 401 || error.response.status == 403) {
             userService.logout();
-            location.reload(true);
+            location.reload();
           }
         } else {
-          store.commit("SET_STATUS", JSON.stringify(error));
+          store.commit('SET_STATUS', JSON.stringify(error));
           userService.logout();
-          location.reload(true);
+          location.reload();
         }
         throw error;
       });
@@ -368,7 +419,7 @@ export default class DatabaseList extends Vue {
    * Start the selected database
    */
   startDatabase(dbid: AdabasAdmin): void {
-    this.operation(dbid, "start");
+    this.operation(dbid, 'start');
   }
   /*
    * Stop the selected database by giving the corresponding
@@ -383,20 +434,21 @@ export default class DatabaseList extends Vue {
    */
 
   operation(dbid: AdabasAdmin, operation: string): void {
+    router.push('/nuclog/' + dbid.dbid());
     dbid
       .callOperation(operation)
       .then((response: any) => {
         store.commit(
-          "SET_STATUS",
+          'SET_STATUS',
           "Calling operation '" + operation + "' initiated..."
         );
-        console.log("Route to " + dbid.dbid());
-        router.push("/nuclog/" + dbid.dbid());
+        console.log('Route to ' + dbid.dbid());
       })
       .catch((error: any) => {
+        // router.push('/nuclog/' + dbid.dbid());
         store.commit(
-          "SET_STATUS",
-          "Error calling" + operation + ":" + JSON.stringify(error)
+          'SET_STATUS',
+          'Error calling' + operation + ':' + JSON.stringify(error)
         );
       });
   }
@@ -404,23 +456,23 @@ export default class DatabaseList extends Vue {
    * Delete the selected Adabas database
    */
   del_database(dbid: AdabasAdmin): void {
-    console.log("Delete database : " + dbid);
+    console.log('Delete database : ' + dbid);
     this.$bvModal
       .msgBoxConfirm(
-        "Please confirm that you want to delete the Adabas database " +
+        'Please confirm that you want to delete the Adabas database ' +
           dbid.dbid() +
-          "(" +
+          '(' +
           dbid.name() +
-          ")" +
-          ".",
+          ')' +
+          '.',
         {
-          title: "Please Confirm",
-          size: "sm",
-          buttonSize: "sm",
-          okVariant: "danger",
-          okTitle: "YES",
-          cancelTitle: "NO",
-          footerClass: "p-2",
+          title: 'Please Confirm',
+          size: 'sm',
+          buttonSize: 'sm',
+          okVariant: 'danger',
+          okTitle: 'YES',
+          cancelTitle: 'NO',
+          footerClass: 'p-2',
           hideHeaderClose: false,
           centered: true,
         }
@@ -430,15 +482,15 @@ export default class DatabaseList extends Vue {
           dbid
             .delete()
             .then((response: any) => {
-              console.log("Delete response: " + JSON.stringify(response));
-              store.commit("SET_STATUS", "Database delete initiated...");
+              console.log('Delete response: ' + JSON.stringify(response));
+              store.commit('SET_STATUS', 'Database delete initiated...');
             })
             .catch((error: any) => {
-              console.log("Error: " + JSON.stringify(error));
+              console.log('Error: ' + JSON.stringify(error));
               if (error.response) {
-                store.commit("SET_STATUS", JSON.stringify(error.response));
+                store.commit('SET_STATUS', JSON.stringify(error.response));
               } else {
-                store.commit("SET_STATUS", JSON.stringify(error));
+                store.commit('SET_STATUS', JSON.stringify(error));
               }
               throw error;
             });
@@ -449,9 +501,16 @@ export default class DatabaseList extends Vue {
     if (items.length == 0) {
       return;
     }
-    this.$router.push({ path: "/information/" + items[0].status.Dbid });
+    this.$router.push({ path: '/information/' + items[0].status.Dbid });
     return;
   }
+  isMonitor(item: any): boolean {
+    if (item.status.StructureLevel > 21) {
+      return true;
+    }
+    return false;
+  }
+
   beforeDestroy(): void {
     clearInterval(this.$data.timer);
   }
@@ -462,6 +521,10 @@ export default class DatabaseList extends Vue {
 <style scoped lang="scss">
 h3 {
   margin: 40px 0 0;
+}
+.card-header {
+  font-weight: bold;
+  font-size: 18px;
 }
 ul {
   list-style-type: none;

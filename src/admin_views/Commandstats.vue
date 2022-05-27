@@ -14,7 +14,7 @@
  * limitations under the License.-->
 
 <template>
-  <div class="userqueue">
+  <div class="commandstats">
     <MyHeader></MyHeader>
     <CommandstatsData :url="url" />
   </div>

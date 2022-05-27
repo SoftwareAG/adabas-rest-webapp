@@ -24,9 +24,13 @@
         <b-nav-item :to="'/nuclog/' + url">Nucleus Log</b-nav-item>
         <b-nav-item :to="'/containers/' + url">Containers</b-nav-item>
         <b-nav-item :to="'/files/' + url">Files</b-nav-item>
+        <b-nav-item :disabled="!active()" :to="'/permission/' + url">Permissions</b-nav-item>
         <b-nav-text>Statistics</b-nav-text>
         <b-nav-item :disabled="!active()" :to="'/highwater/' + url"
           >High Watermark</b-nav-item
+        >
+        <b-nav-item :disabled="!active() && !isMonitor()" :to="'/monitor/' + url"
+          >Monitor</b-nav-item
         >
         <b-nav-item :disabled="!active()" :to="'/cmdstats/' + url"
           >Command statistics</b-nav-item
@@ -34,14 +38,26 @@
         <b-nav-item :disabled="!active()" :to="'/bufferpool/' + url"
           >Buffer Pool statistics</b-nav-item
         >
+        <b-nav-item :disabled="!active()" :to="'/plogstat/' + url"
+          >PLOG statistics</b-nav-item
+        >
+        <b-nav-item :disabled="!active() && !isMonitor()" :to="'/bufferflush/' + url"
+          >Buffer Flush statistics</b-nav-item
+        >
         <b-nav-item :disabled="!active()" :to="'/threadtable/' + url"
           >Thread table</b-nav-item
+        >
+        <b-nav-item :disabled="!active()" :to="'/adatcp/' + url"
+          >TCP connections</b-nav-item
         >
         <b-nav-item :disabled="!active()" :to="'/activity/' + url"
           >Activity</b-nav-item
         >
         <b-nav-item :disabled="!active()" :to="'/checkpoints/' + url"
           >Checkpoints</b-nav-item
+        >
+        <b-nav-item :disabled="!active()" :to="'/cluster/' + url"
+          >Cluster</b-nav-item
         >
         <b-nav-text>Queues</b-nav-text>
         <b-nav-item :disabled="!active()" :to="'/userqueue/' + url"
@@ -80,6 +96,7 @@
 import { Component, Prop, Vue } from "vue-property-decorator";
 import store from "../store/index";
 import { BIconChevronDoubleLeft } from "bootstrap-vue";
+import { SearchDatabases } from '@/adabas/admin';
 
 @Component({
   components: {
@@ -94,7 +111,7 @@ export default class Sidebar extends Vue {
     };
   }
   created() {
-    this.$data.db = store.getters.search(this.url);
+    this.$data.db = SearchDatabases(this.url);
   }
   active() {
     //    console.log("Active sidebar db: "+JSON.stringify(this.$data.db));
@@ -104,13 +121,19 @@ export default class Sidebar extends Vue {
     return this.$data.db.status.Active;
   }
   state() {
-    if (!this.$data.db.status) {
+    if ((!this.$data.db)||(!this.$data.db.status)) {
       return "Unknown";
     }
     if (this.$data.db.status.Active) {
       return "Online";
     }
     return "Offline";
+  }
+  isMonitor(): boolean {
+    if (this.$data.db.status.StructureLevel>21) {
+      return true;
+    }
+    return false;
   }
 }
 </script>

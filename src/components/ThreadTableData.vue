@@ -16,21 +16,17 @@
 <template>
   <div class="threadtabledata p-2">
     <Sidebar :url="url" />
-    <div class="card">
-      <div class="card-header h5">
-        Adabas Database thread table for database {{ url }}
-      </div>
-      <div class="card-body">
+    <b-card
+      :header="'Adabas Database thread table for database ' + url"
+      border-variant="secondary"
+      header-border-variant="secondary"
+    >
+      <b-card-body>
         <b-container fluid>
-          <b-row>
-            <b-col class="font-weight-bold text-center h1">
-              Adabas Thread table
-            </b-col>
-          </b-row>
           <b-row
             ><b-col>
-              This page provide the list of Adabas database user queue to be
-              administrate through this Adabas RESTful server.
+              This page provides the list of Adabas database threads to be
+              monitored through this Adabas RESTful server.
             </b-col>
           </b-row>
           <b-row
@@ -48,21 +44,23 @@
                 :items="threads"
                 :fields="fields"
               >
-              </b-table>
-            </b-col> </b-row
-        ></b-container>
-      </div>
-    </div>
+                 <template v-slot:cell(CommandCount)="row">
+                  {{new Intl.NumberFormat().format(row.item.CommandCount)}}
+                </template>
+             </b-table>
+            </b-col> </b-row></b-container></b-card-body
+    ></b-card>
     <StatusBar />
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import Sidebar from "./Sidebar.vue";
-import StatusBar from "./StatusBar.vue";
-import store from "../store/index";
-import Url from "./Url.vue";
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import Sidebar from './Sidebar.vue';
+import StatusBar from './StatusBar.vue';
+import store from '../store/index';
+import Url from './Url.vue';
+import { SearchDatabases } from '@/adabas/admin';
 
 @Component({
   components: {
@@ -76,31 +74,31 @@ export default class ThreadTableData extends Vue {
   data() {
     return {
       fields: [
-        "Thread",
-        "APU",
-        "CommandCode",
-        "CommandCount",
-        "File",
-        "Status",
+        'Thread',
+        'APU',
+        'CommandCode',
+        'CommandCount',
+        'File',
+        'Status',
       ],
       threads: [],
-      timer: "",
+      timer: '',
       db: null,
     };
   }
-  created():void {
-    this.$data.db = store.getters.search(this.url);
+  created(): void {
+    this.$data.db = SearchDatabases(this.url);
     this.loadThreadTable();
     this.$data.timer = setInterval(this.loadThreadTable, 5000);
   }
-  loadThreadTable():void {
+  loadThreadTable(): void {
     if (this.$data.db && this.$data.db != null) {
       this.$data.db.threadTable().then((response: any) => {
         this.$data.threads = response;
       });
     }
   }
-  beforeDestroy():void {
+  beforeDestroy(): void {
     clearInterval(this.$data.timer);
   }
 }
@@ -110,6 +108,10 @@ export default class ThreadTableData extends Vue {
 <style scoped lang="scss">
 h3 {
   margin: 40px 0 0;
+}
+.card-header {
+  font-weight: bold;
+  font-size: 18px;
 }
 ul {
   list-style-type: none;

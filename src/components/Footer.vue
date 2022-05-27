@@ -16,7 +16,7 @@
 <template>
   <div class="footer">
       <b-container fluid class="bg-light text-dark w-100">
-        <b-row><b-col class="text-left">Adabas REST WebApp {{webAppVersion}}</b-col>
+        <b-row><b-col class="text-left">Adabas REST-Console {{webAppVersion}}</b-col>
         <b-col  class="text-right">
           Adabas RESTfull application with REST server version: {{version}}
         </b-col></b-row>
@@ -42,7 +42,12 @@ export default Vue.extend({
     if (v) {
         this.$data.version = JSON.parse(v).version;
     }
-
+    console.log("JSON local storage version: "+v);
+    this.$data.webAppVersion = config.Version()
+    if (this.$data.webAppVersion === "") {
+       this.$data.webAppVersion = "Unknown"
+    }
+    console.log("Web App version: "+this.$data.webAppVersion );
   },
 });
 </script>

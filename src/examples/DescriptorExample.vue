@@ -14,22 +14,25 @@
  * limitations under the License.-->
 
 <template>
-  <div class="descriptorexample">
-    <GenericExample URL="/rest/map/EMPLOYEES-NAT-DDM?descriptor=true&sorted_by=DEPARTMENT" 
+  <div class="descriptorexample p-2">
+    <GenericExample
+      URL="/rest/map/EMPLOYEES-NAT-DDM?descriptor=true&sorted_by=DEPARTMENT"
       title="Descriptor example"
-      text="This example does an descriptor read with a result of field quantity for each descriptor value. In this case the descriptor is a Superdescriptor 'DEPARTMENT(S1)'" />
+      text="This example does an descriptor read with a result of field quantity for each descriptor value. In this case the descriptor is a Superdescriptor 'DEPARTMENT(S1)'"
+    />
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import GenericExample from "@/components/GenericExample.vue"
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import GenericExample from '@/components/GenericExample.vue';
 
 @Component({
   components: {
     GenericExample,
   },
-})export default class DescriptorExample extends Vue {
+})
+export default class DescriptorExample extends Vue {
   @Prop() private msg!: string;
 }
 </script>

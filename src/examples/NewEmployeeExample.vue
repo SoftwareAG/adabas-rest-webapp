@@ -14,22 +14,25 @@
  * limitations under the License.-->
 
 <template>
-  <div class="newemployeeexample">
-    <GenericExample URL="/rest/map/NEW_EMPLOYEES" 
+  <div class="newemployeeexample p-2">
+    <GenericExample
+      URL="/rest/map/NEW_EMPLOYEES"
       title="New employees example"
-      text="This query calls all fields of the new Employees example file." />
+      text="This query calls all fields of the new Employees example file."
+    />
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import GenericExample from "@/components/GenericExample.vue"
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import GenericExample from '@/components/GenericExample.vue';
 
 @Component({
   components: {
     GenericExample,
   },
-})export default class NewEmployeeExample extends Vue {
+})
+export default class NewEmployeeExample extends Vue {
   @Prop() private msg!: string;
 }
 </script>

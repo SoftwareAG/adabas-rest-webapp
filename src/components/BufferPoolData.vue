@@ -16,21 +16,17 @@
 <template>
   <div class="bufferpooldisplay p-2">
     <Sidebar :url="url" />
-    <div class="card">
-      <div class="card-header h5">
-        Adabas Database Buffer Pool for database {{ url }}
-      </div>
-      <div class="card-body">
+    <b-card
+      :header="'Adabas Database Buffer Pool for database ' + url"
+      border-variant="secondary"
+      header-border-variant="secondary"
+    >
+      <b-card-body>
         <b-container fluid>
-          <b-row>
-            <b-col class="font-weight-bold text-center h1">
-              Buffer Pool statistics
-            </b-col>
-          </b-row>
           <b-row
             ><b-col>
-              This page provide the list of Adabas database Buffer Pool to be
-              administrate through this Adabas RESTful server.
+              This page provide the statistics of Adabas database Buffer Pool to be
+              monitored through this Adabas RESTful server.
             </b-col>
           </b-row>
           <b-row
@@ -52,12 +48,12 @@
             </b-col>
             <b-col>
               {{
-                searchValue("WriteLimit").toLocaleString() +
-                  " (" +
-                  ((searchValue("WriteLimit") / bufferPoolSize) * 100).toFixed(
-                    2
+                searchValue('WriteLimit').toLocaleString() +
+                  ' (' +
+                  ((searchValue('WriteLimit') / bufferPoolSize) * 100).toFixed(
+                    2,
                   ) +
-                  "%)"
+                  '%)'
               }}
             </b-col>
           </b-row>
@@ -66,7 +62,7 @@
               Modified
             </b-col>
             <b-col>
-              {{ searchValue("Modified").toLocaleString() }}
+              {{ searchValue('Modified').toLocaleString() }}
             </b-col>
           </b-row>
           <b-row>
@@ -85,7 +81,7 @@
                 <template v-slot:cell(Name)="row">
                   {{
                     row.item.Name.substring(5)
-                      .replace(/([A-Z])/g, " $1")
+                      .replace(/([A-Z])/g, ' $1')
                       .trim()
                   }}
                 </template>
@@ -112,7 +108,7 @@
                 <template v-slot:cell(Name)="row">
                   {{
                     row.item.Name.substring(2)
-                      .replace(/([A-Z])/g, " $1")
+                      .replace(/([A-Z])/g, ' $1')
                       .trim()
                   }}
                 </template>
@@ -138,7 +134,7 @@
                 <template v-slot:cell(Name)="row">
                   {{
                     row.item.Name.substring(5)
-                      .replace(/([A-Z])/g, " $1")
+                      .replace(/([A-Z])/g, ' $1')
                       .trim()
                   }}
                 </template>
@@ -162,7 +158,7 @@
                 <template v-slot:cell(Name)="row">
                   {{
                     row.item.Name.substring(7)
-                      .replace(/([A-Z])/g, " $1")
+                      .replace(/([A-Z])/g, ' $1')
                       .trim()
                   }}
                 </template>
@@ -173,18 +169,19 @@
             </b-col>
           </b-row>
         </b-container>
-      </div>
-    </div>
+      </b-card-body>
+    </b-card>
     <StatusBar />
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import Sidebar from "./Sidebar.vue";
-import store from "../store/index";
-import StatusBar from "./StatusBar.vue";
-import Url from "./Url.vue";
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import Sidebar from './Sidebar.vue';
+import store from '../store/index';
+import StatusBar from './StatusBar.vue';
+import Url from './Url.vue';
+import { SearchDatabases } from '@/adabas/admin';
 
 @Component({
   components: {
@@ -198,16 +195,16 @@ export default class BufferPoolData extends Vue {
   data() {
     return {
       bufferPoolSize: 0,
-      fields: ["Name", "Value"],
-      statFields: ["Name", "percent", "Value"],
+      fields: ['Name', 'Value'],
+      statFields: ['Name', 'percent', 'Value'],
       bufferpool: [],
     };
   }
   created() {
-    const db = store.getters.search(this.url);
+    const db = SearchDatabases(this.url);
     db.bpStats().then((response: any) => {
       this.$data.bufferpool = response;
-      this.$data.bufferPoolSize = this.searchValue("Size");
+      this.$data.bufferPoolSize = this.searchValue('Size');
     });
   }
   searchValue(s: string): number {
@@ -231,6 +228,10 @@ export default class BufferPoolData extends Vue {
 <style scoped lang="scss">
 h3 {
   margin: 40px 0 0;
+}
+.card-header {
+  font-weight: bold;
+  font-size: 18px;
 }
 ul {
   list-style-type: none;

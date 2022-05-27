@@ -29,17 +29,28 @@
         <b-navbar-nav>
           <b-nav-item-dropdown text="Adabas Data access" right>
             <b-dropdown-item to="/map">Adabas Map access</b-dropdown-item>
-            <b-dropdown-item to="/database">Adabas classic access</b-dropdown-item>
-            <b-dropdown-item to="/metadata">Adabas Map Metadata</b-dropdown-item>
+            <b-dropdown-item to="/database"
+              >Adabas classic access</b-dropdown-item
+            >
+            <b-dropdown-item to="/metadata"
+              >Adabas Map Metadata</b-dropdown-item
+            >
             <b-dropdown-item to="/modify">Modify record</b-dropdown-item>
           </b-nav-item-dropdown>
-            <b-nav-item :disabled="!isAdministrator" to="/databases">Database Administration</b-nav-item>
-            <b-nav-item :disabled="!isAdministrator" to="/jobs">Job list</b-nav-item>
-        </b-navbar-nav>
-        <b-navbar-nav class="ml-auto" right>
-            <b-nav-item target="_blank" href="/api/">Swagger API</b-nav-item>
+          <b-nav-item :disabled="!isAdministrator" to="/databases/">Database Administration</b-nav-item>
+          <!--b-nav-item :disabled="!isClusterAdministrator" to="/cluster/">Database Cluster</b-nav-item-->
+          <b-nav-item :disabled="!isAdministrator" to="/jobs"
+            >List of tasks</b-nav-item
+          >
+          <b-nav-item-dropdown text="Configure REST server" right>
+            <b-dropdown-item to="/configuration/">Configuration</b-dropdown-item>
+            <b-dropdown-item to="/browser/">File Browser</b-dropdown-item>
+            <b-dropdown-item to="/log/">RESTful Log</b-dropdown-item>
+          </b-nav-item-dropdown>
           <b-nav-item-dropdown text="Examples" right>
-            <b-dropdown-item to="/example_description">Description</b-dropdown-item>
+            <b-dropdown-item to="/example_description"
+              >Description</b-dropdown-item
+            >
             <b-dropdown-item to="/example_image">Image example</b-dropdown-item>
             <b-dropdown-item to="/example_unicode"
               >Unicode access</b-dropdown-item
@@ -54,7 +65,12 @@
               >Descriptor read</b-dropdown-item
             >
           </b-nav-item-dropdown>
-          <b-nav-item v-on:click="logout">Logout<br/>&lt;{{user}}&gt;</b-nav-item>
+          <b-nav-item target="_blank" href="/docs">Swagger API</b-nav-item>
+        </b-navbar-nav>
+        <b-navbar-nav class="ml-auto" right>
+          <b-nav-item v-on:click="logout"
+            >Logout<br />&lt;{{ user }}&gt;</b-nav-item
+          >
         </b-navbar-nav>
       </b-collapse>
     </b-navbar>
@@ -62,17 +78,17 @@
 </template>
 
 <script lang="ts">
-import {  Vue } from "vue-property-decorator";
+import { Vue } from 'vue-property-decorator';
 import {
   NavbarPlugin,
   ButtonPlugin,
   FormInputPlugin,
   TablePlugin,
   FormCheckboxPlugin,
-} from "bootstrap-vue";
-import "bootstrap/dist/css/bootstrap.css";
-import "bootstrap-vue/dist/bootstrap-vue.css";
-import { userService } from "../user/service";
+} from 'bootstrap-vue';
+import 'bootstrap/dist/css/bootstrap.css';
+import 'bootstrap-vue/dist/bootstrap-vue.css';
+import { userService } from '../user/service';
 import { authHeader, adminRole } from '../user/auth-header';
 
 Vue.use(NavbarPlugin);
@@ -89,22 +105,23 @@ Vue.use(TablePlugin);
 //      store,
 // })
 export default Vue.extend({
-  name: "Header",
+  name: 'Header',
   data() {
     return {
-      user: "",
+      user: '',
       isAdministrator: false,
+      isClusterAdministrator: false,
       checked: true,
     };
   },
   created() {
     this.$data.isAdministrator = adminRole();
-    this.$data.user = userService.getUsername()
+    this.$data.user = userService.getUsername();
   },
   methods: {
     logout() {
       userService.logout();
-      location.reload(true);
+      location.reload();
     },
   },
 });

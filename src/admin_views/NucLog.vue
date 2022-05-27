@@ -31,7 +31,7 @@ import NucleusLog from '@/components/NucleusLog.vue';
     NucleusLog,
   },
 })
-export default class Databases extends Vue {
+export default class NucLog extends Vue {
       @Prop(String) readonly url: string | undefined;
 }
 </script>

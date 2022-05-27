@@ -64,11 +64,11 @@ export class JobAdmin {
             return axios
                 .put(config.Url() + "/scheduler/job/" + this.status.Job.Name, {}, getConfig);
         }
-        catch (error) {
+        catch (error: any) {
             if (error.response) {
                 if (error.response.status == 401 || error.response.status == 403) {
                     userService.logout();
-                    location.reload(true);
+                    location.reload();
                 }
             }
             throw error;
@@ -86,18 +86,18 @@ export class JobAdmin {
             return axios
                 .delete(config.Url() + "/scheduler/job/" + this.status.Job.Name, getConfig);
         }
-        catch (error) {
+        catch (error: any) {
             if (error.response) {
                 if (error.response.status == 401 || error.response.status == 403) {
                     userService.logout();
-                    location.reload(true);
+                    location.reload();
                 }
             }
             throw error;
         }
     }
     async delete_execution(id: string): Promise<AxiosResponse<any>> {
-        console.log("Starting ...");
+        console.log("Deleting execution " + id + "...");
         const getConfig = {
             headers: authHeader("application/json"),
             useCredentails: true,
@@ -106,11 +106,11 @@ export class JobAdmin {
             return axios
                 .delete(config.Url() + "/scheduler/job/" + this.status.Job.Name + "/result/" + id, getConfig);
         }
-        catch (error) {
+        catch (error: any) {
             if (error.response) {
                 if (error.response.status == 401 || error.response.status == 403) {
                     userService.logout();
-                    location.reload(true);
+                    location.reload();
                 }
             }
             throw error;
@@ -129,11 +129,11 @@ export async function insertJob(job: any): Promise<any> {
         return axios
             .post(config.Url() + "/scheduler/job/", job, getConfig);
     }
-    catch (error) {
+    catch (error: any) {
         if (error.response) {
             if (error.response.status == 401 || error.response.status == 403) {
                 userService.logout();
-                location.reload(true);
+                location.reload();
             }
         }
         throw error;
@@ -143,10 +143,25 @@ export async function insertJob(job: any): Promise<any> {
 // Load all jobs available in REST server. Return array
 // of all jobs.
 export async function loadJobs(): Promise<any> {
-    const response = await triggerCall("/scheduler/job");
+    const response = await triggerCall("/scheduler/jobs");
     const jobs = ([] as JobAdmin[]);
     response.JobDefinition.forEach((element: any) => {
         jobs.push(new JobAdmin(element));
     });
     return jobs;
+}
+
+// Load all jobs available in REST server. Return array
+// of all jobs.
+export async function loadExecutions(jobName: string, from: Date, to: Date): Promise<any> {
+    const response = await triggerCall("/scheduler/jobs/" + jobName + "/result?end_time=" + to.toJSON() + "&start_time=" + from.toJSON());
+    const executions = ([] as any[]);
+    response.JobResults.forEach((element: any) => {
+        executions.push(element);
+    });
+    return executions;
+}
+
+export async function loadJobDefinition(jobName: string): Promise<any> {
+    return await triggerCall("/scheduler/job/" + jobName);
 }

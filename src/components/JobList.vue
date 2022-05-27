@@ -15,27 +15,50 @@
 
 <template>
   <div class="joblist p-2">
-    <div class="card">
-      <div class="card-header h5">Job administration</div>
-      <div class="card-body">
+    <b-card
+      header="Job administration"
+      border-variant="secondary"
+      header-border-variant="secondary"
+    >
+      <b-card-body>
         <p>
-          This page provide access to the list of Adabas RESTful server jobs to
+          This page provides access to the list of Adabas RESTful server jobs to
           be administrate through this Adabas RESTful server. These jobs can
           start long running Adabas utility tasks.
         </p>
         <CreateJob msg="ABC" />
-        <Url url="/adabas/database" />
+        <Url url="/scheduler/jobs" />
+        <b-row>
+          <b-col sm="5">
+            <b-pagination
+              v-model="currentPage"
+              :total-rows="jobs.length"
+              :per-page="perPage"
+              aria-controls="my-table"
+            ></b-pagination
+          ></b-col>
+          <b-col sm="1">
+            <b-form-select
+              v-model="perPage"
+              :options="perPageOptions"
+              size="sm"
+              class="mt-3"
+            ></b-form-select> </b-col
+        ></b-row>
         <b-row>
           <b-col sm="6">
             <b-table
+              id="my-table"
               class="w-100 p-3"
               striped
               bordered
               hover
+              :per-page="perPage"
+              :current-page="currentPage"
               small
               selectable
               select-mode="single"
-              @row-selected="onRowSelected"
+              @row-selected="onJobSelected"
               :items="jobs"
               :fields="fields"
             >
@@ -47,27 +70,19 @@
                   >Start</b-button
                 >
                 <b-button
-                  variant="info"
+                  variant="outline-primary"
                   v-on:click="delJob(row.item.status.Job.Name)"
                   class="mr-2"
                   >Delete</b-button
                 >
                 <b-button
-                  variant="info"
+                  variant="outline-primary"
                   class="mr-2"
-                  v-b-modal="'modal-definition-' + row.item.status.Job.Name"
+                  v-on:click="viewJob(row.item.status)"
                   >Show</b-button
                 >
-                <b-modal
-                  size="xl"
-                  :id="'modal-definition-' + row.item.status.Job.Name"
-                  title="Job definition"
-                  ok-only
-                >
-                  <pre class="my-4">{{ row.item.status.Job }}</pre>
-                </b-modal>
                 <b-button
-                  variant="info"
+                  variant="outline-primary"
                   id="expJob"
                   class="mr-2"
                   v-on:click="exportJob(row.item.status.Job.Name)"
@@ -77,58 +92,88 @@
             </b-table>
           </b-col>
           <b-col sm="6">
-            <b-table
-              class="w-100 p-3"
-              striped
-              bordered
-              hover
-              small
-              selectable
-              select-mode="single"
-              @row-selected="onExecSelected"
-              :items="executions"
-              :fields="execFields"
+            <b-row
+              ><b-col class="text-left">Start:</b-col
+              ><b-col class="text-left">End:</b-col></b-row
+            ><b-row
+              ><b-col>
+                <b-form-datepicker
+                  id="from-datepicker"
+                  v-model="from"
+                  class="mb-2"
+                  :max="max"
+                ></b-form-datepicker></b-col
+              ><b-col>
+                <b-form-datepicker
+                  id="to-datepicker"
+                  v-model="to"
+                  class="mb-2"
+                  :max="max"
+                ></b-form-datepicker></b-col
+            ></b-row>
+            <b-row>
+              <b-table
+                class="w-100 p-3"
+                striped
+                bordered
+                hover
+                small
+                selectable
+                select-mode="single"
+                @row-selected="onExecSelected"
+                :items="executions"
+                :fields="execFields"
+              >
+                <template v-slot:cell(Scheduled)="row">
+                  {{ convertDateTime(row.item.Scheduled) }}
+                </template>
+                <template v-slot:cell(Ended)="row">
+                  {{ convertDateTime(row.item.Ended) }}
+                </template>
+                <template v-slot:cell(log)="row">
+                  <b-button
+                    variant="outline-primary"
+                    class="mr-2"
+                    v-on:click="delExecution(row.item.Id)"
+                    >Delete</b-button
+                  >
+                </template>
+              </b-table></b-row
             >
-              <template v-slot:cell(log)="row">
-                <b-button
-                  variant="info"
-                  class="mr-2"
-                  v-on:click="delExecution(row.item.Id)"
-                  >Delete</b-button
-                >
-                <b-button
-                  variant="info"
-                  v-b-modal="'modal-log' + row.item.Id"
-                  class="mr-2"
-                  >Show log</b-button
-                >
-
-                <b-modal
-                  size="xl"
-                  :id="'modal-log' + row.item.Id"
-                  title="Job log"
-                  ok-only
-                >
-                  <pre class="my-4">{{ row.item.Log }}</pre>
-                </b-modal>
-              </template>
-            </b-table>
           </b-col>
         </b-row>
-      </div>
-    </div>
+        <b-row
+          ><b-col>
+            <b-badge pill variant="secondary"
+              >Log Output {{ currentId }}:</b-badge
+            >
+            <b-alert show variant="secondary">
+              <pre>{{ log }}</pre>
+            </b-alert>
+          </b-col>
+        </b-row>
+      </b-card-body>
+    </b-card>
+    <b-modal
+      size="xl"
+      id="modal-definition-job"
+      :title="'Job definition ' + currentJob.Name"
+      ok-only
+    >
+      <pre class="my-4">{{ currentJob }}</pre>
+    </b-modal>
     <StatusBar />
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import { JobAdmin } from "../adabas/jobs";
-import { userService } from "../user/service";
-import store from "../store/index";
-import CreateJob from "./CreateJob.vue";
-import StatusBar from "./StatusBar.vue";
-import Url from "./Url.vue";
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import { JobAdmin, loadExecutions, loadJobDefinition } from '../adabas/jobs';
+import { userService } from '../user/service';
+import store from '../store/index';
+import CreateJob from './CreateJob.vue';
+import StatusBar from './StatusBar.vue';
+import Url from './Url.vue';
 
 @Component({
   components: {
@@ -140,70 +185,145 @@ import Url from "./Url.vue";
 export default class JobList extends Vue {
   @Prop() private msg!: string;
   data() {
+    const maxDate = new Date();
     return {
-      selected: null,
+      perPage: 10,
+      currentPage: 1,
+      perPageOptions: [10, 20, 50, 100],
+      selectedJob: null,
+      selectedExecution: null,
       fields: [
-        { key: "status.Job.Name", label: "Name" },
-        { key: "status.Job.User", label: "User" },
-        { key: "status.Job.Utility", label: "Utility" },
-        { key: "status.Status", label: "Status" },
-        { key: "status.Job.Description", label: "Description" },
-        "info",
+        { key: 'status.Job.Name', label: 'Name' },
+        { key: 'status.Job.User', label: 'User' },
+        { key: 'status.Job.Utility', label: 'Utility' },
+        { key: 'status.Status', label: 'Status' },
+        { key: 'status.Job.Description', label: 'Description' },
+        'info',
       ],
-      execFields: ["Id", "Scheduled", "Ended", "ExitCode", "log"],
+      execFields: ['Id', 'Scheduled', 'Ended', 'ExitCode', 'log'],
       jobs: [] as JobAdmin[],
+      currentId: '',
       executions: [],
-      timer: "",
+      timer: '',
+      max: maxDate,
+      log: '',
+      from: null,
+      to: null,
+      currentJob: {} as any,
     };
   }
   created(): void {
-    this.loadJobs();
-    this.$data.timer = setInterval(this.loadJobs, 5000);
+    this.$data.to = new Date();
+    this.$data.from = new Date();
+    this.$data.from.setMonth(this.$data.to.getMonth() - 1);
+    this.retrieveJobs();
+    this.$data.timer = setInterval(this.retrieveJobs, 5000);
   }
-  loadJobs(): void {
+  convertDate(currentdate: Date): string {
+    return (
+      new String(currentdate.getFullYear()).padStart(4, '0') +
+      '-' +
+      new String(currentdate.getMonth() + 1).padStart(2, '0') +
+      '-' +
+      new String(currentdate.getDate()).padStart(2, '0')
+    );
+  }
+  convertTime(currentdate: Date): string {
+    return (
+      new String(currentdate.getHours()).padStart(2, '0') +
+      ':' +
+      new String(currentdate.getMinutes()).padStart(2, '0') +
+      ':' +
+      new String(currentdate.getSeconds()).padStart(2, '0')
+    );
+  }
+  convertDateTime(d: string): string {
+    var de = new Date(d);
+    return de.toUTCString();
+  }
+  viewJob(item: any): void {
+    console.log('View job ' + JSON.stringify(item));
+    loadJobDefinition(item.Job.Name).then((result: any) => {
+      console.log('Return ' + JSON.stringify(result));
+      this.$data.currentJob = result;
+      this.$bvModal.show('modal-definition-job');
+    });
+  }
+  retrieveJobs(): void {
     store
-      .dispatch("SYNC_ADMIN_JOBS")
+      .dispatch('SYNC_ADMIN_JOBS')
       .then((response: any) => {
-        if (this.$data.selected != null) {
-          const name = this.$data.selected.status.Job.Name;
+        if (this.$data.selectedJob != null) {
+          const name = this.$data.selectedJob.status.Job.Name;
           let x = response.find((j: JobAdmin) => j.name() === name);
           if (!x) {
+            console.log('No name found');
             return;
           }
-          this.$data.selected = x;
-          this.$data.executions = this.$data.selected.status.Executions;
+          this.$data.selectedJob = x;
+          // this.$data.executions = this.$data.selectedJob.status.Executions;
         }
         this.$data.jobs = response;
       })
       .catch((error: any) => {
-        console.log("ERROR JOBLIST: " + JSON.stringify(error));
+        console.log('ERROR JOBLIST: ' + JSON.stringify(error));
         if (error.response) {
-          store.commit("SET_STATUS", JSON.stringify(error.response));
+          store.commit('SET_STATUS', JSON.stringify(error.response));
           if (error.response.status == 401 || error.response.status == 403) {
             userService.logout();
-            location.reload(true);
+            location.reload();
           }
         } else {
-          store.commit("SET_STATUS", JSON.stringify(error));
+          store.commit('SET_STATUS', JSON.stringify(error));
           userService.logout();
-          location.reload(true);
+          location.reload();
         }
         throw error;
       });
+    if (this.$data.selectedJob != null) {
+      console.log(this.$data.from);
+      loadExecutions(
+        this.$data.selectedJob.status.Job.Name,
+        this.$data.from,
+        this.$data.to
+      ).then((response: any) => {
+        this.$data.executions = [];
+        response.forEach((element: any) => {
+          this.$data.executions.push(element.JobResult);
+          if (
+            this.$data.selectedExecution != null &&
+            this.$data.selectedExecution.Id == element.JobResult.Id
+          ) {
+            this.$data.selectedExecution = element.JobResult;
+          }
+        });
+      });
+    }
   }
-  onRowSelected(items: any): void {
+  onJobSelected(items: any): void {
     if (items.length == 0) {
       return;
     }
-    this.$data.selected = items[0];
-    this.$data.executions = items[0].status.Executions;
-
+    this.$data.log = '';
+    this.$data.selectedJob = items[0];
+    loadExecutions(
+      items[0].status.Job.Name,
+      this.$data.from,
+      this.$data.to
+    ).then((response: any) => {
+      this.$data.executions = [];
+      response.forEach((element: any) => {
+        this.$data.executions.push(element.JobResult);
+      });
+    });
     return;
   }
   onExecSelected(items: any): void {
     if (items.length == 0) {
       return;
     }
+    this.$data.currentId = items[0].Id;
+    this.$data.log = items[0].Log;
   }
   startJob(items: JobAdmin): void {
     items.start();
@@ -212,20 +332,31 @@ export default class JobList extends Vue {
     const jobToDelete = this.$data.jobs.find(
       (j: JobAdmin) => j.name() === name
     );
-    console.log("Job to delete: " + name);
+    console.log('Job to delete: ' + name);
     jobToDelete.delete();
   }
   exportJob(name: string): void {
-    const jobToExport = this.$data.jobs.find(
-      (j: JobAdmin) => j.name() === name
-    );
-    console.log(
-      "Job to export: " + name + " " + JSON.stringify(jobToExport.status.Job)
-    );
+    loadJobDefinition(name).then((result: any) => {
+      var filename = 'job.json';
+      const a = document.createElement('a');
+      const type = filename.split('.').pop();
+      a.href = URL.createObjectURL(
+        new Blob([JSON.stringify(result)], {
+          type: `text/${type === 'txt' ? 'plain' : type}`,
+        })
+      );
+      a.download = filename;
+      a.click();
+    });
   }
   delExecution(id: string): void {
-    console.log("Delete id " + id + " of " + this.$data.selected.name());
-    this.$data.selected.delete_execution(id);
+    console.log('Delete id ' + id);
+    this.$data.selectedJob.delete_execution(id);
+  }
+  showLog(item: any): void {
+    console.log('Show log id ' + JSON.stringify(item));
+    this.$data.currentId = item.ID;
+    this.$data.log = item.Log;
   }
   beforeDestroy(): void {
     clearInterval(this.$data.timer);
@@ -237,6 +368,10 @@ export default class JobList extends Vue {
 <style scoped lang="scss">
 .joblist {
   font-size: 14px;
+}
+.card-header {
+  font-weight: bold;
+  font-size: 18px;
 }
 h3 {
   margin: 40px 0 0;

@@ -14,15 +14,15 @@
  * limitations under the License.-->
 
 <template>
-  <div class="mapdata p-4">
+  <div class="mapdata p-2">
     <b-card
-      header="Access Parameter"
+      header="Query Access Parameter"
       border-variant="secondary"
       header-border-variant="secondary"
     >
       <b-card-body>
         <p>
-          This page provide access to Adabas data using the Adabas Map
+          This page provides access to Adabas data using the Adabas Map
           technology used in Adabas Client for Java. Please select query
           information like search and field to be received.
         </p>
@@ -225,7 +225,7 @@
       header-border-variant="secondary"
     >
       <b-card-header header-tag="header" class="p-1" role="tab">
-        <b-button class="text-left" block v-b-toggle.accordion-1 variant="info"
+        <b-button class="text-left" block v-b-toggle.accordion-1 variant="primary"
           >Response</b-button
         >
       </b-card-header>
@@ -239,7 +239,7 @@
           <b-card-text>
             <b-container fluid>
               <b-row
-                ><b-col sm="4">
+                ><b-col sm="8">
                   <b-pagination
                     v-model="currentPage"
                     :total-rows="rows"
@@ -247,6 +247,12 @@
                     aria-controls="my-table"
                   ></b-pagination>
                 </b-col>
+                <b-col  class="text-right" size="sm" sm="2">Record per page:
+                </b-col>
+                <b-col sm="2">
+                  <b-form-select v-model="perPage" :options="perPageOptions" ></b-form-select>
+                </b-col>
+              </b-row><b-row>
                 <b-col sm="8">
                   <b-form-group
                     label="Filter"
@@ -304,12 +310,12 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, Watch } from "vue-property-decorator";
-import "bootstrap/dist/css/bootstrap.css";
-import store from "../store/index";
-import { config } from "../store/config";
-import StatusBar from "./StatusBar.vue";
-import Url from "./Url.vue";
+import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
+import 'bootstrap/dist/css/bootstrap.css';
+import store from '../store/index';
+import { config } from '../store/config';
+import StatusBar from './StatusBar.vue';
+import Url from './Url.vue';
 
 @Component({
   components: {
@@ -323,38 +329,39 @@ export default class MapData extends Vue {
     return {
       perPage: 10,
       currentPage: 1,
-      filter: "",
+      perPageOptions: [10,20,50,100],
+      filter: '',
       filterOn: [],
       maps: store.state.maps,
-      url: config.Url() + "/rest/map/",
+      url: config.Url() + '/rest/map/',
       selected: null,
       file: null,
       storeRecord: store.state.records,
       status: store.state.status,
       metadata: store.state.metadata,
       records: [] as any[],
-      jsonString: "No query JSON result available" as string,
+      jsonString: 'No query JSON result available' as string,
       options: [
         {
           value: null,
-          text: "Please select the Adabas Map used for the query",
+          text: 'Please select the Adabas Map used for the query',
         },
       ],
       optionsDatabases: [
-        { value: null, text: "Please select an Adabas Database" },
+        { value: null, text: 'Please select an Adabas Database' },
       ],
-      optionsFiles: [{ value: null, text: "Please select an Adabas File" }],
+      optionsFiles: [{ value: null, text: 'Please select an Adabas File' }],
       selectedSortField: null,
-      sortOptions: [{ value: null, text: "Please select Field" }],
+      sortOptions: [{ value: null, text: 'Please select Field' }],
       fields: [] as any[],
       query: {
-        map: "",
+        map: '',
         database: { url: null as any, file: null as any },
         fields: [] as any[],
         validFields: [] as any[],
         offset: 0,
         limit: 20,
-        search: "",
+        search: '',
         removeGroup: false,
         compact: false,
         descriptor: false,
@@ -363,19 +370,19 @@ export default class MapData extends Vue {
   }
   created(): void {
     // console.log("Created " + this.classicMode);
-    if (this.classicMode == "true") {
-      store.dispatch("INIT_DATABASES").then((dbs) => {
+    if (this.classicMode == 'true') {
+      store.dispatch('INIT_DATABASES').then((dbs) => {
         this.adaptDbOptions(dbs);
       });
     } else {
       store
-        .dispatch("INIT_MAPS")
+        .dispatch('INIT_MAPS')
         .then((response) => {
           // console.log("Init maps response: " + JSON.stringify(response));
           this.adaptMapOptions();
         })
         .catch((reason: any) => {
-          console.log("Error reason(created): " + JSON.stringify(reason));
+          console.log('Error reason(created): ' + JSON.stringify(reason));
         });
     }
   }
@@ -387,14 +394,14 @@ export default class MapData extends Vue {
   }
   getSelectedItem(myarg: any): void {
     // Just a regular js function that takes 1 arg
-    if (this.classicMode == "true") {
-      var n = myarg.indexOf("(");
+    if (this.classicMode == 'true') {
+      var n = myarg.indexOf('(');
       let s = myarg.substring(0, n != -1 ? n : myarg.length);
       this.$data.query.database.url = s;
-      this.$data.url = config.Url() + "/rest/db/" + s;
-      store.dispatch("QUERY_DB_FILES", s).then((dbFiles) => {
+      this.$data.url = config.Url() + '/rest/db/' + s;
+      store.dispatch('QUERY_DB_FILES', s).then((dbFiles) => {
         const optionsFiles = [
-          { value: null, text: "Please select an Adabas File" },
+          { value: null, text: 'Please select an Adabas File' },
         ];
         dbFiles.forEach((i: any, index: any) => {
           optionsFiles.push({ value: i, text: i });
@@ -403,25 +410,25 @@ export default class MapData extends Vue {
       });
     } else {
       if (this.$data.query.map !== myarg) {
-        this.$data.url = config.Url() + "/rest/map/" + myarg;
+        this.$data.url = config.Url() + '/rest/map/' + myarg;
         this.$data.query.map = myarg;
         this.$data.query.fields = [];
         this.$data.query.validFields = [];
       }
 
-      store.dispatch("QUERY_MAP_FIELDS", myarg).then((response) => {
+      store.dispatch('QUERY_MAP_FIELDS', myarg).then((response) => {
         this.generateAllFields(response.data);
       });
     }
   }
   getFileItem(myarg: any): void {
-    var n = this.$data.selected.indexOf("(");
+    var n = this.$data.selected.indexOf('(');
     let s = this.$data.selected.substring(
       0,
-      n != -1 ? n : this.$data.selected.length
+      n != -1 ? n : this.$data.selected.length,
     );
-    this.$data.url = config.Url() + "/rest/db/" + s + "/" + this.$data.file;
-    this.$data.query.map = "";
+    this.$data.url = config.Url() + '/rest/db/' + s + '/' + this.$data.file;
+    this.$data.query.map = '';
     if (this.$data.selected != null) {
       this.$data.query.database.url = s;
       this.$data.query.database.file = this.$data.file;
@@ -429,89 +436,89 @@ export default class MapData extends Vue {
     this.$data.query.fields = [];
     this.$data.query.validFields = [];
     store
-      .dispatch("QUERY_FILE_FIELDS", this.$data.query.database)
+      .dispatch('QUERY_FILE_FIELDS', this.$data.query.database)
       .then((response) => {
         this.generateAllFields(response.data);
       });
   }
   generateUrl(): string {
     let url = config.Url();
-    if (this.classicMode == "true") {
-      var n = this.$data.query.database.url.indexOf("(");
+    if (this.classicMode == 'true') {
+      var n = this.$data.query.database.url.indexOf('(');
       let s = this.$data.query.database.url.substring(
         0,
-        n != -1 ? n : this.$data.query.database.url.length
+        n != -1 ? n : this.$data.query.database.url.length,
       );
-      url += "/rest/db/" + s + "/" + this.$data.query.database.file;
+      url += '/rest/db/' + s + '/' + this.$data.query.database.file;
     } else {
-      url += "/rest/map/" + this.$data.query.map;
+      url += '/rest/map/' + this.$data.query.map;
     }
     let first = false;
     if (this.$data.query.fields.length != this.$data.query.validFields.length) {
-      url += "?fields=" + this.$data.query.fields;
+      url += '?fields=' + this.$data.query.fields;
       first = true;
     }
-    if (this.$data.query.search != "") {
+    if (this.$data.query.search != '') {
       if (!first) {
-        url += "?";
+        url += '?';
       } else {
-        url += "&";
+        url += '&';
       }
-      url += "search=" + this.$data.query.search;
+      url += 'search=' + this.$data.query.search;
       first = true;
     }
     if (this.$data.query.limit > 0) {
       if (!first) {
-        url += "?";
+        url += '?';
       } else {
-        url += "&";
+        url += '&';
       }
-      url += "limit=" + this.$data.query.limit;
+      url += 'limit=' + this.$data.query.limit;
       first = true;
     }
     if (this.$data.query.offset > 0) {
       if (!first) {
-        url += "?";
+        url += '?';
       } else {
-        url += "&";
+        url += '&';
       }
-      url += "start=" + this.$data.query.offset;
+      url += 'start=' + this.$data.query.offset;
       first = true;
     }
     if (this.$data.selectedSortField !== null) {
       if (!first) {
-        url += "?";
+        url += '?';
       } else {
-        url += "&";
+        url += '&';
       }
-      url += "sorted_by=" + this.$data.selectedSortField;
+      url += 'sorted_by=' + this.$data.selectedSortField;
       first = true;
     }
     if (this.$data.query.removeGroup) {
       if (!first) {
-        url += "?";
+        url += '?';
       } else {
-        url += "&";
+        url += '&';
       }
-      url += "flatten=true";
+      url += 'flatten=true';
       first = true;
     }
     if (this.$data.query.compact) {
       if (!first) {
-        url += "?";
+        url += '?';
       } else {
-        url += "&";
+        url += '&';
       }
-      url += "compact=true";
+      url += 'compact=true';
       first = true;
     }
     if (this.$data.query.descriptor) {
       if (!first) {
-        url += "?";
+        url += '?';
       } else {
-        url += "&";
+        url += '&';
       }
-      url += "descriptor=true";
+      url += 'descriptor=true';
       first = true;
     }
     return url;
@@ -520,13 +527,13 @@ export default class MapData extends Vue {
     const url = this.generateUrl();
     this.$data.url = url;
     this.$data.fields = null;
-    store.dispatch("QUERY_RECORDS", this.$data.url).catch((reason: any) => {
-      console.log("Query error: " + JSON.stringify(reason));
+    store.dispatch('QUERY_RECORDS', this.$data.url).catch((reason: any) => {
+      console.log('Query error: ' + JSON.stringify(reason));
     });
     this.$data.jsonString = JSON.stringify(this.$data.records);
   }
   refreshMapList(): void {
-    store.dispatch("INIT_MAPS").then((response) => {
+    store.dispatch('INIT_MAPS').then((response) => {
       this.adaptMapOptions();
     });
   }
@@ -541,7 +548,7 @@ export default class MapData extends Vue {
   }
   adaptDbOptions(dbs: any): void {
     const optionsDatabases = [
-      { value: null, text: "Please select an Adabas Database" },
+      { value: null, text: 'Please select an Adabas Database' },
     ];
     dbs.forEach((i: any, index: any) => {
       optionsDatabases.push({ value: i.url, text: i.url });
@@ -549,7 +556,7 @@ export default class MapData extends Vue {
     this.$data.optionsDatabases = optionsDatabases;
   }
   adaptMapOptions(): void {
-    const options = [{ value: null, text: "Please select an Adabas Map" }];
+    const options = [{ value: null, text: 'Please select an Adabas Map' }];
     this.$data.maps.forEach((i: any, index: any) => {
       options.push({ value: i, text: i });
     });
@@ -571,11 +578,11 @@ export default class MapData extends Vue {
     this.$data.query.fields = [];
     this.$data.query.validFields = [];
     this.$data.sortOptions = [
-      { value: null, text: "Select field to be sorted for" },
+      { value: null, text: 'Select field to be sorted for' },
     ];
-    if (this.classicMode == "true") {
+    if (this.classicMode == 'true') {
       metadata.forEach((m: any) => {
-        if (m.label.trim() !== "") {
+        if (m.label.trim() !== '') {
           this.$data.query.fields.push(m.label);
           this.$data.query.validFields.push(m.label);
           this.$data.sortOptions.push({ value: m.label, text: m.label });
@@ -583,7 +590,7 @@ export default class MapData extends Vue {
       });
     } else {
       metadata.Map.fields.forEach((m: any) => {
-        if (m.name.trim() !== "") {
+        if (m.name.trim() !== '') {
           this.$data.query.fields.push(m.name);
           this.$data.query.validFields.push(m.name);
           this.$data.sortOptions.push({ value: m.name, text: m.name });
@@ -594,20 +601,20 @@ export default class MapData extends Vue {
   tagValidator(tag: string): boolean {
     return this.$data.query.validFields.indexOf(tag) > -1;
   }
-  @Watch("metadata")
+  @Watch('metadata')
   onMetadataChange(value: any, newvalue: any) {
     this.$data.query.fields = [];
     this.$data.query.validFields = [];
-    this.$data.sortOptions = [{ value: null, text: "No sorting" }];
+    this.$data.sortOptions = [{ value: null, text: 'No sorting' }];
     newvalue.metadata.Map.fields.forEach((m: any) => {
-      if (m.name.trim() !== "") {
+      if (m.name.trim() !== '') {
         this.$data.query.fields.push(m.name);
         this.$data.query.validFields.push(m.name);
         this.$data.sortOptions.push({ value: m.name, text: m.name });
       }
     });
   }
-  @Watch("storeRecord")
+  @Watch('storeRecord')
   onStoreRecordChange(value: any, newvalue: any) {
     this.$data.records = newvalue[0].Records;
     if (this.$data.fields == null) {
@@ -625,7 +632,7 @@ export default class MapData extends Vue {
 }
 .card-header {
   font-weight: bold;
-  font-size: 16px;
+  font-size: 18px;
 }
 #my-table {
   font-size: 12px;

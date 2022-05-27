@@ -17,6 +17,7 @@
 *
 */
 
+import './publicpath.js'
 import '@babel/polyfill'
 import 'mutationobserver-shim'
 import Vue from 'vue'
@@ -28,29 +29,30 @@ import store from './store'
 import { Route } from 'vue-router'
 
 Vue.config.productionTip = false
+export const eventBus = new Vue();
 
 const DEFAULT_TITLE = 'Adabas REST server';
-router.afterEach((to, from) => {
-    // Use next tick to handle router history correctly
-    // see: https://github.com/vuejs/vue-router/issues/914#issuecomment-384477609
-    Vue.nextTick(() => {
-        document.title = to.meta.title || DEFAULT_TITLE;
-    });
-});
+/*router.afterEach((to, from) => {
+  // Use next tick to handle router history correctly
+  // see: https://github.com/vuejs/vue-router/issues/914#issuecomment-384477609
+  Vue.nextTick(() => {
+    document.title = to.meta?.title || DEFAULT_TITLE;
+  });
+});*/
 router.beforeEach((to: Route, from: Route, next: any) => {
   // redirect to login page if not logged in and trying to access a restricted page
   const publicPages = ['/login'];
   const authRequired = !publicPages.includes(to.path);
   const loggedIn = localStorage.getItem('user');
-
+  //console.log(to.fullPath+" -> "+from.fullPath+" "+JSON.stringify(next));
   if (authRequired && !loggedIn) {
-    return next({
+    next({
       path: '/login',
       query: { returnUrl: to.path },
     });
+  } else {
+    next();
   }
-
-  next();
 });
 
 new Vue({

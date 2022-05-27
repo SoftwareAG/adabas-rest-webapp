@@ -24,7 +24,7 @@ import axios from 'axios';
 import { config } from './config';
 import router from '../router/index';
 import { userService } from '../user/service';
-import { AdabasAdmin, loadDatabases } from '@/adabas/admin';
+import { AdabasAdmin, loadDatabases, loadCluster } from '@/adabas/admin';
 import {  JobAdmin,loadJobs } from '@/adabas/jobs';
 
 Vue.use(Vuex)
@@ -45,6 +45,7 @@ export default new Vuex.Store({
     url: {
       query: "",
     },
+    cluster: {},
     status: { status: "No status", Dbid: "", },
     respData: {json: ""},
   },
@@ -58,6 +59,9 @@ export default new Vuex.Store({
       dbs.forEach((element: any, index: number) => {
         Vue.set(state.adminDatabases, index, element);
       });
+    },
+    SET_ADMIN_CLUSTER: (state, cls) => {
+      Vue.set(state.cluster, 'cluster', cls);
     },
     SET_ADMIN_JOBS: (state, jobs) => {
       jobs.forEach((element: any, index: number) => {
@@ -111,7 +115,7 @@ export default new Vuex.Store({
             if (response.status === 401 || response.status === 404) {
               // auto logout if 401 response returned from api
               userService.logout();
-              location.reload(true);
+              location.reload();
             }
 
             const error = response.statusText;
@@ -137,7 +141,7 @@ export default new Vuex.Store({
           if ((error.response.status == 401) || (error.response.status == 403)) {
             userService.logout();
             if (router.currentRoute.name !== 'login') {
-              location.reload(true);
+              location.reload();
             }
           }
           return error
@@ -157,7 +161,7 @@ export default new Vuex.Store({
             if (response.status === 401 || response.status === 404) {
               // auto logout if 401 response returned from api
               userService.logout();
-              location.reload(true);
+              location.reload();
             }
 
             const error = response.statusText;
@@ -183,7 +187,7 @@ export default new Vuex.Store({
           if ((error.response.status == 401) || (error.response.status == 403)) {
             userService.logout();
             if (router.currentRoute.name !== 'login') {
-              location.reload(true);
+              location.reload();
             }
           }
           return error
@@ -194,6 +198,13 @@ export default new Vuex.Store({
         context.commit('SET_ADMIN_DATABASES', databases);
         context.commit("SET_RESPONSE", JSON.stringify(databases));
         return databases;
+      });
+    },
+    SYNC_ADMIN_CLUSTER: async (context): Promise<any> => {
+      return loadCluster().then((cluster) => {
+        context.commit('SET_ADMIN_CLUSTER', cluster);
+        context.commit("SET_RESPONSE", JSON.stringify(cluster));
+        return cluster;
       });
     },
     SYNC_ADMIN_JOBS: async (context): Promise<any> => {
@@ -224,7 +235,7 @@ export default new Vuex.Store({
           if ((error.response.status == 401) || (error.response.status == 403)) {
             userService.logout();
             if (router.currentRoute.name !== 'login') {
-              location.reload(true);
+              location.reload();
             }
           }
           return error;
@@ -251,7 +262,7 @@ export default new Vuex.Store({
           if ((error.response.status == 401) || (error.response.status == 403)) {
             userService.logout();
             if (router.currentRoute.name !== 'login') {
-              location.reload(true);
+              location.reload();
             }
           }
           return error;
@@ -275,7 +286,7 @@ export default new Vuex.Store({
           if ((error.response.status == 401) || (error.response.status == 403)) {
             userService.logout();
             if (router.currentRoute.name !== 'login') {
-              location.reload(true);
+              location.reload();
             }
           }
           return error;
@@ -300,7 +311,7 @@ export default new Vuex.Store({
           context.commit('CLEAR_RECORDS', null);
           if ((error.response.status == 401) || (error.response.status == 403)) {
             userService.logout();
-            location.reload(true);
+            location.reload();
           }
           if (error.response.data.Error) {
             context.commit('SET_STATUS', JSON.stringify(error.response.data.Error));

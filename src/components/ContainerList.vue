@@ -16,30 +16,27 @@
 <template>
   <div class="containerlist p-2">
     <Sidebar :url="url" />
-    <div class="card">
-      <div class="card-header h5">
-        Adabas Database containers for database {{ url }}
-      </div>
-      <div class="card-body">
+    <b-card
+      :header="'Adabas Database containers and Free Space Table data for database ' + url"
+      border-variant="secondary"
+      header-border-variant="secondary"
+    >
+      <b-card-body>
         <b-container fluid>
-          <b-row>
-            <b-col class="font-weight-bold text-center h1">
-              Adabas container volumes
-            </b-col>
-          </b-row>
           <b-row
             ><b-col>
-              This page provide the list of Adabas database containers to be
-              administrate through this Adabas RESTful server.
+              This page provides the list of Adabas database containers to be
+              administrate through this Adabas RESTful server. The Free Space table is in an extra table.
             </b-col></b-row
           >
           <b-row
-            ><b-col>
-              <Url url="/adabas/database" /> </b-col
+            ><b-col> <Url url="/adabas/database" /> </b-col
           ></b-row>
           <b-row
             ><b-col>
-              <b-table
+          <b-tabs content-class="mt-3">
+          <b-tab title="Container" active>
+            <b-table
                 striped
                 bordered
                 hover
@@ -51,21 +48,38 @@
                   {{ calculate(row.item) }}
                 </template>
               </b-table>
+          </b-tab>
+          <b-tab title="Free Space Table">
+            <b-table
+                striped
+                bordered
+                hover
+                small
+                :items="fst"
+                :fields="fstFields"
+              >
+                <template v-slot:cell(BlockSize)="row">
+                  {{ row.item.BlockSize }}KB
+                </template>
+              </b-table>
+          </b-tab>
+          </b-tabs>
             </b-col></b-row
           >
         </b-container>
-      </div>
-    </div>
+      </b-card-body></b-card
+    >
     <StatusBar />
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import Sidebar from "./Sidebar.vue";
-import store from "../store/index";
-import StatusBar from "./StatusBar.vue";
-import Url from "./Url.vue";
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import Sidebar from './Sidebar.vue';
+import store from '../store/index';
+import StatusBar from './StatusBar.vue';
+import Url from './Url.vue';
+import { SearchDatabases } from '@/adabas/admin';
 
 @Component({
   components: {
@@ -74,28 +88,37 @@ import Url from "./Url.vue";
     Url,
   },
 })
-export default class DatabaseList extends Vue {
+export default class ContainerList extends Vue {
   @Prop(String) readonly url: string | undefined;
   data() {
     return {
       fields: [
-        "Path",
-        "Type",
-        "ContainerNumber",
-        "DeviceType",
-        "BlockSize",
-        "FirstExtentRabn",
-        "LastExtentRabn",
-        "FirstUnusedRabn",
-        { label: "Size", key: "calc" },
+        'Path',
+        'Type',
+        'ContainerNumber',
+        'DeviceType',
+        'BlockSize',
+        'FirstExtentRabn',
+        'LastExtentRabn',
+        'FirstUnusedRabn',
+        { label: 'Size', key: 'calc' },
+      ],
+      fstFields: [
+         'Type',
+         'FirstRABN',
+         'LastRABN',
+         'BlockSize'
       ],
       containers: [],
+      fst: [],
     };
   }
   created() {
-    const db = store.getters.search(this.url);
+    const db = SearchDatabases(this.url);
     db.containerList().then((response: any) => {
-      this.$data.containers = response;
+      console.log(JSON.stringify(response));
+      this.$data.containers = response.Container.ContainerList;
+      this.$data.fst = response.Container.FreeSpaceTable;
     });
   }
   calculate(container: any): string {
@@ -105,19 +128,19 @@ export default class DatabaseList extends Vue {
     return this.formatSizeUnits(size);
   }
   formatSizeUnits(bytes: number): string {
-    let formatedSize = "";
+    let formatedSize = '';
     if (bytes >= 1073741824) {
-      formatedSize = (bytes / 1073741824).toFixed(2) + " GB";
+      formatedSize = (bytes / 1073741824).toFixed(2) + ' GB';
     } else if (bytes >= 1048576) {
-      formatedSize = (bytes / 1048576).toFixed(2) + " MB";
+      formatedSize = (bytes / 1048576).toFixed(2) + ' MB';
     } else if (bytes >= 1024) {
-      formatedSize = (bytes / 1024).toFixed(2) + " KB";
+      formatedSize = (bytes / 1024).toFixed(2) + ' KB';
     } else if (bytes > 1) {
-      formatedSize = bytes + " bytes";
+      formatedSize = bytes + ' bytes';
     } else if (bytes == 1) {
-      formatedSize = bytes + " byte";
+      formatedSize = bytes + ' byte';
     } else {
-      formatedSize = "0 bytes";
+      formatedSize = '0 bytes';
     }
     return formatedSize;
   }
@@ -128,6 +151,10 @@ export default class DatabaseList extends Vue {
 <style scoped lang="scss">
 h3 {
   margin: 40px 0 0;
+}
+.card-header {
+  font-weight: bold;
+  font-size: 18px;
 }
 ul {
   list-style-type: none;
