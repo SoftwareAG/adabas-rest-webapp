@@ -1,4 +1,4 @@
-def version = '7.1.0.0'
+def version = '7.1.1.0'
 def buildVersion = version+'.' + currentBuild.number
 
 properties([parameters([
