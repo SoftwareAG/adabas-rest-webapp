@@ -25,7 +25,7 @@ The final Web Application is located in the `dist` directory.
 
 Copy all the files from `dist` and paste it to your installed `AdabasRestAdministration/static` directory.
 
-Browser the web application with url: http://127.0.0.1:<port number>/ and the Adabas REST server need to be online.
+Browser the web application with url: `http://127.0.0.1:<port number>/` and the Adabas REST server need to be online.
 
 
 ## Usage
@@ -40,7 +40,7 @@ Beside the main topics above, a number of short data access example pages are in
 
 Nearly all pages display the URL query call and the JSON response output in the corresponding `JSON response` tab.
 
-A menu entry provides the Swagger API web page (http://127.0.0.1:<port number>/docs) of the Adabas REST server which can be used to get an overview of the available Adabas REST operations.
+A menu entry provides the Swagger API web page (`http://127.0.0.1:<port number>/docs`) of the Adabas REST server which can be used to get an overview of the available Adabas REST operations.
 
 
 
