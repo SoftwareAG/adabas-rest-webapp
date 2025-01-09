@@ -147,29 +147,13 @@ Output of server log will be stored in the `log` directory of the installation. 
 
 The REST server can be started manuelly with the script `startAdaRest.sh` on Unix/Linux platforms, or with `startAdaRest.bat` on Windows platforms. The manuel start of the server will open a console window to show the REST server output.
 
-The REST server example page can be accessed via `http://localhost:<port>` or `https://localhost:<port>`. The initial user name is `admin` and the password `manage`.
-
-**Please change the password or remove the default user password of the `admin` user out of `realm.properties` file. New users can be added using the `service.<sh or bat>` script.**
+The REST server example page can be accessed via `http://localhost:<port>` or `https://localhost:<port>`. The initial user name is `admin` and the default password is set during the installation of the Adabas RESTful server.
 
 ## 1.9. REST Server Authentication
 
-### 1.9.1. JAAS
+#### 1.9.1. Adabas password file
 
-Adabas RESTful server supports the Java Authentication and Authorization Service (JAAS) security module of Java. It is possible to set up any JAAS module.
-
-The file `security.conf` configures the JAAS security classes used to set up the authorization.
-
-There are a number of modules predefined in the delivered configuration:
-
-| Name | Content |
-|---|---|
-| Adabas | Provide the hash realm access from previous version (see below) |
-| LocalUnix | Use the Software AG local access security library (SSX) to enable system authorization |
-| LocalWindows | Use the local system authentication |
-
-#### 1.9.1.1. Adabas password file
-
-The REST server supports a minimal authentication realm. In order to set up the authentication using MD5 or SHASUM hash encoding, modify the realm.properties from the configuration subdirectory as required. By default, the user `admin` with password `manage` is defined.
+The REST server supports a minimal authentication realm. In order to set up the authentication using MD5 or SHASUM hash encoding, modify the realm.properties from the configuration subdirectory as required. By default, the user `admin` with the default password set during the installation of the REST server.
 
 A simple password file called `realm.properties` contains user name and password information. The format of the password
 file is as following.
@@ -199,7 +183,6 @@ user: MD5:d47f18dc7780fe47c24759714e2cd58f, saguser
 
 To add a new user to the `realm.properties` you can start the `server.<sh or bat> add_user` command.
 
-The realm.properties authentication is not used if ADASAF/RACF based authentication is configured.
 
 ##### 1.9.1.1.1. Creating an MD5 Hash
 
