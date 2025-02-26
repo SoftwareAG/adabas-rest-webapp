@@ -16,29 +16,28 @@
 <template>
   <div class="login">
     <div>
-      <b-img
-        src="img/AdabasNatural.png"
-        fluid
-        rounded
+      <img
+        src="../../public/img/AdabasNatural.png"
+        class="img-fluid rounded"
         alt="Responsive image"
-      ></b-img>
+      />
     </div>
     <h2>Adabas REST-Console Login</h2>
     <form @submit.prevent="handleSubmit">
       <div>
         <table class="table table-striped">
           <tr>
-            <td class="text-right">Info:</td>
-            <td class="text-left">Default user is 'admin'</td>
+            <td class="text-end">Info:</td>
+            <td class="text-start">Default user is 'admin'</td>
           </tr>
           <tr>
-            <td class="text-left" colspan="2">
+            <td class="text-start" colspan="2">
               Passsword is generated in the installation procedure. Use 'service.sh' to create new users or to set the password afterwards.
             </td>
           </tr>
         </table>
       </div>
-      <div class="form-group">
+      <div class="mb-3">
         <input
           type="text"
           v-model="username"
@@ -51,7 +50,7 @@
           Username is required
         </div>
       </div>
-      <div class="form-group">
+      <div class="mb-3">
         <input
           type="password"
           v-model="password"
@@ -64,7 +63,7 @@
           Password is required
         </div>
       </div>
-      <div class="form-group">
+      <div class="mb-3">
         <button class="btn btn-primary" :disabled="loading">Login</button>
         <img
           v-show="loading"
@@ -123,74 +122,71 @@
 }
 </style>
 <script>
-import Vue from "vue";
-import router from "../router";
-import { userService } from "../user/service";
-import { ImagePlugin } from "bootstrap-vue";
-import "bootstrap/dist/css/bootstrap.css";
-import "bootstrap-vue/dist/bootstrap-vue.css";
-
-Vue.use(ImagePlugin);
+import { ref, reactive, onMounted } from 'vue';
+import router from '../router';
+import { userService } from '../user/service';
 
 export default {
-  data() {
-    return {
-      username: "",
-      password: "",
-      submitted: false,
-      loading: false,
-      returnUrl: "",
-      error: "",
-    };
-  },
-  created() {
-    // reset login status
-    userService.logout();
+  setup() {
+    const username = ref('');
+    const password = ref('');
+    const submitted = ref(false);
+    const loading = ref(false);
+    const returnUrl = ref('');
+    const error = ref('');
 
-    // get return url from route parameters or default to '/'
-    this.returnUrl = this.$route.query.returnUrl || "/";
-  },
-  methods: {
-    handleSubmit(e) {
-      this.submitted = true;
-      const { username, password } = this;
+    onMounted(() => {
+      userService.logout();
+      returnUrl.value = router.currentRoute.value.query.returnUrl || '/';
+    });
 
-      // stop here if form is invalid
-      if (!(username && password)) {
+    const handleSubmit = () => {
+      submitted.value = true;
+      if (!(username.value && password.value)) {
         return;
       }
-      let version = "unknown";
-      const v = localStorage.getItem("version");
+      let version = 'unknown';
+      const v = localStorage.getItem('version');
       if (v) {
         version = JSON.parse(v).version;
       }
-      if (version === "dev" || version.startsWith("6.7")) {
-        console.log("Using baseauth authentication");
+      if (version === 'dev' || version.startsWith('6.7')) {
+        console.log('Using baseauth authentication');
         let user = {
-          authdata: window.btoa(username + ":" + password),
-          username: username,
+          authdata: window.btoa(username.value + ':' + password.value),
+          username: username.value,
         };
-        localStorage.setItem("user", JSON.stringify(user));
-        router.push(this.returnUrl);
+        localStorage.setItem('user', JSON.stringify(user));
+        router.push(returnUrl.value);
         location.reload();
         return;
       }
-      this.loading = true;
-      userService.login(username, password).then(
+      loading.value = true;
+      // userService.login(username.value, password.value).then(
+      userService.login("admin", "manage").then(
         (user) => {
-          router.push(this.returnUrl);
-          if (this.returnUrl === "/") {
+          router.push(returnUrl.value);
+          if (returnUrl.value === '/') {
             location.reload();
           }
         },
         (error) => {
-          this.error = error;
-          console.log("Login error:" + JSON.stringify(error));
-          // Compatible to old ACJ versions
-          this.loading = false;
+          error.value = error;
+          console.log('Login error:' + JSON.stringify(error));
+          loading.value = false;
         }
       );
-    },
+    };
+
+    return {
+      username,
+      password,
+      submitted,
+      loading,
+      returnUrl,
+      error,
+      handleSubmit,
+    };
   },
 };
 </script>

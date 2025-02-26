@@ -21,17 +21,21 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { defineComponent } from 'vue';
 import MyHeader from '@/components/Header.vue';
 import UserqueueList from '@/components/UserqueueList.vue';
 
-@Component({
+export default defineComponent({
+  name: 'Userqueue',
   components: {
     MyHeader,
     UserqueueList,
   },
-})
-export default class Userqueue extends Vue {
-      @Prop(String) readonly url: string | undefined;
-}
+  props: {
+    url: {
+      type: String,
+      required: true,
+    },
+  },
+});
 </script>

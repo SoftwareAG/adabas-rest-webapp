@@ -21,17 +21,20 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { defineComponent, PropType } from 'vue';
 import MyHeader from '@/components/Header.vue';
 import PermissionList from '@/components/PermissionList.vue';
 
-@Component({
+export default defineComponent({
   components: {
     MyHeader,
     PermissionList,
   },
-})
-export default class Permission extends Vue {
-      @Prop(String) readonly url: string | undefined;
-}
+  props: {
+    url: {
+      type: String,
+      required: false,
+    },
+  },
+});
 </script>

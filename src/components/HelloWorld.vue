@@ -15,12 +15,11 @@
 
 <template>
   <div class="hello p-2">
-    <b-card
-      header="Adabas data access"
-      border-variant="secondary"
-      header-border-variant="secondary"
-    >
-      <b-card-body>
+    <div class="card border-secondary">
+      <div class="card-header border-secondary">
+        Adabas data access
+      </div>
+      <div class="card-body">
         <p>
           The application provides an overview of accessing Adabas records and the form of data provided by the Adabas REST API.
           It contains Adabas record data access as well as Adabas
@@ -60,13 +59,13 @@
           repository defined by the configuration. There are
           {{ numberDbs }} databases which can be accessed directly.
         </p>
-      </b-card-body></b-card>
-    <b-card
-      header="Adabas administration"
-      border-variant="secondary"
-      header-border-variant="secondary"
-    >
-      <b-card-body>
+      </div>
+    </div>
+    <div class="card border-secondary mt-3">
+      <div class="card-header border-secondary">
+        Adabas administration
+      </div>
+      <div class="card-body">
         <p>
           Beside the Adabas data access, this application provides examples of how to
           access administration operations using the REST API of the
@@ -79,33 +78,40 @@
           control management used to start long running Adabas utility jobs can
           be used as well.
         </p>
-      </b-card-body></b-card>
+      </div>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import store from "../store/index";
+import { defineComponent, ref, onMounted } from 'vue';
+import store from '../store/index';
 
-@Component
-export default class HelloWorld extends Vue {
-  @Prop() private msg!: string;
-  data() {
+export default defineComponent({
+  props: {
+    msg: String,
+  },
+  setup() {
+    const numberDbs = ref(0);
+    const numberMaps = ref(0);
+    const mappingConfigExample = ref('<Mapping>\n <Directory url="file:xtsurl.cfg" />\n <Database dbid="111(adatcp://localhost:64111)" file="4" />\n</Mapping>');
+
+    onMounted(() => {
+      store.dispatch("INIT_DATABASES").then((dbs) => {
+        numberDbs.value = dbs.length;
+      });
+      store.dispatch("INIT_MAPS").then((response) => {
+        numberMaps.value = response.data.Maps.length;
+      });
+    });
+
     return {
-      numberDbs: 0,
-      numberMaps: 0,
-      mappingConfigExample:'<Mapping>\n <Directory url="file:xtsurl.cfg" />\n <Database dbid="111(adatcp://localhost:64111)" file="4" />\n</Mapping>'
+      numberDbs,
+      numberMaps,
+      mappingConfigExample,
     };
-  }
-  created(): void {
-    store.dispatch("INIT_DATABASES").then((dbs) => {
-      this.$data.numberDbs = dbs.length;
-    });
-    store.dispatch("INIT_MAPS").then((response) => {
-      this.$data.numberMaps = response.data.Maps.length;
-    });
-  }
-}
+  },
+});
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

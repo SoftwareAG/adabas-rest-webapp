@@ -17,8 +17,7 @@
 *
 */
 
-import Vue from 'vue'
-import Router from 'vue-router'
+
 import Home from '../views/Home.vue'
 import Map from '../views/Map.vue'
 import Modify from '../views/Modify.vue'
@@ -59,216 +58,221 @@ import DescriptorExample from '../examples/DescriptorExample.vue'
 import Configuration from '../components/Configuration.vue'
 import Log from '../components/Log.vue'
 
-Vue.use(Router)
-
-export default new Router({
+import { createRouter, createWebHistory } from 'vue-router';
+const router = createRouter({
+  history: createWebHistory(),
   routes: [
-    {
-      path: '/',
-      name: 'Home',
-      component: Home,
-    },
-    { path: '/login', name: 'login', component: LoginPage },
-    {
-      path: '/map',
-      name: 'Map',
-      component: Map
-    },
-    {
-      path: '/browser',
-      name: 'Browser',
-      component: Browser
-    },
-    {
-      path: '/modify',
-      name: 'Modify',
-      component: Modify
-    },
-    {
-      path: '/metadata',
-      name: 'Metadata',
-      component: Metadata
-    },
-    {
-      path: '/database',
-      name: 'Database',
-      component: Database
-    },
-    {
-      path: '/databases',
-      name: 'Database List',
-      component: Databases
-    },
-    {
-      path: '/cluster',
-      name: 'Cluster',
-      component: Cluster
-    },
-    {
-      path: '/cluster/:url',
-      name: 'Database Cluster',
-      component: DatabaseCluster
-    },
-    {
-      path: '/information/:url',
-      name: 'Database information',
-      component: DatabaseInfo, props: true
-    },
-    {
-      path: '/plogstat/:url',
-      name: 'Database PLOG statistics',
-      component: DatabasePlog, props: true
-    },
-    {
-      path: '/parameters/:url',
-      name: 'Database Parameter',
-      component: Parameters, props: true
-    },
-    {
-      path: '/containers/:url',
-      name: 'Database Container',
-      component: Containers, props: true
-    },
-    {
-      path: '/files/:url',
-      name: 'Database Files',
-      component: Files, props: true
-    },
-    {
-      path: '/permission/:url',
-      name: 'Role-Based-Access Permission',
-      component: Permission, props: true
-    },
-    {
-      path: '/userqueue/:url',
-      name: 'Database Userqueues',
-      component: Userqueue, props: true
-    },
-    {
-      path: '/commandqueue/:url',
-      name: 'Database Commandqueues',
-      component: Commandqueue, props: true
-    },
-    {
-      path: '/holdqueue/:url',
-      name: 'Database Holdqueues',
-      component: Holdqueue, props: true
-    },
-    {
-      path: '/highwater/:url',
-      name: 'Database High Watermark',
-      component: Highwater, props: true
-    },
-    {
-      path: '/adatcp/:url',
-      name: 'Database ADATCP Connections',
-      component: Adatcp, props: true
-    },
-    {
-      path: '/activity/:url',
-      name: 'Database Activity',
-      component: Activity, props: true
-    },
-    {
-      path: '/bufferpool/:url',
-      name: 'Database Buffer Pool',
-      component: Bufferpool, props: true
-    },
-    {
-      path: '/bufferflush/:url',
-      name: 'Database Buffer Flush',
-      component: Bufferflush, props: true
-    },
-    {
-      path: '/nuclog/:url',
-      name: 'Database Nucleus Log',
-      component: NucLog, props: true
-    },
-    {
-      path: '/threadtable/:url',
-      name: 'Database Thread Table',
-      component: Threadtable, props: true
-    },
-    {
-      path: '/ucb/:url',
-      name: 'Database UCB',
-      component: UCB, props: true
-    },
-    {
-      path: '/cmdstats/:url',
-      name: 'Database Command statistics',
-      component: Commandstats, props: true
-    },
-    {
-      path: '/monitor/:url',
-      name: 'Database Monitor statistics',
-      component: Monitor, props: true
-    },
-    {
-      path: '/checkpoints/:url',
-      name: 'Database Checkpoints',
-      component: Checkpoints, props: true
-    },
-    {
-      path: '/jobs',
-      name: 'Job List',
-      component: Jobs
-    },
-    {
-      path: '/example_description',
-      name: 'Example description',
-      component: Description,
-      meta: { title: 'Example description' }
-    },
-    {
-      path: '/example_image',
-      name: 'Image Example',
-      component: ImageExample,
-      meta: { title: 'Image example' }
-    },
-    {
-      path: '/example_unicode',
-      name: 'Unicode Example',
-      component: UnicodeExample,
-      meta: { title: 'Unicode example' }
-    },
-    {
-      path: '/example_new_employees',
-      name: 'New Employee Example',
-      component: NewEmployeeExample,
-      meta: { title: 'New employees example' }
-    },
-    {
-      path: '/example_sorted',
-      name: 'Sorted Example',
-      component: SortedExample,
-      meta: { title: 'Sort example' }
-    },
-    {
-      path: '/example_descriptor',
-      name: 'Descriptor Example',
-      component: DescriptorExample,
-      meta: { title: 'Descriptor example' }
-    },
-    {
-      path: '/configuration',
-      name: 'Configuration',
-      component: Configuration,
-      meta: { title: 'Configuration' }
-    },
-    {
-      path: '/log',
-      name: 'Log',
-      component: Log,
-      meta: { title: 'Log' }
-    },
-    {
-      path: '/about',
-      name: 'About',
-      // route level code-splitting
-      // this generates a separate chunk (about.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
-    }
-  ],
+  {
+    path: '/',
+    name: 'Home',
+    component: Home,
+  },
+  { path: '/login', 
+    name: 'login', 
+    component: LoginPage 
+  },
+  {
+    path: '/map',
+    name: 'Map',
+    component: Map
+  },
+  {
+    path: '/browser',
+    name: 'Browser',
+    component: Browser
+  },
+  {
+    path: '/modify',
+    name: 'Modify',
+    component: Modify
+  },
+  {
+    path: '/metadata',
+    name: 'Metadata',
+    component: Metadata
+  },
+  {
+    path: '/database',
+    name: 'Database',
+    component: Database
+  },
+  {
+    path: '/databases',
+    name: 'Database List',
+    component: Databases
+  },
+  {
+    path: '/cluster',
+    name: 'Cluster',
+    component: Cluster
+  },
+  {
+    path: '/cluster/:url',
+    name: 'Database Cluster',
+    component: DatabaseCluster
+  },
+  {
+    path: '/information/:url',
+    name: 'Database information',
+    component: DatabaseInfo, props: true
+  },
+  {
+    path: '/plogstat/:url',
+    name: 'Database PLOG statistics',
+    component: DatabasePlog, props: true
+  },
+  {
+    path: '/parameters/:url',
+    name: 'Database Parameter',
+    component: Parameters, props: true
+  },
+  {
+    path: '/containers/:url',
+    name: 'Database Container',
+    component: Containers, props: true
+  },
+  {
+    path: '/files/:url',
+    name: 'Database Files',
+    component: Files, props: true
+  },
+  {
+    path: '/permission/:url',
+    name: 'Role-Based-Access Permission',
+    component: Permission, props: true
+  },
+  {
+    path: '/userqueue/:url',
+    name: 'Database Userqueues',
+    component: Userqueue, props: true
+  },
+  {
+    path: '/commandqueue/:url',
+    name: 'Database Commandqueues',
+    component: Commandqueue, props: true
+  },
+  {
+    path: '/holdqueue/:url',
+    name: 'Database Holdqueues',
+    component: Holdqueue, props: true
+  },
+  {
+    path: '/highwater/:url',
+    name: 'Database High Watermark',
+    component: Highwater, props: true
+  },
+  {
+    path: '/adatcp/:url',
+    name: 'Database ADATCP Connections',
+    component: Adatcp, props: true
+  },
+  {
+    path: '/activity/:url',
+    name: 'Database Activity',
+    component: Activity, props: true
+  },
+  {
+    path: '/bufferpool/:url',
+    name: 'Database Buffer Pool',
+    component: Bufferpool, props: true
+  },
+  {
+    path: '/bufferflush/:url',
+    name: 'Database Buffer Flush',
+    component: Bufferflush, props: true
+  },
+  {
+    path: '/nuclog/:url',
+    name: 'Database Nucleus Log',
+    component: NucLog, props: true
+  },
+  {
+    path: '/threadtable/:url',
+    name: 'Database Thread Table',
+    component: Threadtable, props: true
+  },
+  {
+    path: '/ucb/:url',
+    name: 'Database UCB',
+    component: UCB, props: true
+  },
+  {
+    path: '/cmdstats/:url',
+    name: 'Database Command statistics',
+    component: Commandstats, props: true
+  },
+  {
+    path: '/monitor/:url',
+    name: 'Database Monitor statistics',
+    component: Monitor, props: true
+  },
+  {
+    path: '/checkpoints/:url',
+    name: 'Database Checkpoints',
+    component: Checkpoints, props: true
+  },
+  {
+    path: '/jobs',
+    name: 'Job List',
+    component: Jobs
+  },
+  {
+    path: '/example_description',
+    name: 'Example description',
+    component: Description,
+    meta: { title: 'Example description' }
+  },
+  {
+    path: '/example_image',
+    name: 'Image Example',
+    component: ImageExample,
+    meta: { title: 'Image example' }
+  },
+  {
+    path: '/example_unicode',
+    name: 'Unicode Example',
+    component: UnicodeExample,
+    meta: { title: 'Unicode example' }
+  },
+  {
+    path: '/example_new_employees',
+    name: 'New Employee Example',
+    component: NewEmployeeExample,
+    meta: { title: 'New employees example' }
+  },
+  {
+    path: '/example_sorted',
+    name: 'Sorted Example',
+    component: SortedExample,
+    meta: { title: 'Sort example' }
+  },
+  {
+    path: '/example_descriptor',
+    name: 'Descriptor Example',
+    component: DescriptorExample,
+    meta: { title: 'Descriptor example' }
+  },
+  {
+    path: '/configuration',
+    name: 'Configuration',
+    component: Configuration,
+    meta: { title: 'Configuration' }
+  },
+  {
+    path: '/log',
+    name: 'Log',
+    component: Log,
+    meta: { title: 'Log' }
+  },
+  {
+    path: '/about',
+    name: 'About',
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+  }
+],
 });
+
+export default router;

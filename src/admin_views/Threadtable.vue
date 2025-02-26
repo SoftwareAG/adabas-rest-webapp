@@ -21,17 +21,20 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { defineComponent, PropType } from 'vue';
 import MyHeader from '@/components/Header.vue';
 import ThreadTableData from '@/components/ThreadTableData.vue';
 
-@Component({
+export default defineComponent({
   components: {
     MyHeader,
     ThreadTableData,
   },
-})
-export default class ThreadTable extends Vue {
-      @Prop(String) readonly url: string | undefined;
-}
+  props: {
+    url: {
+      type: String,
+      required: false,
+    },
+  },
+});
 </script>

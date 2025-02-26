@@ -15,114 +15,103 @@
 
 <template>
   <div>
-    <b-navbar toggleable="lg" type="light" variant="light">
-      <b-navbar-brand to="/"
-        ><img
-          src="img/logo_sag.png"
-          style="width: auto; height: 15px;"
-        /><br />Adabas RESTful server</b-navbar-brand
-      >
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand" href="/">
+        <img src="../../public/img/logo_sag.png" style="width: auto; height: 15px;" />
+        <br />Adabas RESTful server
+      </a>
 
-      <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav-collapse" aria-controls="nav-collapse" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
-      <b-collapse id="nav-collapse" is-nav>
-        <b-navbar-nav>
-          <b-nav-item-dropdown text="Adabas Data access" right>
-            <b-dropdown-item to="/map">Adabas Map access</b-dropdown-item>
-            <b-dropdown-item to="/database"
-              >Adabas classic access</b-dropdown-item
-            >
-            <b-dropdown-item to="/metadata"
-              >Adabas Map Metadata</b-dropdown-item
-            >
-            <b-dropdown-item to="/modify">Modify record</b-dropdown-item>
-          </b-nav-item-dropdown>
-          <b-nav-item :disabled="!isAdministrator" to="/databases/">Database Administration</b-nav-item>
-          <!--b-nav-item :disabled="!isClusterAdministrator" to="/cluster/">Database Cluster</b-nav-item-->
-          <b-nav-item :disabled="!isAdministrator" to="/jobs"
-            >List of tasks</b-nav-item
-          >
-          <b-nav-item-dropdown text="Configure REST server" right>
-            <b-dropdown-item to="/configuration/">Configuration</b-dropdown-item>
-            <b-dropdown-item to="/browser/">File Browser</b-dropdown-item>
-            <b-dropdown-item to="/log/">RESTful Log</b-dropdown-item>
-          </b-nav-item-dropdown>
-          <b-nav-item-dropdown text="Examples" right>
-            <b-dropdown-item to="/example_description"
-              >Description</b-dropdown-item
-            >
-            <b-dropdown-item to="/example_image">Image example</b-dropdown-item>
-            <b-dropdown-item to="/example_unicode"
-              >Unicode access</b-dropdown-item
-            >
-            <b-dropdown-item to="/example_new_employees"
-              >New employees file</b-dropdown-item
-            >
-            <b-dropdown-item to="/example_sorted"
-              >Sorted access</b-dropdown-item
-            >
-            <b-dropdown-item to="/example_descriptor"
-              >Descriptor read</b-dropdown-item
-            >
-          </b-nav-item-dropdown>
-          <b-nav-item target="_blank" href="/docs">Swagger API</b-nav-item>
-        </b-navbar-nav>
-        <b-navbar-nav class="ml-auto" right>
-          <b-nav-item v-on:click="logout"
-            >Logout<br />&lt;{{ user }}&gt;</b-nav-item
-          >
-        </b-navbar-nav>
-      </b-collapse>
-    </b-navbar>
+      <div class="collapse navbar-collapse" id="nav-collapse">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="adabasDataAccessDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Adabas Data access
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="adabasDataAccessDropdown">
+              <li><a class="dropdown-item" href="/map">Adabas Map access</a></li>
+              <li><a class="dropdown-item" href="/database">Adabas classic access</a></li>
+              <li><a class="dropdown-item" href="/metadata">Adabas Map Metadata</a></li>
+              <li><a class="dropdown-item" href="/modify">Modify record</a></li>
+            </ul>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" :class="{ disabled: !isAdministrator }" href="/databases/">Database Administration</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" :class="{ disabled: !isAdministrator }" href="/jobs">List of tasks</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="configureRestServerDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Configure REST server
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="configureRestServerDropdown">
+              <li><a class="dropdown-item" href="/configuration/">Configuration</a></li>
+              <li><a class="dropdown-item" href="/browser/">File Browser</a></li>
+              <li><a class="dropdown-item" href="/log/">RESTful Log</a></li>
+            </ul>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="examplesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Examples
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="examplesDropdown">
+              <li><a class="dropdown-item" href="/example_description">Description</a></li>
+              <li><a class="dropdown-item" href="/example_image">Image example</a></li>
+              <li><a class="dropdown-item" href="/example_unicode">Unicode access</a></li>
+              <li><a class="dropdown-item" href="/example_new_employees">New employees file</a></li>
+              <li><a class="dropdown-item" href="/example_sorted">Sorted access</a></li>
+              <li><a class="dropdown-item" href="/example_descriptor">Descriptor read</a></li>
+            </ul>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" target="_blank" href="/docs">Swagger API</a>
+          </li>
+        </ul>
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link" href="#" @click="logout">Logout<br />&lt;{{ user }}&gt;</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
   </div>
 </template>
 
 <script lang="ts">
-import { Vue } from 'vue-property-decorator';
-import {
-  NavbarPlugin,
-  ButtonPlugin,
-  FormInputPlugin,
-  TablePlugin,
-  FormCheckboxPlugin,
-} from 'bootstrap-vue';
-import 'bootstrap/dist/css/bootstrap.css';
-import 'bootstrap-vue/dist/bootstrap-vue.css';
+import { defineComponent, ref, onMounted } from 'vue';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js'; 
+
 import { userService } from '../user/service';
 import { authHeader, adminRole } from '../user/auth-header';
 
-Vue.use(NavbarPlugin);
-Vue.use(ButtonPlugin);
-Vue.use(FormInputPlugin);
-Vue.use(FormCheckboxPlugin);
-Vue.use(TablePlugin);
-
-// @Component({
-//     NavbarPlugin,
-//     ButtonPlugin,
-//     FormInputPlugin,
-//     TablePlugin,
-//      store,
-// })
-export default Vue.extend({
+export default defineComponent({
   name: 'Header',
-  data() {
-    return {
-      user: '',
-      isAdministrator: false,
-      isClusterAdministrator: false,
-      checked: true,
-    };
-  },
-  created() {
-    this.$data.isAdministrator = adminRole();
-    this.$data.user = userService.getUsername();
-  },
-  methods: {
-    logout() {
+  setup() {
+    const user = ref('');
+    const isAdministrator = ref(false);
+    const isClusterAdministrator = ref(false);
+
+    onMounted(() => {
+      isAdministrator.value = adminRole();
+      user.value = userService.getUsername();
+    });
+
+    const logout = () => {
       userService.logout();
       location.reload();
-    },
+    };
+
+    return {
+      user,
+      isAdministrator,
+      isClusterAdministrator,
+      logout,
+    };
   },
 });
 </script>

@@ -21,15 +21,15 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { defineComponent } from 'vue';
 import MyHeader from '@/components/Header.vue';
 import DatabaseList from '@/components/DatabaseList.vue';
 
-@Component({
+export default defineComponent({
+  name: 'Databases',
   components: {
     MyHeader,
     DatabaseList,
   },
-})
-export default class Databases extends Vue {}
+});
 </script>

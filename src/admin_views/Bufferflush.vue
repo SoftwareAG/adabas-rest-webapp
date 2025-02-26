@@ -21,17 +21,22 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { defineComponent, PropType } from 'vue';
 import MyHeader from '@/components/Header.vue';
 import BufferFlushData from '@/components/BufferFlushData.vue';
 
-@Component({
+export default defineComponent({
   components: {
     MyHeader,
     BufferFlushData,
   },
-})
-export default class Bufferflush extends Vue {
-      @Prop(String) readonly url: string | undefined;
-}
+  props: {
+    url: {
+      type: String as PropType<string | undefined>,
+      required: false,
+    },
+  },
+  setup(props) {
+  }
+});
 </script>

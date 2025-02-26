@@ -24,17 +24,14 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { defineComponent } from 'vue';
 import GenericExample from '@/components/GenericExample.vue';
 
-@Component({
+export default defineComponent({
   components: {
     GenericExample,
   },
-})
-export default class NewEmployeeExample extends Vue {
-  @Prop() private msg!: string;
-}
+});
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

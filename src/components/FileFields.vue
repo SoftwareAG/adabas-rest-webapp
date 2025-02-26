@@ -20,12 +20,14 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { defineComponent, PropType } from 'vue';
 
-@Component
-export default class FileFields extends Vue {
-  @Prop() private msg!: string;
-}
+export default defineComponent({
+  name: 'FileFields',
+  props: {
+    msg: String,
+  },
+});
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

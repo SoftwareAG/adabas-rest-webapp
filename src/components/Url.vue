@@ -15,31 +15,39 @@
 
 <template>
   <div class="url p-2 w-75">
-    <b-button-toolbar aria-label="Url">
-      <b-button-group size="sm" class="mr-2">
-        <b-button disabled>URL:</b-button>
-        <b-button disabled variant="outline-primary">{{ storedUrl.query.method }}</b-button>
-      </b-button-group>
-      <b-input-group size="sm" prepend=">" class="w-50">
-        <b-form-input readonly class="text-left" v-model="storedUrl.query.url"></b-form-input>
-      </b-input-group>
-    </b-button-toolbar>
+    <div class="btn-toolbar" role="toolbar" aria-label="Url">
+      <div class="btn-group btn-group-sm mr-2" role="group">
+        <button type="button" class="btn btn-secondary" disabled>URL:</button>
+        <button type="button" class="btn btn-outline-primary" disabled>{{ storedUrl.query.method }}</button>
+      </div>
+      <div class="input-group input-group-sm w-50">
+        <div class="input-group-prepend">
+          <span class="input-group-text">></span>
+        </div>
+        <input type="text" class="form-control text-left" readonly v-model="storedUrl.query.url">
+      </div>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import store from "../store/index";
+import { defineComponent, ref } from 'vue';
+import store from '../store/index';
 
-@Component
-export default class UrlDisplay extends Vue {
-  @Prop(String) readonly url: string | undefined;
-  data() {
+export default defineComponent({
+  props: {
+    url: {
+      type: String,
+      required: false,
+    },
+  },
+  setup() {
+    const storedUrl = ref(store.state.url);
     return {
-      storedUrl: store.state.url,
+      storedUrl,
     };
-  }
-}
+  },
+});
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

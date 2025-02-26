@@ -16,92 +16,109 @@
 <template>
   <div class="threadtabledata p-2">
     <Sidebar :url="url" />
-    <b-card
-      :header="'Adabas Database thread table for database ' + url"
-      border-variant="secondary"
-      header-border-variant="secondary"
-    >
-      <b-card-body>
-        <b-container fluid>
-          <b-row
-            ><b-col>
+    <div class="card border-secondary mb-3">
+      <div class="card-header border-secondary">
+        Adabas Database thread table for database {{ url }}
+      </div>
+      <div class="card-body">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col">
               This page provides the list of Adabas database threads to be
               monitored through this Adabas RESTful server.
-            </b-col>
-          </b-row>
-          <b-row
-            ><b-col>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
               <Url url="/adabas/database" />
-            </b-col>
-          </b-row>
-          <b-row
-            ><b-col>
-              <b-table
-                striped
-                bordered
-                hover
-                small
-                :items="threads"
-                :fields="fields"
-              >
-                 <template v-slot:cell(CommandCount)="row">
-                  {{new Intl.NumberFormat().format(row.item.CommandCount)}}
-                </template>
-             </b-table>
-            </b-col> </b-row></b-container></b-card-body
-    ></b-card>
-    <StatusBar />
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <table class="table table-striped table-bordered table-hover table-sm">
+                <thead>
+                  <tr>
+                    <th v-for="field in fields" :key="field">{{ field }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="thread in threads" :key="thread.Thread">
+                    <td>{{ thread.Thread }}</td>
+                    <td>{{ thread.APU }}</td>
+                    <td>{{ thread.CommandCode }}</td>
+                    <td>{{ new Intl.NumberFormat().format(thread.CommandCount) }}</td>
+                    <td>{{ thread.File }}</td>
+                    <td>{{ thread.Status }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+        <StatusBar />
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { defineComponent, ref, onMounted, onBeforeUnmount } from 'vue';
 import Sidebar from './Sidebar.vue';
-import StatusBar from './StatusBar.vue';
+import StatusBar from '@/components/StatusBar.vue';
 import store from '../store/index';
 import Url from './Url.vue';
 import { SearchDatabases } from '@/adabas/admin';
 
-@Component({
+export default defineComponent({
   components: {
     Sidebar,
     StatusBar,
     Url,
   },
-})
-export default class ThreadTableData extends Vue {
-  @Prop(String) readonly url: string | undefined;
-  data() {
-    return {
-      fields: [
-        'Thread',
-        'APU',
-        'CommandCode',
-        'CommandCount',
-        'File',
-        'Status',
-      ],
-      threads: [],
-      timer: '',
-      db: null,
+  props: {
+    url: {
+      type: String,
+      required: false,
+    },
+  },
+  setup(props) {
+    const fields = ref([
+      'Thread',
+      'APU',
+      'CommandCode',
+      'CommandCount',
+      'File',
+      'Status',
+    ]);
+    const threads = ref([]);
+    const timer = ref(null);
+    const db = ref(null);
+
+    const loadThreadTable = () => {
+      if (db.value) {
+        db.value.threadTable().then((response: any) => {
+          threads.value = response;
+        });
+      }
     };
-  }
-  created(): void {
-    this.$data.db = SearchDatabases(this.url);
-    this.loadThreadTable();
-    this.$data.timer = setInterval(this.loadThreadTable, 5000);
-  }
-  loadThreadTable(): void {
-    if (this.$data.db && this.$data.db != null) {
-      this.$data.db.threadTable().then((response: any) => {
-        this.$data.threads = response;
-      });
-    }
-  }
-  beforeDestroy(): void {
-    clearInterval(this.$data.timer);
-  }
-}
+
+    onMounted(() => {
+      db.value = SearchDatabases(props.url);
+      loadThreadTable();
+      timer.value = setInterval(loadThreadTable, 5000);
+    });
+
+    onBeforeUnmount(() => {
+      clearInterval(timer.value);
+    });
+
+    return {
+      fields,
+      threads,
+      loadThreadTable,
+    };
+  },
+});
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

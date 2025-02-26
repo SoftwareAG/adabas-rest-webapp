@@ -17,19 +17,19 @@
 *
 */
 
-import './publicpath.js'
-import '@babel/polyfill'
 import 'mutationobserver-shim'
-import Vue from 'vue'
-import './plugins/bootstrap-vue'
+import { createApp } from 'vue'
 import App from './App.vue'
 import './registerServiceWorker'
 import router from './router'
 import store from './store'
-import { Route } from 'vue-router'
+import type { RouteLocationNormalized, NavigationGuardNext } from 'vue-router';
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/js/bootstrap.bundle.min.js"; 
 
-Vue.config.productionTip = false
-export const eventBus = new Vue();
+const app = createApp(App);
+app.config.globalProperties.productionTip = false
+export const eventBus = app;
 
 const DEFAULT_TITLE = 'Adabas REST server';
 /*router.afterEach((to, from) => {
@@ -39,7 +39,7 @@ const DEFAULT_TITLE = 'Adabas REST server';
     document.title = to.meta?.title || DEFAULT_TITLE;
   });
 });*/
-router.beforeEach((to: Route, from: Route, next: any) => {
+router.beforeEach((to: RouteLocationNormalized, from: RouteLocationNormalized, next: any) => {
   // redirect to login page if not logged in and trying to access a restricted page
   const publicPages = ['/login'];
   const authRequired = !publicPages.includes(to.path);
@@ -55,11 +55,6 @@ router.beforeEach((to: Route, from: Route, next: any) => {
   }
 });
 
-new Vue({
-  router,
-  store,
-  render: (h) => h(App),
-  created() {
-    // store.dispatch('INIT_ALBUMS', '');
-  },
-}).$mount('#app');
+app.use(router);
+app.use(store);
+app.mount('#app');

@@ -1,73 +1,70 @@
 <template>
   <div class="commandstatsdata p-2">
     <Sidebar :url="url" />
-    <b-card
-      :header="'Adabas Database command statistics for database ' + url"
-      border-variant="secondary"
-      header-border-variant="secondary"
-    >
-      <b-card-body>
-        <b-container fluid>
-          <b-row>
-            <b-col>
+    <div class="card border-secondary">
+      <div class="card-header border-secondary">
+        Adabas Database command statistics for database {{ url }}
+      </div>
+      <div class="card-body">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col">
               This page provides the statistics of Adabas database command
               to be monitored through this Adabas RESTful server.
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
               <Url :url="'/adabas/database/' + url + '/cmdstats'" />
-            </b-col>
-            <b-col class="text-right">
-              <b-button v-on:click="resetCommands()">Reset</b-button>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col sm="4" class="h-100 p-1">
-              <b-pagination
-                v-model="tableMetadata.currentPage"
-                :total-rows="comstats.length"
-                :per-page="tableMetadata.perPage"
-                aria-controls="my-table"
-              ></b-pagination>
-
-              <b-table
-                id="my-table"
-                class="h-100"
-                striped
-                bordered
-                hover
-                small
-                :per-page="tableMetadata.perPage"
-                :current-page="tableMetadata.currentPage"
-                :items="comstats"
-                :sort-by.sync="tableMetadata.sortBy"
-                :sort-desc.sync="tableMetadata.sortDesc"
-                :fields="tableMetadata.fields"
-                sort-icon-left
-                responsive="sm"
-              >
-              </b-table>
-            </b-col>
-            <b-col sm="4">
+            </div>
+            <div class="col text-end">
+              <button class="btn btn-primary" @click="resetCommands()">Reset</button>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-4 h-100 p-1">
+              <nav>
+                <ul class="pagination">
+                  <li class="page-item" v-for="page in totalPages" :key="page">
+                    <a class="page-link" @click="changePage(page)">{{ page }}</a>
+                  </li>
+                </ul>
+              </nav>
+              <table class="table table-striped table-bordered table-hover table-sm">
+                <thead>
+                  <tr>
+                    <th v-for="field in tableMetadata.fields" :key="field">{{ field }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="item in paginatedItems" :key="item.CommandName">
+                    <td>{{ item.CommandName }}</td>
+                    <td>{{ item.CommandCount }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="col-sm-4">
               <div class="small Chart w-100">
                 <DoughnutChart v-bind="doughnutChartProps" />
                 <img style="width: 300px" v-if="imgData" :src="imgData" />
               </div>
-            </b-col>
-            <b-col sm="4">
+            </div>
+            <div class="col-sm-4">
               <div class="small Chart w-100">
                 <BarChart v-bind="barChartProps" />
                 <img style="width: 300px" v-if="imgData" :src="imgData" />
               </div>
-            </b-col> </b-row></b-container></b-card-body
-    ></b-card>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <StatusBar />
   </div>
 </template>
 
 <script>
-import { Chart } from "chart.js/auto";
 import { DoughnutChart, useDoughnutChart, BarChart, useBarChart } from "vue-chart-3";
 import {
   ref,
@@ -75,9 +72,9 @@ import {
   computed,
   onBeforeUnmount,
   defineComponent,
-} from "@vue/composition-api";
+} from "vue";
 import Sidebar from "./Sidebar.vue";
-import StatusBar from "./StatusBar.vue";
+import StatusBar from '@/components/StatusBar.vue';
 import Url from "./Url.vue";
 import { SearchDatabases } from '@/adabas/admin';
 
@@ -87,7 +84,7 @@ export default defineComponent({
     BarChart,
     DoughnutChart,
     Sidebar,
-    StatusBar,
+   StatusBar,
     Url,
   },
   props: ["url"],
@@ -233,6 +230,16 @@ export default defineComponent({
       });
     }
 
+    // const totalPages = computed(() => Math.ceil(comstats.value.length / tableMetadata.perPage));
+    // const paginatedItems = computed(() => {
+    //   const start = (tableMetadata.currentPage - 1) * tableMetadata.perPage;
+    //   const end = start + tableMetadata.perPage;
+    //   return comstats.value.slice(start, end);
+    // });
+    // function changePage(page) {
+    //   tableMetadata.currentPage = page;
+    // }
+
     return {
       tableMetadata,
       comstats,
@@ -242,6 +249,9 @@ export default defineComponent({
       barChartRef,
       resetCommands,
       imgData,
+      // totalPages,
+      // paginatedItems,
+      // changePage,
     };
   },
 });

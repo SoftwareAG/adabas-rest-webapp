@@ -17,25 +17,23 @@
 *
 */
 
-import Vue from 'vue'
-import Vuex from 'vuex'
+import { reactive } from 'vue';
+import { createStore } from "vuex";
 import { authHeader } from '../user/auth-header';
 import axios from 'axios';
 import { config } from './config';
 import router from '../router/index';
 import { userService } from '../user/service';
-import { AdabasAdmin, loadDatabases, loadCluster } from '@/adabas/admin';
-import {  JobAdmin,loadJobs } from '@/adabas/jobs';
+import { AdabasAdmin, loadDatabases, loadCluster } from '../adabas/admin';
+import {  JobAdmin,loadJobs } from '../adabas/jobs';
 
-Vue.use(Vuex)
-
-export default new Vuex.Store({
+export default createStore({
   state: {
-    databases: [],
+    databases: [] as any[],
     adminDatabases: [] as AdabasAdmin[],
     adminJobs: [] as JobAdmin[],
-    maps: [],
-    records: [],
+    maps: [] as any[],
+    records: [] as any[],
     metadata: {
       Map: null as any,
     },
@@ -52,51 +50,49 @@ export default new Vuex.Store({
   mutations: {
     SET_DATABASES: (state, dbs) => {
       dbs.forEach((element: any, index: number) => {
-        Vue.set(state.databases, index, element);
+        state.databases[index] = element;
       });
     },
     SET_ADMIN_DATABASES: (state, dbs) => {
-      dbs.forEach((element: any, index: number) => {
-        Vue.set(state.adminDatabases, index, element);
-      });
+      state.adminDatabases = dbs;
     },
     SET_ADMIN_CLUSTER: (state, cls) => {
-      Vue.set(state.cluster, 'cluster', cls);
+      state.cluster = { ...state.cluster, cluster: cls };
     },
     SET_ADMIN_JOBS: (state, jobs) => {
       jobs.forEach((element: any, index: number) => {
-        Vue.set(state.adminJobs, index, element);
+        state.adminJobs[index] = element;
       });
     },
     SET_MAPS: (state, maps) => {
       // console.log("Set maps " + JSON.stringify(maps));
       maps.forEach((element: any, index: number) => {
-        Vue.set(state.maps, index, element);
+        state.maps[index] = element;
       });
     },
     SET_METADATA: (state, metadata) => {
       // console.log("Set metadata " + JSON.stringify(metadata));
-      Vue.set(state.metadata, 'Map', metadata.Map);
+      state.metadata.Map = metadata.Map;
     },
     SET_FIELDS: (state, fields) => {
       // console.log("Set fields " + JSON.stringify(fields));
-      Vue.set(state.fields, 'File', fields);
+      state.fields.File = fields;
     },
     SET_RECORDS: (state, records) => {
-      Vue.set(state.records, 0, records);
+      state.records = [records];
     },
     CLEAR_RECORDS: (state, records) => {
-      Vue.set(state.records, 0, []);
+      state.records = [];
     },
     SET_URL: (state, url) => {
-      Vue.set(state.url, 'query', url);
+      state.url.query = url;
     },
     SET_STATUS: (state, status) => {
       // state.status = status;
-      Vue.set(state.status, 'status', status);
+      state.status.status = status;
     },
     SET_RESPONSE: (state, respData) => {
-      Vue.set(state.respData, 'json', respData);
+      state.respData = reactive({ json: respData });
     },
   },
   actions: {

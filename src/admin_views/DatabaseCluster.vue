@@ -21,17 +21,21 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { defineComponent, PropType } from 'vue';
 import MyHeader from '@/components/Header.vue';
 import DatabaseClusterList from '@/components/DatabaseClusterList.vue';
 
-@Component({
+export default defineComponent({
+  name: 'DatabaseCluster',
   components: {
     MyHeader,
     DatabaseClusterList,
   },
-})
-export default class DatabaseCluster extends Vue {
-  @Prop(String) readonly url: string | undefined;
-}
+  props: {
+    url: {
+      type: String as PropType<string | undefined>,
+      required: false,
+    },
+  },
+});
 </script>
