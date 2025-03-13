@@ -161,7 +161,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue } from 'vue-facing-decorator';
 import store from '../store/index';
 import { config } from '../store/config';
 import { authHeader } from '../user/auth-header';

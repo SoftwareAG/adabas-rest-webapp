@@ -310,7 +310,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
+import { Component, Prop, Vue, Watch } from 'vue-facing-decorator';
 import 'bootstrap/dist/css/bootstrap.css';
 import store from '../store/index';
 import { config } from '../store/config';

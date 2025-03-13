@@ -49,7 +49,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Provide, Vue } from 'vue-property-decorator';
+import { Component, Prop, Provide, Vue } from 'vue-facing-decorator';
 import Sidebar from './Sidebar.vue';
 import StatusBar from './StatusBar.vue';
 import store from '../store/index';

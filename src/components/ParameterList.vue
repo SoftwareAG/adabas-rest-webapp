@@ -175,7 +175,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Provide, Vue } from 'vue-property-decorator';
+import { Component, Prop, Provide, Vue } from 'vue-facing-decorator';
 import { authHeader } from '../user/auth-header';
 import { config } from '../store/config';
 import { userService } from '../user/service';

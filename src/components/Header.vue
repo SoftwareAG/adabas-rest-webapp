@@ -78,7 +78,7 @@
 </template>
 
 <script lang="ts">
-import { Vue } from 'vue-property-decorator';
+import { Vue } from 'vue-facing-decorator';
 import {
   NavbarPlugin,
   ButtonPlugin,

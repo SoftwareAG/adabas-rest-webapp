@@ -46,7 +46,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-facing-decorator';
 import MyHeader from '@/components/Header.vue';
 import { AdabasConfig } from '../adabas/config';
 import Url from './Url.vue';
