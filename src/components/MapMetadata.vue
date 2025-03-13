@@ -135,8 +135,8 @@
               :items="mapFields"
               :fields="fields"
             >
-              <template v-for="(field, index) in fields">
-                <div :key="index">
+              <template v-for="(field, index) in fields" :key="index">
+                <div>
                   {{ index }}{{ field.name }}
                   Am Confused
                 </div>
