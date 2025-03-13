@@ -32,6 +32,6 @@ import MonitorData from '@/components/MonitorData.vue';
   },
 })
 export default class Monitor extends Vue {
-      @Prop(String) readonly url: string | undefined;
+      @Prop({ type: String, required: false }) readonly url!: string | undefined;
 }
 </script>

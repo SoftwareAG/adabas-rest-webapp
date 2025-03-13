@@ -32,6 +32,6 @@ import AdatcpList from '@/components/AdatcpList.vue';
   },
 })
 export default class Adatcp extends Vue {
-    @Prop(String) readonly url: string | undefined;
+    @Prop({ type: String, required: false }) readonly url!: string | undefined;
 }
 </script>

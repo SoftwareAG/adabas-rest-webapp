@@ -39,7 +39,7 @@ import store from "../store/index";
 
 @Component
 export default class ResponseBar extends Vue {
-  @Prop(String) readonly url: string | undefined;
+  @Prop({ type: String, required: false }) readonly url!: string | undefined;
   data() {
     return {
       jsonString: store.state.respData,

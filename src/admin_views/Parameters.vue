@@ -32,6 +32,6 @@ import ParameterList from '@/components/ParameterList.vue';
   },
 })
 export default class Parameters extends Vue {
-    @Prop(String) readonly url: string | undefined;
+    @Prop({ type: String, required: false }) readonly url!: string | undefined;
 }
 </script>

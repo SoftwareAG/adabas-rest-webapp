@@ -32,6 +32,6 @@ import UserqueueList from '@/components/UserqueueList.vue';
   },
 })
 export default class Userqueue extends Vue {
-      @Prop(String) readonly url: string | undefined;
+      @Prop({ type: String, required: false }) readonly url!: string | undefined;
 }
 </script>

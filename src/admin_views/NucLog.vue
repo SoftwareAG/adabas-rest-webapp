@@ -32,6 +32,6 @@ import NucleusLog from '@/components/NucleusLog.vue';
   },
 })
 export default class NucLog extends Vue {
-      @Prop(String) readonly url: string | undefined;
+      @Prop({ type: String, required: false }) readonly url!: string | undefined;
 }
 </script>

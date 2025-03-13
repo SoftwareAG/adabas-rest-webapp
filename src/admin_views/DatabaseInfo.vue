@@ -32,6 +32,6 @@ import DatabaseInfos from '@/components/DatabaseInfos.vue';
   },
 })
 export default class DatabaseInfo extends Vue {
-    @Prop(String) readonly url: string | undefined;
+    @Prop({ type: String, required: false }) readonly url!: string | undefined;
 }
 </script>

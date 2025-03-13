@@ -32,6 +32,6 @@ import HighwaterList from '@/components/HighwaterList.vue';
   },
 })
 export default class Highwater extends Vue {
-    @Prop(String) readonly url: string | undefined;
+    @Prop({ type: String, required: false }) readonly url!: string | undefined;
 }
 </script>

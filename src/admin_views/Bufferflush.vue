@@ -32,6 +32,6 @@ import BufferFlushData from '@/components/BufferFlushData.vue';
   },
 })
 export default class Bufferflush extends Vue {
-      @Prop(String) readonly url: string | undefined;
+      @Prop({ type: String, required: false }) readonly url!: string | undefined;
 }
 </script>

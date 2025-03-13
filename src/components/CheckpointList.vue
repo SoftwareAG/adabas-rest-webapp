@@ -124,7 +124,7 @@ import { SearchDatabases } from '@/adabas/admin';
   },
 })
 export default class CheckpointList extends Vue {
-  @Prop(String) readonly url: string | undefined;
+  @Prop({ type: String, required: false }) readonly url!: string | undefined;
   data() {
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());

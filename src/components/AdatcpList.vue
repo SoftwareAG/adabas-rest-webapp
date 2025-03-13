@@ -88,7 +88,7 @@ import { BIconXCircle } from "bootstrap-vue";
   },
 })
 export default class AdatcpList extends Vue {
-  @Prop(String) readonly url: string | undefined;
+  @Prop({ type: String, required: false }) readonly url!: string | undefined;
   @Provide() type = 'static';
   data() {
     return {

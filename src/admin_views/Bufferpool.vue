@@ -32,6 +32,6 @@ import BufferPoolData from '@/components/BufferPoolData.vue';
   },
 })
 export default class Bufferpool extends Vue {
-      @Prop(String) readonly url: string | undefined;
+      @Prop({ type: String, required: false }) readonly url!: string | undefined;
 }
 </script>

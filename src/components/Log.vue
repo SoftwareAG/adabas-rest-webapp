@@ -58,7 +58,7 @@ import store from '../store/index';
   },
 })
 export default class Configuration extends Vue {
-  @Prop(String) readonly url: string | undefined;
+  @Prop({ type: String, required: false }) readonly url!: string | undefined;
   data() {
     return {
       log: '' as string,

@@ -32,6 +32,6 @@ import CheckpointList from '@/components/CheckpointList.vue';
   },
 })
 export default class Checkpoint extends Vue {
-        @Prop(String) readonly url: string | undefined;
+        @Prop({ type: String, required: false }) readonly url!: string | undefined;
 }
 </script>

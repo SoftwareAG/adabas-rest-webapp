@@ -32,6 +32,6 @@ import HoldqueueList from '@/components/HoldqueueList.vue';
   },
 })
 export default class Holdqueue extends Vue {
-        @Prop(String) readonly url: string | undefined;
+        @Prop({ type: String, required: false }) readonly url!: string | undefined;
 }
 </script>

@@ -69,7 +69,7 @@ import { SearchDatabases } from '@/adabas/admin';
   },
 })
 export default class DatabaseList extends Vue {
-  @Prop(String) readonly url: string | undefined;
+  @Prop({ type: String, required: false }) readonly url!: string | undefined;
   data() {
     return {
       log: '' as string,

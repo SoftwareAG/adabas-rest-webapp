@@ -73,7 +73,7 @@ import { SearchDatabases } from '@/adabas/admin';
   },
 })
 export default class UCBList extends Vue {
-  @Prop(String) readonly url: string | undefined;
+  @Prop({ type: String, required: false }) readonly url!: string | undefined;
   data() {
     return {
       fields: ['Count', 'DBMode', 'Date', 'Id', 'Sequence', 'files'],

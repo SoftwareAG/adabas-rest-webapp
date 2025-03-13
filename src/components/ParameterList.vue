@@ -194,7 +194,7 @@ import { SearchDatabases } from '@/adabas/admin';
   },
 })
 export default class ParameterList extends Vue {
-  @Prop(String) readonly url: string | undefined;
+  @Prop({ type: String, required: false }) readonly url!: string | undefined;
   @Provide() type = 'static';
   data() {
     return {

@@ -191,7 +191,7 @@ import { SearchDatabases } from '@/adabas/admin';
   },
 })
 export default class BufferPoolData extends Vue {
-  @Prop(String) readonly url: string | undefined;
+  @Prop({ type: String, required: false }) readonly url!: string | undefined;
   data() {
     return {
       bufferPoolSize: 0,

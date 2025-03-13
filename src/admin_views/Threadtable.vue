@@ -32,6 +32,6 @@ import ThreadTableData from '@/components/ThreadTableData.vue';
   },
 })
 export default class ThreadTable extends Vue {
-      @Prop(String) readonly url: string | undefined;
+      @Prop({ type: String, required: false }) readonly url!: string | undefined;
 }
 </script>

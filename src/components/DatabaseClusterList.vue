@@ -116,7 +116,7 @@ import router from "../router/index";
   },
 })
 export default class DatabaseClusterList extends Vue {
-  @Prop(String) readonly url: string | undefined;
+  @Prop({ type: String, required: false }) readonly url!: string | undefined;
   @Prop() private msg!: string;
   data() {
     return {

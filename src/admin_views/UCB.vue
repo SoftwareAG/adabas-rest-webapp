@@ -32,6 +32,6 @@ import UCBList from '@/components/UCBList.vue';
   },
 })
 export default class UCB extends Vue {
-      @Prop(String) readonly url: string | undefined;
+      @Prop({ type: String, required: false }) readonly url!: string | undefined;
 }
 </script>

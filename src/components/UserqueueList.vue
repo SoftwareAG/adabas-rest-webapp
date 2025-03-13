@@ -242,7 +242,7 @@ import { SearchDatabases } from '@/adabas/admin';
   },
 })
 export default class UserqueueList extends Vue {
-  @Prop(String) readonly url: string | undefined;
+  @Prop({ type: String, required: false }) readonly url!: string | undefined;
   data() {
     return {
       fields: [

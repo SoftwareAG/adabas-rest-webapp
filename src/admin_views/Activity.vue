@@ -32,6 +32,6 @@ import ActivityDisplay from '@/components/ActivityDisplay.vue';
   },
 })
 export default class Activity extends Vue {
-      @Prop(String) readonly url: string | undefined;
+      @Prop({ type: String, required: false }) readonly url!: string | undefined;
 }
 </script>
