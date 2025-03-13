@@ -26,16 +26,15 @@ import router from '../router/index';
 import { userService } from '../user/service';
 import { AdabasAdmin, loadDatabases, loadCluster } from '@/adabas/admin';
 import {  JobAdmin,loadJobs } from '@/adabas/jobs';
+import { createStore } from 'vuex';
 
-Vue.use(Vuex)
-
-export default new Vuex.Store({
+export default createStore({
   state: {
-    databases: [],
+    databases: [] as any[],
     adminDatabases: [] as AdabasAdmin[],
     adminJobs: [] as JobAdmin[],
     maps: [] as any[],
-    records: [],
+    records: [] as any[],
     metadata: {
       Map: null as any,
     },
@@ -43,11 +42,11 @@ export default new Vuex.Store({
       File: null as any,
     },
     url: {
-      query: "",
+      query: '',
     },
-    cluster: {},
-    status: { status: "No status", Dbid: "", },
-    respData: {json: ""},
+    cluster: { cluster: null },
+    status: { status: 'No status', Dbid: '' },
+    respData: { json: '' },
   },
   mutations: {
     SET_DATABASES: (state, dbs) => {
@@ -69,30 +68,26 @@ export default new Vuex.Store({
       });
     },
     SET_MAPS: (state, maps) => {
-      // console.log("Set maps " + JSON.stringify(maps));
       maps.forEach((element: any, index: number) => {
         state.maps[index] = element;
       });
     },
     SET_METADATA: (state, metadata) => {
-      // console.log("Set metadata " + JSON.stringify(metadata));
       state.metadata.Map = metadata.Map;
     },
     SET_FIELDS: (state, fields) => {
-      // console.log("Set fields " + JSON.stringify(fields));
       state.fields.File = fields;
     },
     SET_RECORDS: (state, records) => {
-      state.records = records;
+      state.records[0] = records;
     },
-    CLEAR_RECORDS: (state, records) => {
-      state.records = [];
+    CLEAR_RECORDS: (state) => {
+      state.records[0] = [];
     },
     SET_URL: (state, url) => {
       state.url.query = url;
     },
     SET_STATUS: (state, status) => {
-      // state.status = status;
       state.status.status = status;
     },
     SET_RESPONSE: (state, respData) => {
@@ -100,6 +95,7 @@ export default new Vuex.Store({
     },
   },
   actions: {
+    // Your actions stay the same, as the action code is compatible with Vue 3
     INIT_DATABASES: async (context): Promise<any> => {
       const getConfig = {
         headers: authHeader('application/json'),
@@ -320,22 +316,21 @@ export default new Vuex.Store({
           }
           throw error;
         });
-    },
+    },    
   },
   getters: {
     search: (state) => (dbid: number) => {
       if (state.adminDatabases.length == 0) {
-        console.log("No admin databases found");
+        console.log('No admin databases found');
         return undefined;
       }
-      const x = state.adminDatabases.filter(s => s.dbid() == dbid);
+      const x = state.adminDatabases.filter((s) => s.dbid() === dbid);
       if (x.length > 0) {
         return x[0];
       }
-      console.log("Result fail: "+JSON.stringify(x)+" for "+dbid);
+      console.log('Result fail: ' + JSON.stringify(x) + ' for ' + dbid);
       return undefined;
-    }
+    },
   },
-  modules: {
-  }
-})
+  modules: {},
+});

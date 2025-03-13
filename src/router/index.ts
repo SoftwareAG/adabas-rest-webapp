@@ -59,8 +59,6 @@ import DescriptorExample from '../examples/DescriptorExample.vue'
 import Configuration from '../components/Configuration.vue'
 import Log from '../components/Log.vue'
 
-Vue.use(Router)
-
 export default new Router({
   routes: [
     {
