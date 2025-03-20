@@ -26,7 +26,7 @@ import App from './App.vue';
 import './registerServiceWorker';
 import router from './router';
 import store from './store';
-import { Route } from 'vue-router';
+import { RouteLocationNormalized } from 'vue-router';
 
 // Create the Vue app instance
 const app = createApp(App);
@@ -43,7 +43,7 @@ router.afterEach((to, from) => {
 });
 */
 
-router.beforeEach((to: Route, from: Route, next: any) => {
+router.beforeEach((to: RouteLocationNormalized, from: RouteLocationNormalized, next: any) => {
   // redirect to login page if not logged in and trying to access a restricted page
   const publicPages = ['/login'];
   const authRequired = !publicPages.includes(to.path);

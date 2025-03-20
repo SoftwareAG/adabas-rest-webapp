@@ -124,7 +124,9 @@ export default class ParameterList extends Vue {
     this.$data.db.highWaterMarkReset();
   }
   beforeDestroy(): void {
-    clearInterval(this.$data.timer);
+    if (this.timer) {
+      clearInterval(this.timer);
+    }
   }
 }
 </script>

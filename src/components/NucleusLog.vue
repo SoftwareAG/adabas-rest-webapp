@@ -94,7 +94,9 @@ export default class DatabaseList extends Vue {
     });
   }
   beforeDestroy() {
-    clearInterval(this.$data.timer);
+    if (this.timer) {
+      clearInterval(this.timer);
+    }
   }
   changeLog() {
     this.$data.show = false;

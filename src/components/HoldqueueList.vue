@@ -97,8 +97,10 @@ export default class HoldqueueList extends Vue {
       this.$data.holdqueues = response;
     });
   }
-  beforeDestroy() {
-    clearInterval(this.$data.timer);
+  beforeDestroy(): void {
+    if (this.timer) {
+      clearInterval(this.timer);
+    }
   }
 }
 </script>

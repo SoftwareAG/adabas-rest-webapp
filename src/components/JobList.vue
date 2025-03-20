@@ -359,7 +359,9 @@ export default class JobList extends Vue {
     this.$data.log = item.Log;
   }
   beforeDestroy(): void {
-    clearInterval(this.$data.timer);
+    if (this.timer) {
+      clearInterval(this.timer);
+    }
   }
 }
 </script>

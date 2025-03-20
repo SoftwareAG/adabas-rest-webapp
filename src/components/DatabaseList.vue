@@ -512,7 +512,9 @@ export default class DatabaseList extends Vue {
   }
 
   beforeDestroy(): void {
-    clearInterval(this.$data.timer);
+    if (this.timer) {
+      clearInterval(this.timer);
+    }
   }
 }
 </script>

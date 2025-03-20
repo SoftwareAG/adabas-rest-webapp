@@ -496,7 +496,9 @@ export default class FilesList extends Vue {
       });
   }
   beforeDestroy(): void {
-    clearInterval(this.$data.timer);
+    if (this.timer) {
+      clearInterval(this.timer);
+    }
   }
 }
 </script>

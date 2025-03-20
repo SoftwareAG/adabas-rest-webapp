@@ -136,7 +136,7 @@ export default createStore({
 
           if ((error.response.status == 401) || (error.response.status == 403)) {
             userService.logout();
-            if (router.currentRoute.name !== 'login') {
+            if (router.currentRoute.value.name !== 'login') {
               location.reload();
             }
           }
@@ -182,7 +182,7 @@ export default createStore({
 
           if ((error.response.status == 401) || (error.response.status == 403)) {
             userService.logout();
-            if (router.currentRoute.name !== 'login') {
+            if (router.currentRoute.value.name !== 'login') {
               location.reload();
             }
           }
@@ -230,7 +230,7 @@ export default createStore({
           context.commit('SET_STATUS', JSON.stringify(error));
           if ((error.response.status == 401) || (error.response.status == 403)) {
             userService.logout();
-            if (router.currentRoute.name !== 'login') {
+            if (router.currentRoute.value.name !== 'login') {
               location.reload();
             }
           }
@@ -257,7 +257,7 @@ export default createStore({
           context.commit('SET_STATUS', JSON.stringify(error));
           if ((error.response.status == 401) || (error.response.status == 403)) {
             userService.logout();
-            if (router.currentRoute.name !== 'login') {
+            if (router.currentRoute.value.name !== 'login') {
               location.reload();
             }
           }
@@ -281,7 +281,7 @@ export default createStore({
           context.commit('SET_STATUS', JSON.stringify(error));
           if ((error.response.status == 401) || (error.response.status == 403)) {
             userService.logout();
-            if (router.currentRoute.name !== 'login') {
+            if (router.currentRoute.value.name !== 'login') {
               location.reload();
             }
           }

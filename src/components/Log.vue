@@ -75,8 +75,10 @@ export default class Configuration extends Vue {
       this.$data.log = response.Log.Log;
     });
   }
-  beforeDestroy() {
-    clearInterval(this.$data.timer);
+  beforeDestroy(): void {
+    if (this.timer) {
+      clearInterval(this.timer);
+    }
   }
 }
 </script>

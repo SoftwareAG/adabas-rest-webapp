@@ -101,8 +101,10 @@ export default class CommandqueueList extends Vue {
       });
      });
   }
-  beforeDestroy() {
-    clearInterval(this.$data.timer);
+  beforeDestroy(): void {
+    if (this.timer) {
+      clearInterval(this.timer);
+    }
   }
 }
 </script>

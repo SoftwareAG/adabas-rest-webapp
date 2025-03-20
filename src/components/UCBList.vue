@@ -74,22 +74,20 @@ import { SearchDatabases } from '@/adabas/admin';
 })
 export default class UCBList extends Vue {
   @Prop({ type: String, required: false }) readonly url!: string | undefined;
-  data() {
-    return {
-      fields: ['Count', 'DBMode', 'Date', 'Id', 'Sequence', 'files'],
-      ucb: [],
-      timer: '',
-      db: null,
-    };
-  }
+
+  fields: string [] = ['Count', 'DBMode', 'Date', 'Id', 'Sequence', 'files'];
+  ucb: any = [];
+  timer: number | null = null;
+  db: any = null;
+
   created() {
-    this.$data.db = SearchDatabases(this.url);
-    this.$data.timer = setInterval(this.loadUCBList, 5000);
+    this.db = SearchDatabases(this.url);
+    this.timer = setInterval(this.loadUCBList, 5000);
     this.loadUCBList();
   }
   loadUCBList() {
-    this.$data.db.ucb().then((response: any) => {
-      this.$data.ucb = response;
+    this.db.ucb().then((response: any) => {
+      this.ucb = response;
     });
   }
   listUcbFiles(count: number, ucbFiles: any) {

@@ -12,7 +12,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.-->
-
 <template>
   <div class="unicodeexample p-2">
     <MyHeader></MyHeader>
@@ -44,9 +43,8 @@
           :current-page="currentPage"
           :items="unicode"
           :fields="fields"
-        >
-        </b-table
-      ></b-card-body>
+        ></b-table>
+      </b-card-body>
     </b-card>
     <StatusBar />
   </div>
@@ -72,36 +70,35 @@ import axios from 'axios';
 })
 export default class UnicodeExample extends Vue {
   @Prop() private msg!: string;
-  data() {
-    return {
-      perPage: 10,
-      currentPage: 1,
-      URL: '/rest/map/NEW_EMPLOYEES?start=1250&fields=personnel-id,full-name',
-      fields: [
-        { label: 'ISN', key: 'ISN' },
-        { label: 'personnel-id', key: 'personnel-data.personnel-id' },
-        { label: 'Name', key: 'full-name.name' },
-        { label: 'Middle Name', key: 'full-name.middle-name' },
-        { label: 'First Name', key: 'full-name.first-name' },
-      ],
-      unicode: [],
-    };
-  }
+  
+  // Declare types for the data properties
+  perPage: number = 10;
+  currentPage: number = 1;
+  URL: string = '/rest/map/NEW_EMPLOYEES?start=1250&fields=personnel-id,full-name';
+  fields: Array<{ label: string; key: string }> = [
+    { label: 'ISN', key: 'ISN' },
+    { label: 'personnel-id', key: 'personnel-data.personnel-id' },
+    { label: 'Name', key: 'full-name.name' },
+    { label: 'Middle Name', key: 'full-name.middle-name' },
+    { label: 'First Name', key: 'full-name.first-name' },
+  ];
+  unicode: any [] = []; // Use the UnicodeRecord type here
+
   created() {
     const getConfig = {
       headers: authHeader('application/json'),
       useCredentails: true,
     };
     store.commit('SET_URL', {
-      url: config.Url() + this.$data.URL,
+      url: config.Url() + this.URL,
       method: 'get',
     });
     return axios
-      .get(config.Url() + this.$data.URL, getConfig)
+      .get(config.Url() + this.URL, getConfig)
       .then((response: any) => {
         store.commit('SET_STATUS', 'OK');
         store.commit('SET_RESPONSE', JSON.stringify(response));
-        this.$data.unicode = response.data.Records;
+        this.unicode = response.data.Records; // Type-safe access to response data
       })
       .catch((error: any) => {
         console.log('ERROR: ' + JSON.stringify(error));
@@ -120,7 +117,6 @@ export default class UnicodeExample extends Vue {
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 h3 {
   margin: 40px 0 0;

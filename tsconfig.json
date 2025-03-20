@@ -13,7 +13,10 @@
     "sourceMap": true,
     "baseUrl": ".",
     "types": [
-      "webpack-env"
+      "webpack-env", // Webpack types, if using Webpack
+      "vite/client", // Vite types, if using Vite
+      "vue-router", // Include Vue Router types
+      "vue"
     ],
     "paths": {
       "@/*": [
@@ -30,7 +33,7 @@
   "include": [
     "src/**/*.ts",
     "src/**/*.tsx",
-    "src/**/*.vue",
+    "src/**/*.vue", 
     "tests/**/*.ts",
     "tests/**/*.tsx"
   ],

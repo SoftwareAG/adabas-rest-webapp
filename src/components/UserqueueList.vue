@@ -233,6 +233,30 @@ import Url from "./Url.vue";
 import store from "../store/index";
 import { SearchDatabases } from '@/adabas/admin';
 
+import { AxiosError } from "axios";
+
+interface UqDetail {
+  UqId: number;
+  CommandCount: number;
+  UserEncoding: number;
+  LastActivity: string;
+  StartSession: string;
+  StartTransaction: string;
+  files: Array<any>;
+  DetailEntry: {
+    UqId: number;
+    Flags: string;
+    EtFlags: string;
+    Uid: {
+      Id: number;
+      Node: string;
+      Terminal: string;
+      Timestamp: string;
+    };
+    User: string;
+  };
+}
+
 @Component({
   components: {
     Sidebar,
@@ -243,69 +267,99 @@ import { SearchDatabases } from '@/adabas/admin';
 })
 export default class UserqueueList extends Vue {
   @Prop({ type: String, required: false }) readonly url!: string | undefined;
-  data() {
-    return {
-      fields: [
-        "UqId",
-        { key: "Uid.Id", label: "Adabas ID" },
-        "Uid.Node",
-        "Uid.Terminal",
-        { key: "Uid.Timestamp", label: "Adabs ID Timestamp" },
-        "User",
-        "Flags",
-        "EtFlags",
-        "Delete",
-      ],
-      userqueues: [],
-      displayUq: {
-        UserQueueDetails: {
-          CommandCount: 0,
-          LastActivity: "",
-          StartSession: "",
-          StartTransaction: "",
-          UserEncoding: 0,
-          DetailEntry: {
-            EtFlags: "        ",
-            Flags: "  ",
-            Uid: { Id: 0, Node: "", "": "     ", Timestamp: "" },
-            UqId: 0,
-            User: " ",
-          },
-        },
-        files: [],
-      } as any,
-      timer: "",
-      errorResponse: "",
-      db: null,
-    };
-  }
+
+  fields = [
+    "UqId",
+    { key: "Uid.Id", label: "Adabas ID" },
+    "Uid.Node",
+    "Uid.Terminal",
+    { key: "Uid.Timestamp", label: "Adabas ID Timestamp" },
+    "User",
+    "Flags",
+    "EtFlags",
+    "Delete",
+  ];
+
+  userqueues: any[] = [];
+  displayUq: UqDetail = {
+    UqId: 0,
+    CommandCount: 0,
+    UserEncoding: 0,
+    LastActivity: "",
+    StartSession: "",
+    StartTransaction: "",
+    files: [],
+    DetailEntry: {
+      UqId: 0,
+      Flags: " ",
+      EtFlags: " ",
+      Uid: {
+        Id: 0,
+        Node: "",
+        Terminal: "",
+        Timestamp: "",
+      },
+      User: "",
+    },
+  };
+
+  errorResponse: string = "";
+  db: any = null;
+  timer: number | null = null;
+
   created() {
-    this.$data.db = SearchDatabases(this.url);
-    this.$data.timer = setInterval(this.loadUserQueue, 5000);
+    this.db = SearchDatabases(this.url);
+    this.timer = setInterval(this.loadUserQueue, 5000);
     this.loadUserQueue();
   }
+
   loadUserQueue() {
-    this.$data.db.userQueue().then((response: any) => {
-      this.$data.userqueues = response;
-      this.$data.userqueues.forEach(function(part:any, index:number, theArray:any) {
-        theArray[index].Uid.Timestamp = new Date(theArray[index].Uid.Timestamp).toUTCString();
+    this.db.userQueue().then((response: any) => {
+      this.userqueues = response;
+      this.userqueues.forEach((part: any) => {
+        part.Uid.Timestamp = new Date(part.Uid.Timestamp).toUTCString();
       });
+    }).catch((error: AxiosError) => {
+      this.errorResponse = "Failed to load user queues.";
+      if (this.$root) {
+        this.$root.$emit("bv::show::modal", "modal-error-uqDetails");
+      }
     });
   }
+
   display_detail(uq: any) {
-    this.$data.db.userQueueDetails(uq.UqId).then((response: any) => {
-      this.$data.displayUq = response;
+    this.db.userQueueDetails(uq.UqId).then((response: any) => {
+      this.displayUq = response;
+    }).catch((error: AxiosError) => {
+      this.errorResponse = "Failed to load user queue details.";
+      if (this.$root) {
+        this.$root.$emit("bv::show::modal", "modal-error-uqDetails");
+      }
     });
-    this.$root.$emit("bv::show::modal", "modal-display-uqDetails", "#btnShow");
+    if (this.$root) {
+      this.$root.$emit("bv::show::modal", "modal-display-uqDetails", "#btnShow");
+    }
   }
+
   stop_user(uq: any): void {
-    this.$data.db.stopUser(uq.UqId);
+    this.db.stopUser(uq.UqId).then(() => {
+      this.loadUserQueue(); // Reload the list after stopping the user
+    }).catch((error: AxiosError) => {
+      this.errorResponse = "Failed to stop the user.";
+      if (this.$root) {
+        this.$root.$emit("bv::show::modal", "modal-error-uqDetails");
+      }
+    });
   }
+
   handleOk(bvModalEvt: any): void {
     console.log("OK clicked");
   }
+
   beforeDestroy() {
-    clearInterval(this.$data.timer);
+    if (this.timer) {
+      clearInterval(this.timer);
+    }
   }
 }
 </script>

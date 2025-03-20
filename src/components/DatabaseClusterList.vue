@@ -168,7 +168,9 @@ export default class DatabaseClusterList extends Vue {
       });
   }
   beforeDestroy(): void {
-    clearInterval(this.$data.timer);
+    if (this.timer) {
+      clearInterval(this.timer);
+    }
   }
 }
 </script>
