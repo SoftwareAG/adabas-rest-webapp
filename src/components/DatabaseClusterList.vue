@@ -99,7 +99,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { Component, Prop, Vue } from "vue-facing-decorator";
 import { AdabasAdmin } from "../adabas/admin";
 import { userService } from "../user/service";
 import { BIconXCircle } from "bootstrap-vue";
@@ -116,7 +116,7 @@ import router from "../router/index";
   },
 })
 export default class DatabaseClusterList extends Vue {
-  @Prop(String) readonly url: string | undefined;
+  @Prop({ type: String, required: false }) readonly url!: string | undefined;
   @Prop() private msg!: string;
   data() {
     return {
@@ -168,7 +168,9 @@ export default class DatabaseClusterList extends Vue {
       });
   }
   beforeDestroy(): void {
-    clearInterval(this.$data.timer);
+    if (this.timer) {
+      clearInterval(this.timer);
+    }
   }
 }
 </script>

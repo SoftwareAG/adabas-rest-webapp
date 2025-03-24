@@ -1,18 +1,3 @@
-<!--
- * Copyright (c) 2020 Software AG (http://www.softwareag.com/)
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.-->
-
 <template>
   <div class="joblist p-2">
     <b-card
@@ -23,7 +8,7 @@
       <b-card-body>
         <p>
           This page provides access to the list of Adabas RESTful server jobs to
-          be administrate through this Adabas RESTful server. These jobs can
+          be administrated through this Adabas RESTful server. These jobs can
           start long running Adabas utility tasks.
         </p>
         <CreateJob msg="ABC" />
@@ -35,16 +20,17 @@
               :total-rows="jobs.length"
               :per-page="perPage"
               aria-controls="my-table"
-            ></b-pagination
-          ></b-col>
+            ></b-pagination>
+          </b-col>
           <b-col sm="1">
             <b-form-select
               v-model="perPage"
               :options="perPageOptions"
               size="sm"
               class="mt-3"
-            ></b-form-select> </b-col
-        ></b-row>
+            ></b-form-select>
+          </b-col>
+        </b-row>
         <b-row>
           <b-col sm="6">
             <b-table
@@ -92,25 +78,28 @@
             </b-table>
           </b-col>
           <b-col sm="6">
-            <b-row
-              ><b-col class="text-left">Start:</b-col
-              ><b-col class="text-left">End:</b-col></b-row
-            ><b-row
-              ><b-col>
+            <b-row>
+              <b-col class="text-left">Start:</b-col>
+              <b-col class="text-left">End:</b-col>
+            </b-row>
+            <b-row>
+              <b-col>
                 <b-form-datepicker
                   id="from-datepicker"
                   v-model="from"
                   class="mb-2"
                   :max="max"
-                ></b-form-datepicker></b-col
-              ><b-col>
+                ></b-form-datepicker>
+              </b-col>
+              <b-col>
                 <b-form-datepicker
                   id="to-datepicker"
                   v-model="to"
                   class="mb-2"
                   :max="max"
-                ></b-form-datepicker></b-col
-            ></b-row>
+                ></b-form-datepicker>
+              </b-col>
+            </b-row>
             <b-row>
               <b-table
                 class="w-100 p-3"
@@ -138,12 +127,12 @@
                     >Delete</b-button
                   >
                 </template>
-              </b-table></b-row
-            >
+              </b-table>
+            </b-row>
           </b-col>
         </b-row>
-        <b-row
-          ><b-col>
+        <b-row>
+          <b-col>
             <b-badge pill variant="secondary"
               >Log Output {{ currentId }}:</b-badge
             >
@@ -167,176 +156,192 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { defineComponent, ref, onMounted, onBeforeUnmount } from 'vue';
 import { JobAdmin, loadExecutions, loadJobDefinition } from '../adabas/jobs';
 import { userService } from '../user/service';
 import store from '../store/index';
 import CreateJob from './CreateJob.vue';
 import StatusBar from './StatusBar.vue';
 import Url from './Url.vue';
+import { BModal } from 'bootstrap-vue-3';
 
-@Component({
+export default defineComponent({
   components: {
     StatusBar,
     CreateJob,
     Url,
   },
-})
-export default class JobList extends Vue {
-  @Prop() private msg!: string;
-  data() {
-    const maxDate = new Date();
-    return {
-      perPage: 10,
-      currentPage: 1,
-      perPageOptions: [10, 20, 50, 100],
-      selectedJob: null,
-      selectedExecution: null,
-      fields: [
-        { key: 'status.Job.Name', label: 'Name' },
-        { key: 'status.Job.User', label: 'User' },
-        { key: 'status.Job.Utility', label: 'Utility' },
-        { key: 'status.Status', label: 'Status' },
-        { key: 'status.Job.Description', label: 'Description' },
-        'info',
-      ],
-      execFields: ['Id', 'Scheduled', 'Ended', 'ExitCode', 'log'],
-      jobs: [] as JobAdmin[],
-      currentId: '',
-      executions: [],
-      timer: '',
-      max: maxDate,
-      log: '',
-      from: null,
-      to: null,
-      currentJob: {} as any,
-    };
-  }
-  created(): void {
-    this.$data.to = new Date();
-    this.$data.from = new Date();
-    this.$data.from.setMonth(this.$data.to.getMonth() - 1);
-    this.retrieveJobs();
-    this.$data.timer = setInterval(this.retrieveJobs, 5000);
-  }
-  convertDate(currentdate: Date): string {
-    return (
-      new String(currentdate.getFullYear()).padStart(4, '0') +
-      '-' +
-      new String(currentdate.getMonth() + 1).padStart(2, '0') +
-      '-' +
-      new String(currentdate.getDate()).padStart(2, '0')
-    );
-  }
-  convertTime(currentdate: Date): string {
-    return (
-      new String(currentdate.getHours()).padStart(2, '0') +
-      ':' +
-      new String(currentdate.getMinutes()).padStart(2, '0') +
-      ':' +
-      new String(currentdate.getSeconds()).padStart(2, '0')
-    );
-  }
-  convertDateTime(d: string): string {
-    var de = new Date(d);
-    return de.toUTCString();
-  }
-  viewJob(item: any): void {
-    console.log('View job ' + JSON.stringify(item));
-    loadJobDefinition(item.Job.Name).then((result: any) => {
-      console.log('Return ' + JSON.stringify(result));
-      this.$data.currentJob = result;
-      this.$bvModal.show('modal-definition-job');
+  setup() {
+    // Reactive state
+    const modalRef = ref<BModal>(null); 
+    const perPage = ref(10);
+    const currentPage = ref(1);
+    const perPageOptions = ref([10, 20, 50, 100]);
+    const selectedJob = ref<any>(null);
+    const selectedExecution = ref<any>(null);
+    const fields = ref([
+      { key: 'status.Job.Name', label: 'Name' },
+      { key: 'status.Job.User', label: 'User' },
+      { key: 'status.Job.Utility', label: 'Utility' },
+      { key: 'status.Status', label: 'Status' },
+      { key: 'status.Job.Description', label: 'Description' },
+      'info',
+    ]);
+    const execFields = ref(['Id', 'Scheduled', 'Ended', 'ExitCode', 'log']);
+    const jobs = ref<JobAdmin[]>([]);
+    const currentId = ref('');
+    const executions = ref<any[]>([]);
+    const timer = ref<any>(0);
+    const max = new Date();
+    const log = ref('');
+    const from = ref<any>(null);
+    const to = ref<any>(null);
+    const currentJob = ref<any>({});
+
+    // Lifecycle hooks
+    onMounted(() => {
+      to.value = new Date();
+      from.value = new Date();
+      from.value.setMonth(to.value.getMonth() - 1);
+      retrieveJobs();
+      timer.value = setInterval(retrieveJobs, 5000);
     });
-  }
-  retrieveJobs(): void {
-    store
-      .dispatch('SYNC_ADMIN_JOBS')
-      .then((response: any) => {
-        if (this.$data.selectedJob != null) {
-          const name = this.$data.selectedJob.status.Job.Name;
-          let x = response.find((j: JobAdmin) => j.name() === name);
-          if (!x) {
-            console.log('No name found');
-            return;
-          }
-          this.$data.selectedJob = x;
-          // this.$data.executions = this.$data.selectedJob.status.Executions;
+
+    onBeforeUnmount(() => {
+      if (timer.value) {
+        clearInterval(timer.value);
+      }
+    });
+
+    // Methods
+    const convertDate = (currentdate: Date): string => {
+      return (
+        new String(currentdate.getFullYear()).padStart(4, '0') +
+        '-' +
+        new String(currentdate.getMonth() + 1).padStart(2, '0') +
+        '-' +
+        new String(currentdate.getDate()).padStart(2, '0')
+      );
+    };
+
+    const convertTime = (currentdate: Date): string => {
+      return (
+        new String(currentdate.getHours()).padStart(2, '0') +
+        ':' +
+        new String(currentdate.getMinutes()).padStart(2, '0') +
+        ':' +
+        new String(currentdate.getSeconds()).padStart(2, '0')
+      );
+    };
+
+    const convertDateTime = (d: string): string => {
+      var de = new Date(d);
+      return de.toUTCString();
+    };
+
+    const viewJob = (item: any): void => {
+      console.log('View job ' + JSON.stringify(item));
+      loadJobDefinition(item.Job.Name).then((result: any) => {
+        console.log('Return ' + JSON.stringify(result));
+        currentJob.value = result;
+        // Show modal using the ref
+        if (modalRef.value) {
+          modalRef.value.show(); // Show the modal
         }
-        this.$data.jobs = response;
-      })
-      .catch((error: any) => {
-        console.log('ERROR JOBLIST: ' + JSON.stringify(error));
-        if (error.response) {
-          store.commit('SET_STATUS', JSON.stringify(error.response));
-          if (error.response.status == 401 || error.response.status == 403) {
+      });
+    };
+
+    const retrieveJobs = (): void => {
+      store
+        .dispatch('SYNC_ADMIN_JOBS')
+        .then((response: any) => {
+          if (selectedJob.value != null) {
+            const name = selectedJob.value.status.Job.Name;
+            let x = response.find((j: JobAdmin) => j.name() === name);
+            if (!x) {
+              console.log('No name found');
+              return;
+            }
+            selectedJob.value = x;
+          }
+          jobs.value = response;
+        })
+        .catch((error: any) => {
+          console.log('ERROR JOBLIST: ' + JSON.stringify(error));
+          if (error.response) {
+            store.commit('SET_STATUS', JSON.stringify(error.response));
+            if (error.response.status == 401 || error.response.status == 403) {
+              userService.logout();
+              location.reload();
+            }
+          } else {
+            store.commit('SET_STATUS', JSON.stringify(error));
             userService.logout();
             location.reload();
           }
-        } else {
-          store.commit('SET_STATUS', JSON.stringify(error));
-          userService.logout();
-          location.reload();
-        }
-        throw error;
-      });
-    if (this.$data.selectedJob != null) {
-      console.log(this.$data.from);
-      loadExecutions(
-        this.$data.selectedJob.status.Job.Name,
-        this.$data.from,
-        this.$data.to
-      ).then((response: any) => {
-        this.$data.executions = [];
-        response.forEach((element: any) => {
-          this.$data.executions.push(element.JobResult);
-          if (
-            this.$data.selectedExecution != null &&
-            this.$data.selectedExecution.Id == element.JobResult.Id
-          ) {
-            this.$data.selectedExecution = element.JobResult;
-          }
+          throw error;
         });
-      });
-    }
-  }
-  onJobSelected(items: any): void {
-    if (items.length == 0) {
-      return;
-    }
-    this.$data.log = '';
-    this.$data.selectedJob = items[0];
-    loadExecutions(
-      items[0].status.Job.Name,
-      this.$data.from,
-      this.$data.to
-    ).then((response: any) => {
-      this.$data.executions = [];
-      response.forEach((element: any) => {
-        this.$data.executions.push(element.JobResult);
-      });
-    });
-    return;
-  }
-  onExecSelected(items: any): void {
-    if (items.length == 0) {
-      return;
-    }
-    this.$data.currentId = items[0].Id;
-    this.$data.log = items[0].Log;
-  }
-  startJob(items: JobAdmin): void {
-    items.start();
-  }
-  delJob(name: string): void {
-    const jobToDelete = this.$data.jobs.find(
-      (j: JobAdmin) => j.name() === name
-    );
-    console.log('Job to delete: ' + name);
-    jobToDelete.delete();
-  }
-  exportJob(name: string): void {
-    loadJobDefinition(name).then((result: any) => {
+
+        if (selectedJob.value != null) {
+          console.log(from.value);
+          loadExecutions(
+            selectedJob.value.status.Job.Name,
+            from.value,
+            to.value
+          ).then((response: any) => {
+            executions.value = [];
+            response.forEach((element: any) => {
+              executions.value.push(element.JobResult);
+              if (
+                selectedExecution.value != null &&
+                selectedExecution.value.Id == element.JobResult.Id
+              ) {
+                selectedExecution.value = element.JobResult;
+              }
+            });
+          });
+        }
+    };
+
+    const onJobSelected = (items: any): void => {
+      if (items.length === 0) {
+        return;
+      }
+      log.value = '';
+      selectedJob.value = items[0];
+      loadExecutions(items[0].status.Job.Name, from.value, to.value).then(
+        (response: any) => {
+          executions.value = [];
+          response.forEach((element: any) => {
+            executions.value.push(element.JobResult);
+          });
+        }
+      );
+    };
+
+    const onExecSelected = (items: any): void => {
+      if (items.length === 0) {
+        return;
+      }
+      currentId.value = items[0].Id;
+      log.value = items[0].log;
+    };
+
+    const startJob = (items: JobAdmin): void => {
+      items.start();
+    };
+
+    const delJob = (name: string): void => {
+      console.log('disable function for now. need to check again');
+      //const jobToDelete = jobs.find(
+      //  (j: JobAdmin) => j.name() === name
+      //);
+      //console.log('Job to delete: ' + name);
+      //jobToDelete.delete();
+    };
+
+    const exportJob = (name: string): void => {
+      loadJobDefinition(name).then((result: any) => {
       var filename = 'job.json';
       const a = document.createElement('a');
       const type = filename.split('.').pop();
@@ -348,20 +353,52 @@ export default class JobList extends Vue {
       a.download = filename;
       a.click();
     });
-  }
-  delExecution(id: string): void {
-    console.log('Delete id ' + id);
-    this.$data.selectedJob.delete_execution(id);
-  }
-  showLog(item: any): void {
-    console.log('Show log id ' + JSON.stringify(item));
-    this.$data.currentId = item.ID;
-    this.$data.log = item.Log;
-  }
-  beforeDestroy(): void {
-    clearInterval(this.$data.timer);
-  }
-}
+    };
+
+    const delExecution = (id: string): void => {
+      console.log('Delete id ' + id);
+      console.log('disable the function for now, need to check');
+      //selectedJob.delete_execution(id);
+    };
+
+    const showLog = (item: any): void => {
+      console.log('Show log id ' + JSON.stringify(item));
+      currentId.value = item.ID;
+      log.value = item.Log;
+    };
+    const beforeDestroy = (): void => {
+      if (timer.value) {
+        clearInterval(timer.value);
+      }
+    };
+
+    return {
+      jobs,
+      perPage,
+      currentPage,
+      fields,
+      execFields,
+      currentId,
+      log,
+      from,
+      to,
+      executions,
+      currentJob,
+      max,
+      convertDate,
+      convertTime,
+      convertDateTime,
+      viewJob,
+      retrieveJobs,
+      onJobSelected,
+      onExecSelected,
+      startJob,
+      delJob,
+      exportJob,
+      delExecution,
+    };
+  },
+});
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

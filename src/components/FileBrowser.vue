@@ -138,7 +138,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { Component, Prop, Vue } from "vue-facing-decorator";
 import Sidebar from "./Sidebar.vue";
 import StatusBar from "./StatusBar.vue";
 import Url from "./Url.vue";
@@ -152,7 +152,7 @@ import { FilePathBrowser, fileAccessConfig } from "../adabas/file";
   },
 })
 export default class FileBrowser extends Vue {
-  @Prop(String) readonly url: string | undefined;
+  @Prop({ type: String, required: false }) readonly url!: string | undefined;
   data() {
     return {
       perPage: 10,

@@ -77,7 +77,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Provide, Vue } from 'vue-property-decorator';
+import { Component, Prop, Provide, Vue } from 'vue-facing-decorator';
 import Sidebar from './Sidebar.vue';
 import store from '../store/index';
 import StatusBar from './StatusBar.vue';
@@ -92,7 +92,7 @@ import { SearchDatabases } from '@/adabas/admin';
   },
 })
 export default class ParameterList extends Vue {
-  @Prop(String) readonly url: string | undefined;
+  @Prop({ type: String, required: false }) readonly url!: string | undefined;
   @Provide() type = 'static';
   data() {
     return {
@@ -124,7 +124,9 @@ export default class ParameterList extends Vue {
     this.$data.db.highWaterMarkReset();
   }
   beforeDestroy(): void {
-    clearInterval(this.$data.timer);
+    if (this.timer) {
+      clearInterval(this.timer);
+    }
   }
 }
 </script>

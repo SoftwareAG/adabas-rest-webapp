@@ -26,49 +26,43 @@
           <b-row>
             <b-col>
               This page provides access to the list of nodes in an Adabas database cluster to
-              be administrate through this Adabas RESTful server.
+              be administrated through this Adabas RESTful server.
             </b-col>
           </b-row>
           <b-row>
             <b-col><Url url="/adabas/cluster" /> </b-col>
           </b-row>
           <b-row>
-            <b-col class="text-right">State ID</b-col
-            ><b-col>UUID: {{ cluster.View.StateID.StateID }}</b-col>
+            <b-col class="text-right">State ID</b-col>
+            <b-col>UUID: {{ cluster.View.StateID.StateID }}</b-col>
           </b-row>
           <b-row>
-            <b-col class="text-right"></b-col
-            ><b-col>Sequence No: {{ cluster.View.StateID.SeqNo }}</b-col>
+            <b-col class="text-right"></b-col>
+            <b-col>Sequence No: {{ cluster.View.StateID.SeqNo }}</b-col>
           </b-row>
           <b-row>
-            <b-col class="text-right">Last Committed</b-col
-            ><b-col>UUID: {{ cluster.View.LastCommitted.StateID }}</b-col>
+            <b-col class="text-right">Last Committed</b-col>
+            <b-col>UUID: {{ cluster.View.LastCommitted.StateID }}</b-col>
           </b-row>
           <b-row>
-            <b-col class="text-right"></b-col
-            ><b-col>Sequence No: {{ cluster.View.LastCommitted.SeqNo }}</b-col>
+            <b-col class="text-right"></b-col>
+            <b-col>Sequence No: {{ cluster.View.LastCommitted.SeqNo }}</b-col>
           </b-row>
           <b-row>
-            <b-col class="text-right">Number of Members</b-col
-            ><b-col>{{ cluster.View.NumberOfMembers }}</b-col>
+            <b-col class="text-right">Number of Members</b-col>
+            <b-col>{{ cluster.View.NumberOfMembers }}</b-col>
           </b-row>
           <b-row>
-            <b-col class="text-right">Status</b-col
-            ><b-col>{{ cluster.View.Status }}</b-col>
+            <b-col class="text-right">Status</b-col>
+            <b-col>{{ cluster.View.Status }}</b-col>
           </b-row>
           <b-row>
-            <b-col class="text-right">Local send</b-col
-            ><b-col
-              >{{ cluster.View.LocalSendQueue }} /
-              {{ cluster.View.LocalSendQueueMax }}</b-col
-            >
+            <b-col class="text-right">Local send</b-col>
+            <b-col>{{ cluster.View.LocalSendQueue }} / {{ cluster.View.LocalSendQueueMax }}</b-col>
           </b-row>
           <b-row>
-            <b-col class="text-right">Local receive</b-col
-            ><b-col
-              >{{ cluster.View.LocalRecvQueue }} /
-              {{ cluster.View.LocalRecvQueueMax }}</b-col
-            >
+            <b-col class="text-right">Local receive</b-col>
+            <b-col>{{ cluster.View.LocalRecvQueue }} / {{ cluster.View.LocalRecvQueueMax }}</b-col>
           </b-row>
           <b-row>
             <b-col>
@@ -90,8 +84,9 @@
                 @row-selected="onRowSelected"
                 :items="cluster.Members"
                 :fields="fields"
-              ></b-table></b-col
-          ></b-row>
+              ></b-table>
+            </b-col>
+          </b-row>
         </b-container>
       </b-card-body>
     </b-card>
@@ -100,7 +95,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { Component, Prop, Vue } from "vue-facing-decorator";
 import { AdabasAdmin } from "../adabas/admin";
 import { userService } from "../user/service";
 import { BIconXCircle } from "bootstrap-vue";
@@ -118,48 +113,64 @@ import router from "../router/index";
 })
 export default class ClusterList extends Vue {
   @Prop() private msg!: string;
-  data() {
-    return {
-      perPage: 10,
-      currentPage: 1,
-      filter: "",
-      filterOn: [],
-      fields: [
-        { label: "Name", key: "BaseName" },
-        { label: "Status", key: "Status" },
-        { label: "Remote Access", key: "BaseIncoming" },
-        { label: "ID", key: "BaseId" },
-      ],
-      cluster: {
-        members: [],
-        View: { StateID: "", Status: "No cluster", NumberOfMembers: 0, 
-        LastCommitted: 0 },
-      },
-      timer: "",
-      jsonString: "<No data received>",
+
+  // Data properties with types
+  perPage: number = 10;
+  currentPage: number = 1;
+  filter: string = "";
+  filterOn: string[] = [];
+  fields: Array<{ label: string; key: string }> = [
+    { label: "Name", key: "BaseName" },
+    { label: "Status", key: "Status" },
+    { label: "Remote Access", key: "BaseIncoming" },
+    { label: "ID", key: "BaseId" },
+  ];
+  cluster: {
+    View: {
+      StateID: { StateID: string; SeqNo: number };
+      LastCommitted: { StateID: string; SeqNo: number };
+      NumberOfMembers: number;
+      Status: string;
+      LocalSendQueue: number;
+      LocalSendQueueMax: number;
+      LocalRecvQueue: number;
+      LocalRecvQueueMax: number;
     };
-  }
+    Members: Array<any>;
+  } = {
+    View: {
+      StateID: { StateID: "", SeqNo: 0 },
+      LastCommitted: { StateID: "", SeqNo: 0 },
+      NumberOfMembers: 0,
+      Status: "No cluster",
+      LocalSendQueue: 0,
+      LocalSendQueueMax: 0,
+      LocalRecvQueue: 0,
+      LocalRecvQueueMax: 0,
+    },
+    Members: [],
+  };
+  timer: any = null;
+  jsonString: string = "<No data received>";
+
   created() {
     this.loadCluster();
-    this.$data.timer = setInterval(this.loadCluster, 5000);
+    this.timer = setInterval(this.loadCluster, 5000);
   }
-  /*
-   * submit the request to get the list of Adabas databases.
-   * The list contains database which are able to be administrated.
-   */
+
+  // Submit the request to get the list of Adabas databases
   loadCluster(): void {
     store
       .dispatch("SYNC_ADMIN_CLUSTER")
       .then((response: any) => {
-        this.$data.cluster = response;
-        this.$data.jsonString = JSON.stringify(response);
+        this.cluster = response;
+        this.jsonString = JSON.stringify(response);
         store.commit("SET_STATUS", "Database list received...");
       })
       .catch((error: any) => {
-        // console.log('ERROR DBLIST: ' + JSON.stringify(error));
         if (error.response) {
           store.commit("SET_STATUS", JSON.stringify(error.response));
-          if (error.response.status == 401 || error.response.status == 403) {
+          if (error.response.status === 401 || error.response.status === 403) {
             userService.logout();
             location.reload();
           }
@@ -168,18 +179,17 @@ export default class ClusterList extends Vue {
           userService.logout();
           location.reload();
         }
-        // throw error;
       });
   }
+
   onRowSelected(items: any): void {
-    if (items.length == 0) {
-      return;
+    if (items.length > 0) {
+      this.$router.push({ path: `/information/${items[0].status.Dbid}` });
     }
-    this.$router.push({ path: "/information/" + items[0].status.Dbid });
-    return;
   }
+
   beforeDestroy(): void {
-    clearInterval(this.$data.timer);
+    clearInterval(this.timer);
   }
 }
 </script>

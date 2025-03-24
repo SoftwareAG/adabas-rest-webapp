@@ -55,7 +55,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-facing-decorator';
 import Sidebar from './Sidebar.vue';
 import StatusBar from './StatusBar.vue';
 import store from '../store/index';
@@ -70,36 +70,35 @@ import { SearchDatabases } from '@/adabas/admin';
   },
 })
 export default class ThreadTableData extends Vue {
-  @Prop(String) readonly url: string | undefined;
-  data() {
-    return {
-      fields: [
-        'Thread',
-        'APU',
-        'CommandCode',
-        'CommandCount',
-        'File',
-        'Status',
-      ],
-      threads: [],
-      timer: '',
-      db: null,
-    };
-  }
+  @Prop({ type: String, required: false }) readonly url!: string | undefined;
+  fields: string[] = [
+    'Thread',
+    'APU',
+    'CommandCode',
+    'CommandCount',
+    'File',
+    'Status',
+  ];
+  threads: any = [];
+  timer: number | null = null;
+  db: any = null;
+
   created(): void {
-    this.$data.db = SearchDatabases(this.url);
+    this.db = SearchDatabases(this.url);
     this.loadThreadTable();
-    this.$data.timer = setInterval(this.loadThreadTable, 5000);
+    this.timer = setInterval(this.loadThreadTable, 5000);
   }
   loadThreadTable(): void {
-    if (this.$data.db && this.$data.db != null) {
-      this.$data.db.threadTable().then((response: any) => {
-        this.$data.threads = response;
+    if (this.db && this.db != null) {
+      this.db.threadTable().then((response: any) => {
+        this.threads = response;
       });
     }
   }
   beforeDestroy(): void {
-    clearInterval(this.$data.timer);
+    if (this.timer) {
+      clearInterval(this.timer);
+    }
   }
 }
 </script>

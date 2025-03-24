@@ -57,21 +57,22 @@
                     <b-icon-x-circle
                       scale="2"
                       variant="danger"
-                      v-on:click="stopConnection(row.item)"
+                      @click="stopConnection(row.item)"
                     ></b-icon-x-circle>
                   </div>
                 </template>
               </b-table>
             </b-col>
           </b-row>
-        </b-container> </b-card-body
-    ></b-card>
+        </b-container> 
+      </b-card-body>
+    </b-card>
     <StatusBar />
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Provide, Vue } from 'vue-property-decorator';
+import { Component, Prop, Provide, Vue } from 'vue-facing-decorator';
 import Sidebar from './Sidebar.vue';
 import store from '../store/index';
 import StatusBar from './StatusBar.vue';
@@ -88,45 +89,45 @@ import { BIconXCircle } from "bootstrap-vue";
   },
 })
 export default class AdatcpList extends Vue {
-  @Prop(String) readonly url: string | undefined;
-  @Provide() type = 'static';
-  data() {
-    return {
-      db: null,
-      fields: [
-        'ID',
-        'RecvID',
-        'RemoteHost',
-        'RemoteIP',
-        'RemoteUser',
-        'RemotePort',
-        'Stop',
-      ],
-      adatcp: [] as any[],
-      timer: '',
-    };
-  }
+  @Prop(String) readonly url!: string;
+  @Provide() type: string = 'static';
+
+  db: any = null;
+  adatcp: any[] = [];
+  fields: string[] = [
+    'ID',
+    'RecvID',
+    'RemoteHost',
+    'RemoteIP',
+    'RemoteUser',
+    'RemotePort',
+    'Stop',
+  ];
+  timer: any = null;
+
   created(): void {
-    this.$data.db = SearchDatabases(this.url);
-    this.$data.timer = setInterval(this.queryParameters, 5000);
+    this.db = SearchDatabases(this.url);
+    this.timer = setInterval(this.queryParameters, 5000);
     this.queryParameters();
   }
+
   queryParameters(): void {
-    this.$data.db.adatcp().then((response: any) => {
-      this.$data.adatcp = response.Entry;
+    this.db.adatcp().then((response: any) => {
+      this.adatcp = response.Entry;
     });
   }
+
   beforeDestroy(): void {
-    clearInterval(this.$data.timer);
+    clearInterval(this.timer);
   }
+
   stopConnection(tcp: any): void {
-    console.log("TCP: "+JSON.stringify(tcp));
-    this.$data.db.closeConnection(tcp.ID);
+    console.log("TCP: " + JSON.stringify(tcp));
+    this.db.closeConnection(tcp.ID);
   }
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 h3 {
   margin: 40px 0 0;
@@ -140,10 +141,5 @@ ul {
   padding: 0;
 }
 li {
-  display: inline-block;
-  margin: 0 10px;
+  display: inline-bl
 }
-a {
-  color: #42b983;
-}
-</style>

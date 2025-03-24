@@ -21,7 +21,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-facing-decorator';
 import MyHeader from '@/components/Header.vue';
 import HighwaterList from '@/components/HighwaterList.vue';
 
@@ -32,6 +32,6 @@ import HighwaterList from '@/components/HighwaterList.vue';
   },
 })
 export default class Highwater extends Vue {
-    @Prop(String) readonly url: string | undefined;
+    @Prop({ type: String, required: false }) readonly url!: string | undefined;
 }
 </script>

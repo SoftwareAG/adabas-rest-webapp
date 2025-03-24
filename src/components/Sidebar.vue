@@ -93,7 +93,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { Component, Prop, Vue } from "vue-facing-decorator";
 import store from "../store/index";
 import { BIconChevronDoubleLeft } from "bootstrap-vue";
 import { SearchDatabases } from '@/adabas/admin';
@@ -104,33 +104,29 @@ import { SearchDatabases } from '@/adabas/admin';
   },
 })
 export default class Sidebar extends Vue {
-  @Prop(String) readonly url: string | undefined;
-  data() {
-    return {
-      db: null,
-    };
-  }
+  @Prop({ type: String, required: false }) readonly url!: string | undefined;
+  db: any = null;
   created() {
-    this.$data.db = SearchDatabases(this.url);
+    this.db = SearchDatabases(this.url);
   }
   active() {
-    //    console.log("Active sidebar db: "+JSON.stringify(this.$data.db));
-    if (!this.$data.db.status) {
+    //    console.log("Active sidebar db: "+JSON.stringify(this.db));
+    if (!this.db.status) {
       return false;
     }
-    return this.$data.db.status.Active;
+    return this.db.status.Active;
   }
   state() {
-    if ((!this.$data.db)||(!this.$data.db.status)) {
+    if ((!this.db)||(!this.db.status)) {
       return "Unknown";
     }
-    if (this.$data.db.status.Active) {
+    if (this.db.status.Active) {
       return "Online";
     }
     return "Offline";
   }
   isMonitor(): boolean {
-    if (this.$data.db.status.StructureLevel>21) {
+    if (this.db.status.StructureLevel>21) {
       return true;
     }
     return false;

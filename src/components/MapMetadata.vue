@@ -22,7 +22,7 @@
     >
       <b-card-body>
         <p>
-          This page query the Adabas Map Metadata of the Adabas Map technology
+          This page queries the Adabas Map Metadata of the Adabas Map technology
           used in Adabas Client for Java.
         </p>
         <Url url="/adabas/database" />
@@ -34,7 +34,7 @@
             <b-col sm="8">
               <b-form-select
                 v-model="selected"
-                v-on:change="getSelectedItem"
+                @change="getSelectedItem"
                 :options="options"
                 size="sm"
                 class="w-75"
@@ -45,7 +45,7 @@
                 size="sm"
                 variant="outline-primary"
                 class="ml-2"
-                v-on:click="refreshMapList"
+                @click="refreshMapList"
                 >Refresh Map list</b-button
               >
             </b-col>
@@ -135,10 +135,9 @@
               :items="mapFields"
               :fields="fields"
             >
-              <template v-for="(field, index) in fields">
-                <div :key="index">
+              <template v-for="(field, index) in fields" :key="index">
+                <div>
                   {{ index }}{{ field.name }}
-                  Am Confused
                 </div>
               </template>
             </b-table>
@@ -151,83 +150,99 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import { ref, reactive, onMounted, watch } from 'vue';
 import 'bootstrap/dist/css/bootstrap.css';
 import store from '../store/index';
 import { config } from '../store/config';
 import StatusBar from './StatusBar.vue';
 import Url from './Url.vue';
 
-export default Vue.extend({
+export default {
   name: 'MapMetadata',
   components: { StatusBar, Url },
-  data() {
-    return {
-      maps: store.state.maps,
-      map: {
-        data: { target: '', file: '' },
-        definition: { target: '', file: '' },
-        fields: [],
-      },
-      url: config.Url() + '/rest/metadata/map/<to be selected>',
-      selected: null,
-      status: store.state.status,
-      metadata: store.state.metadata,
-      mapFields: [],
-      fields: ['name', 'contentType', 'shortName', 'length'],
-      jsonString: 'No query JSON result available' as string,
-      options: [{ value: null, text: 'Please select an Adabas Map' }],
-      query: {
-        map: '',
-      },
-    };
-  },
-  created() {
-    store
-      .dispatch('INIT_MAPS')
-      .then((response) => {
-        console.log('Response: ' + JSON.stringify(response));
-      })
-      .catch((reason: any) => {
-        console.log('Reason(created): ' + JSON.stringify(reason));
-      });
-    this.adaptMapOptions();
-  },
-  methods: {
-    getSelectedItem: function(myarg: any) {
-      // Just a regular js function that takes 1 arg
-      if (this.query.map !== myarg) {
-        this.url = config.Url() + '/rest/metadata/map/' + myarg;
-        this.query.map = myarg;
+  setup() {
+    const maps = reactive(store.state.maps);
+    const map = reactive({
+      data: { target: '', file: '' },
+      definition: { target: '', file: '' },
+      fields: [],
+    });
+    const url = ref(config.Url() + '/rest/metadata/map/<to be selected>');
+    const selected = ref(null);
+    const status = reactive(store.state.status);
+    const metadata = reactive(store.state.metadata);
+    const mapFields = ref([]);
+    const fields = ['name', 'contentType', 'shortName', 'length'];
+    const jsonString = ref('No query JSON result available');
+    const options = ref([{ value: null, text: 'Please select an Adabas Map' }]);
+    const query = reactive({ map: '' });
+
+    // Lifecycle hook for mounting
+    onMounted(() => {
+      store
+        .dispatch('INIT_MAPS')
+        .then((response) => {
+          console.log('Response: ' + JSON.stringify(response));
+        })
+        .catch((reason: any) => {
+          console.log('Reason(onMounted): ' + JSON.stringify(reason));
+        });
+      adaptMapOptions();
+    });
+
+    // Methods
+    const getSelectedItem = (myarg: any) => {
+      if (query.map !== myarg) {
+        url.value = config.Url() + '/rest/metadata/map/' + myarg;
+        query.map = myarg;
       }
 
       store.dispatch('QUERY_MAP_FIELDS', myarg).then((response) => {
-        // console.log("Query map: "+JSON.stringify(response));
-        this.mapFields = response.data.Map.fields;
-        this.map = response.data.Map;
-        this.jsonString = JSON.stringify(this.map);
+        mapFields.value = response.data.Map.fields;
+        map.data = response.data.Map.data;
+        map.definition = response.data.Map.definition;
+        jsonString.value = JSON.stringify(map);
       });
-    },
-    refreshMapList: function() {
+    };
+
+    const refreshMapList = () => {
       store.dispatch('INIT_MAPS');
-    },
-    adaptMapOptions: function() {
-      const options = [{ value: null, text: 'Please select an Adabas Map' }];
-      this.maps.forEach((i: any, index: any) => {
-        options.push({ value: i, text: i });
-        this.options = options;
+    };
+
+    const adaptMapOptions = () => {
+      const optionsList = [{ value: null, text: 'Please select an Adabas Map' }];
+      maps.forEach((i: any) => {
+        optionsList.push({ value: i, text: i });
       });
-    },
+      options.value = optionsList;
+    };
+
+    // Watchers
+    watch(maps, () => {
+      adaptMapOptions(); // Called within the watch
+    });
+
+    watch(metadata, (newvalue: any) => {
+      console.log('Metadata changed:', JSON.stringify(newvalue));
+    });
+
+    return {
+      maps,
+      map,
+      url,
+      selected,
+      status,
+      metadata,
+      mapFields,
+      fields,
+      jsonString,
+      options,
+      query,
+      getSelectedItem,
+      refreshMapList,
+    };
   },
-  watch: {
-    maps: function(value: any, newvalue: any) {
-      this.adaptMapOptions();
-    },
-    metadata: function(value: any, newvalue: any) {
-      console.log('Metadata changed:' + JSON.stringify(newvalue));
-    },
-  },
-});
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

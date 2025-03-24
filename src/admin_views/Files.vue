@@ -21,7 +21,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-facing-decorator';
 import MyHeader from '@/components/Header.vue';
 import FilesList from '@/components/FilesList.vue';
 
@@ -32,6 +32,6 @@ import FilesList from '@/components/FilesList.vue';
   },
 })
 export default class Files extends Vue {
-      @Prop(String) readonly url: string | undefined;
+      @Prop({ type: String, required: false }) readonly url!: string | undefined;
 }
 </script>

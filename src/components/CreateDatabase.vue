@@ -266,7 +266,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { Component, Prop, Vue } from "vue-facing-decorator";
 import axios from "axios";
 import { config } from "../store/config";
 import { authHeader } from "../user/auth-header";

@@ -52,7 +52,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-facing-decorator';
 import Sidebar from './Sidebar.vue';
 import store from '../store/index';
 import StatusBar from './StatusBar.vue';
@@ -67,7 +67,7 @@ import { SearchDatabases } from '@/adabas/admin';
   },
 })
 export default class HoldqueueList extends Vue {
-  @Prop(String) readonly url: string | undefined;
+  @Prop({ type: String, required: false }) readonly url!: string | undefined;
   data() {
     return {
       fields: [
@@ -97,8 +97,10 @@ export default class HoldqueueList extends Vue {
       this.$data.holdqueues = response;
     });
   }
-  beforeDestroy() {
-    clearInterval(this.$data.timer);
+  beforeDestroy(): void {
+    if (this.timer) {
+      clearInterval(this.timer);
+    }
   }
 }
 </script>

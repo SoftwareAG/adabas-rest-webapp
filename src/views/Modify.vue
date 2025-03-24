@@ -21,7 +21,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-facing-decorator';
 import MyHeader from '@/components/Header.vue';
 import ModifyData from '@/components/ModifyData.vue';
 
@@ -31,5 +31,7 @@ import ModifyData from '@/components/ModifyData.vue';
     ModifyData,
   },
 })
-export default class Modify extends Vue {}
+export default class Modify extends Vue {
+  @Prop({ type: String, required: false }) readonly url!: string | undefined;
+}
 </script>

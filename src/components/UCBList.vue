@@ -58,7 +58,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-facing-decorator';
 import Sidebar from './Sidebar.vue';
 import StatusBar from './StatusBar.vue';
 import Url from './Url.vue';
@@ -73,23 +73,21 @@ import { SearchDatabases } from '@/adabas/admin';
   },
 })
 export default class UCBList extends Vue {
-  @Prop(String) readonly url: string | undefined;
-  data() {
-    return {
-      fields: ['Count', 'DBMode', 'Date', 'Id', 'Sequence', 'files'],
-      ucb: [],
-      timer: '',
-      db: null,
-    };
-  }
+  @Prop({ type: String, required: false }) readonly url!: string | undefined;
+
+  fields: string [] = ['Count', 'DBMode', 'Date', 'Id', 'Sequence', 'files'];
+  ucb: any = [];
+  timer: number | null = null;
+  db: any = null;
+
   created() {
-    this.$data.db = SearchDatabases(this.url);
-    this.$data.timer = setInterval(this.loadUCBList, 5000);
+    this.db = SearchDatabases(this.url);
+    this.timer = setInterval(this.loadUCBList, 5000);
     this.loadUCBList();
   }
   loadUCBList() {
-    this.$data.db.ucb().then((response: any) => {
-      this.$data.ucb = response;
+    this.db.ucb().then((response: any) => {
+      this.ucb = response;
     });
   }
   listUcbFiles(count: number, ucbFiles: any) {

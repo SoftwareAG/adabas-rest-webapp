@@ -17,7 +17,8 @@
 *
 */
 
-import Vue from 'vue';
+// import Vue from 'vue';
+import { version } from 'vue'; // Import the version property from the Vue package
 import App from '../App.vue'
 
 export function Url() {
@@ -44,7 +45,7 @@ export function Version(): string {
    if (process.env.NODE_ENV === 'development') {
       return 'dev';
    }
-   return App.version;
+   return version;
 }
 
 export const config = {
