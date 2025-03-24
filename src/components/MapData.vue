@@ -28,14 +28,14 @@
         </p>
         <p>Press 'Query Data' to receive the result list in the table.</p>
         <b-container fluid>
-          <b-row class="my-1" v-if="classicMode == 'false'">
+          <b-row class="my-1" v-if="classicMode === 'false'">
             <b-col sm="2" class="text-right">
               <label>Select Map to be displayed: {{ classicMode }}</label>
             </b-col>
             <b-col sm="8">
               <b-form-select
                 v-model="selected"
-                v-on:change="getSelectedItem"
+                @change="getSelectedItem"
                 :options="options"
                 size="sm"
                 class="w-75"
@@ -49,7 +49,7 @@
             <b-col sm="4">
               <b-form-select
                 v-model="selected"
-                v-on:change="getSelectedItem"
+                @change="getSelectedItem"
                 :options="optionsDatabases"
                 size="sm"
                 class="w-75"
@@ -58,7 +58,7 @@
             <b-col sm="4">
               <b-form-select
                 v-model="file"
-                v-on:change="getFileItem"
+                @change="getFileItem"
                 :options="optionsFiles"
                 size="sm"
                 class="w-75"
@@ -69,7 +69,7 @@
                 size="sm"
                 variant="outline-primary"
                 class="ml-2"
-                v-on:click="refreshMapList"
+                @click="refreshMapList"
                 >Refresh Database list</b-button
               >
             </b-col>
@@ -211,7 +211,7 @@
             class="ml-2"
             href="#"
             variant="outline-primary"
-            v-on:click="callQuery"
+            @click="callQuery"
             >Query data</b-button
           >
         </b-container>
@@ -238,8 +238,8 @@
         <b-card-body>
           <b-card-text>
             <b-container fluid>
-              <b-row
-                ><b-col sm="8">
+              <b-row>
+                <b-col sm="8">
                   <b-pagination
                     v-model="currentPage"
                     :total-rows="rows"
@@ -247,12 +247,12 @@
                     aria-controls="my-table"
                   ></b-pagination>
                 </b-col>
-                <b-col  class="text-right" size="sm" sm="2">Record per page:
-                </b-col>
+                <b-col class="text-right" sm="2">Record per page:</b-col>
                 <b-col sm="2">
-                  <b-form-select v-model="perPage" :options="perPageOptions" ></b-form-select>
+                  <b-form-select v-model="perPage" :options="perPageOptions"></b-form-select>
                 </b-col>
-              </b-row><b-row>
+              </b-row>
+              <b-row>
                 <b-col sm="8">
                   <b-form-group
                     label="Filter"
@@ -276,9 +276,9 @@
                       </b-input-group-append>
                     </b-input-group>
                   </b-form-group>
-                </b-col></b-row
-              ></b-container
-            >
+                </b-col>
+              </b-row>
+            </b-container>
             <p class="mt-3">Current Page: {{ currentPage }}</p>
             <b-table
               id="my-table"
@@ -286,7 +286,7 @@
               bordered
               hover
               :filter="filter"
-              :filterIncludedFields="filterOn"
+              :filter-included-fields="filterOn"
               :per-page="perPage"
               :current-page="currentPage"
               small
@@ -309,65 +309,61 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Component, Prop, Vue, Watch } from 'vue-facing-decorator';
-import 'bootstrap/dist/css/bootstrap.css';
-import store from '../store/index';
-import { config } from '../store/config';
-import StatusBar from './StatusBar.vue';
-import Url from './Url.vue';
+<script lang="ts" setup>
+  import { ref, computed, onMounted } from 'vue';
+  import store from '../store/index';
+  import { config } from '../store/config';
+  import StatusBar from './StatusBar.vue';
+  import Url from './Url.vue';
+  import { useRoute } from 'vue-router';
 
-@Component({
-  components: {
-    StatusBar,
-    Url,
-  },
-})
-export default class MapData extends Vue {
-  @Prop() private classicMode!: string;
-  data() {
-    return {
-      perPage: 10,
-      currentPage: 1,
-      perPageOptions: [10,20,50,100],
-      filter: '',
-      filterOn: [],
-      maps: store.state.maps,
-      url: config.Url() + '/rest/map/',
-      selected: null,
-      file: null,
-      storeRecord: store.state.records,
-      status: store.state.status,
-      metadata: store.state.metadata,
-      records: [] as any[],
-      jsonString: 'No query JSON result available' as string,
-      options: [
-        {
-          value: null,
-          text: 'Please select the Adabas Map used for the query',
-        },
-      ],
-      optionsDatabases: [
-        { value: null, text: 'Please select an Adabas Database' },
-      ],
-      optionsFiles: [{ value: null, text: 'Please select an Adabas File' }],
-      selectedSortField: null,
-      sortOptions: [{ value: null, text: 'Please select Field' }],
-      fields: [] as any[],
-      query: {
-        map: '',
-        database: { url: null as any, file: null as any },
-        fields: [] as any[],
-        validFields: [] as any[],
-        offset: 0,
-        limit: 20,
-        search: '',
-        removeGroup: false,
-        compact: false,
-        descriptor: false,
-      },
-    };
-  }
+  const props = defineProps<{ classicMode: string }>();
+
+  const perPage = ref(10);
+  const currentPage = ref(1);
+  const perPageOptions = ref([10, 20, 50, 100]);
+  const filter = ref('');
+  const filterOn = ref([]);
+  const maps = store.state.maps;
+  const records = ref<any[]>([]);
+  const url = ref(config.Url() + '/rest/map/');
+  const selected = ref(null);
+  const file = ref(null);
+  const jsonString = ref('No query JSON result available');
+  const selectedSortField = ref(null);
+  const sortOptions = ref([{ value: null, text: 'Please select Field' }]);
+  const options = ref([{ value: null, text: 'Please select the Adabas Map used for the query' }]);
+  const optionsDatabases = ref([{ value: null, text: 'Please select an Adabas Database' }]);
+  const optionsFiles = ref([{ value: null, text: 'Please select an Adabas File' }]);
+
+  const query = ref({
+    map: '',
+    database: { url: null as any, file: null as any },
+    fields: [] as any[],
+    validFields: [] as any[],
+    offset: 0,
+    limit: 20,
+    search: '',
+    removeGroup: false,
+    compact: false,
+    descriptor: false,
+  });
+
+  const rows = computed(() => {
+    return records.value ? records.value.length : 0;
+  });
+
+  onMounted(() => {
+    if (props.classicMode === 'true') {
+      store.dispatch('INIT_DATABASES').then((dbs) => {
+        adaptDbOptions(dbs);
+      });
+    } else {
+      store.dispatch('INIT_MAPS').then(() => {
+        adaptMapOptions();
+      });
+    }
+  });
   created(): void {
     // console.log("Created " + this.classicMode);
     if (this.classicMode == 'true') {
@@ -652,4 +648,5 @@ li {
 a {
   color: #42b983;
 }
+</style>
 </style>

@@ -23,32 +23,22 @@
     >
       <b-card-body>
         <b-container fluid>
-          <b-row
-            ><b-col>
-              This page provides the Adabas database nucleus log output.
-            </b-col></b-row
-          >
-          <b-row
-            ><b-col> <Url url="/adabas/database" /> </b-col
-          ></b-row>
-          <b-row
-            ><b-col sm="2">
-           Select:
-            </b-col><b-col sm="10">
-              <b-form-select v-on:change="changeLog()" v-model="selected" :options="nucleusOptions"></b-form-select>
-            </b-col></b-row>
-          <b-row
-            ><b-col>
-   <b-overlay :show="show" rounded="sm">
-               <b-alert show variant="secondary"
-                ><pre>{{ log }}</pre></b-alert
-              >
-   </b-overlay>
-            </b-col></b-row
-          ></b-container
-        ></b-card-body
-      ></b-card
-    >
+          <b-row><b-col>This page provides the Adabas database nucleus log output.</b-col></b-row>
+          <b-row><b-col><Url url="/adabas/database" /></b-col></b-row>
+          <b-row>
+            <b-col sm="2">Select:</b-col>
+            <b-col sm="10">
+              <b-form-select v-on:change="changeLog" v-model="selected" :options="nucleusOptions"></b-form-select>
+            </b-col>
+          </b-row>
+          <b-row><b-col>
+            <b-overlay :show="show" rounded="sm">
+              <b-alert show variant="secondary"><pre>{{ log }}</pre></b-alert>
+            </b-overlay>
+          </b-col></b-row>
+        </b-container>
+      </b-card-body>
+    </b-card>
     <StatusBar />
   </div>
 </template>
@@ -70,27 +60,26 @@ import { SearchDatabases } from '@/adabas/admin';
 })
 export default class DatabaseList extends Vue {
   @Prop({ type: String, required: false }) readonly url!: string | undefined;
-  data() {
-    return {
-      log: '' as string,
-      db: null,
-      selected: 'adanuc.log',
-      nucleusOptions: ["adanuc.log"] as string[],
-      show: true,
-    };
-  }
+
+  log: string = '';
+  db: any = null;
+  selected: string = 'adanuc.log';
+  nucleusOptions: string[] = ["adanuc.log"];
+  show: boolean = true;
+  timer: number = 0;
+
   created() {
-    this.$data.db = SearchDatabases(this.url);
-    this.$data.timer = setInterval(this.loadNucleus, 5000);
+    this.db = SearchDatabases(this.url);
+    this.timer = setInterval(this.loadNucleus, 5000);
     this.loadNucleus();
-    this.$data.db.nucleusLogList().then((response: any) => {
-      this.$data.nucleusOptions = response.NucleusLogs;
+    this.db.nucleusLogList().then((response: any) => {
+      this.nucleusOptions = response.NucleusLogs;
     });
   }
   loadNucleus() {
-    this.$data.db.nucleusLog(this.$data.selected).then((response: any) => {
-      this.$data.log = response;
-      this.$data.show = false;
+    this.db.nucleusLog(this.selected).then((response: any) => {
+      this.log = response;
+      this.show = false;
     });
   }
   beforeDestroy() {
@@ -99,7 +88,7 @@ export default class DatabaseList extends Vue {
     }
   }
   changeLog() {
-    this.$data.show = false;
+    this.show = false;
     this.loadNucleus();
   }
 }

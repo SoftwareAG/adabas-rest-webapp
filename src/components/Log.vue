@@ -15,7 +15,7 @@
 
 <template>
   <div class="log p-2">
-    <MyHeader></MyHeader>
+    <MyHeader />
     <b-card
       :header="'Adabas REST server log'"
       border-variant="secondary"
@@ -23,64 +23,70 @@
     >
       <b-card-body>
         <b-container fluid>
-          <b-row
-            ><b-col>
+          <b-row>
+            <b-col>
               This page provides the Adabas REST server log output.
-            </b-col></b-row
-          >
-          <b-row
-            ><b-col> <Url url="/adabas/rest/log" /> </b-col
-          ></b-row>
-          <b-row
-            ><b-col>
-              <b-alert show variant="secondary"
-                ><pre>{{ log }}</pre></b-alert
-              >
-            </b-col></b-row
-          ></b-container
-        ></b-card-body
-      ></b-card
-    >
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col>
+              <Url url="/adabas/rest/log" />
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col>
+              <b-alert show variant="secondary">
+                <pre>{{ log }}</pre>
+              </b-alert>
+            </b-col>
+          </b-row>
+        </b-container>
+      </b-card-body>
+    </b-card>
     <StatusBar />
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-facing-decorator';
+import { ref, onMounted, onBeforeUnmount } from 'vue';
 import MyHeader from '@/components/Header.vue';
-import { AdabasConfig } from '../adabas/config';
 import Url from './Url.vue';
-import store from '../store/index';
+import StatusBar from './StatusBar.vue';
+import { AdabasConfig } from '../adabas/config';
 
-@Component({
+export default {
   components: {
     MyHeader,
+    Url,
+    StatusBar,
   },
-})
-export default class Configuration extends Vue {
-  @Prop({ type: String, required: false }) readonly url!: string | undefined;
-  data() {
-    return {
-      log: '' as string,
-      c: null,
+  setup() {
+    const log = ref<string>('');  // reactive reference for log
+    const c = new AdabasConfig(); // instance of AdabasConfig
+    let timer: ReturnType<typeof setInterval> | null = null;  // interval reference
+
+    // Function to load logs
+    const loadLog = async () => {
+      const response = await c.readLog();
+      log.value = response?.Log?.Log ?? '';  // Update log
     };
-  }
-  created() {
-    this.$data.c = new AdabasConfig();
-    this.$data.timer = setInterval(this.loadLog, 5000);
-    this.loadLog();
-  }
-  loadLog() {
-    this.$data.c.readLog().then((response: any) => {
-      this.$data.log = response.Log.Log;
+
+    // Mounted hook to start loading logs and set interval
+    onMounted(() => {
+      loadLog();
+      timer = setInterval(loadLog, 5000);  // reload log every 5 seconds
     });
-  }
-  beforeDestroy(): void {
-    if (this.timer) {
-      clearInterval(this.timer);
-    }
-  }
-}
+
+    // Before unmount hook to clear the interval
+    onBeforeUnmount(() => {
+      if (timer) clearInterval(timer);  // clear interval when component is destroyed
+    });
+
+    return {
+      log,  // expose log variable for template
+    };
+  },
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

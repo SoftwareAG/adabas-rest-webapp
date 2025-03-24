@@ -38,7 +38,7 @@
             <b-col sm="5">
               <b-form-select
                 v-model="selected"
-                v-on:change="getSelectedItem"
+                @change="getSelectedItem"
                 :options="options"
                 size="sm"
                 class="w-75"
@@ -49,7 +49,7 @@
                 size="sm"
                 variant="outline-primary"
                 class="ml-2"
-                v-on:click="refreshMapList"
+                @click="refreshMapList"
                 >Refresh Map list</b-button
               >
             </b-col>
@@ -65,8 +65,8 @@
                 :state="null"
                 size="sm"
                 placeholder="Enter fields to restrict to"
-              /> </b-col
-            ><b-col> </b-col>
+              />
+            </b-col>
           </b-row>
           <b-row class="my-1">
             <b-col sm="3" class="text-right">
@@ -79,17 +79,17 @@
                 :state="null"
                 size="sm"
                 placeholder="Enter search"
-              /> </b-col
-            ><b-col sm="2">
+              />
+            </b-col>
+            <b-col sm="2">
               <b-button
                 size="sm"
                 variant="outline-primary"
                 class="ml-2"
                 @click="readData()"
                 >Apply query parameter</b-button
-              ></b-col
-            >
-          </b-row>
+              ></b-col>
+            </b-row>
           <b-row>
             <b-col sm="3">
               <b-button
@@ -148,17 +148,16 @@
               "
             >
               <b-form-input
-                v-on:input="changeInput($event, row.item)"
-                v-bind:value="getData(row.item.reference)"
+                @input="changeInput($event, row.item)"
+                :value="getData(row.item.reference)"
               />
             </div>
             <div v-else>----------------</div>
           </template>
         </b-table>
-      </b-card-body></b-card
-    >
-  </div>
-</template>
+      </b-card-body></b-card>
+    </div>
+  </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-facing-decorator';
@@ -170,67 +169,65 @@ import { userService } from '../user/service';
 
 @Component
 export default class ModifyData extends Vue {
-  data() {
-    return {
-      curIndex: 0,
-      maps: store.state.maps,
-      url: config.Url() + '/rest/metadata/map/<to be selected>',
-      dataUrl: '',
-      mapFields: [],
-      selected: null,
-      index: 1,
-      mapName: '',
-      fields: ['field', 'contentType', 'formatType', 'length', 'input'],
-      options: [{ value: null, text: 'Please select an Adabas Map' }],
-      record: [] as any[],
-      query: { search: '', fields: '' },
-    };
-  }
+  curIndex: number = 0;
+  maps: string[] = store.state.maps;
+  url: string = config.Url() + '/rest/metadata/map/<to be selected>';
+  dataUrl: string = '';
+  mapFields: any[] = [];
+  selected: any = null;
+  index: number = 1;
+  mapName: string = '';
+  fields: [string, string, string, string, string] = ['field', 'contentType', 'formatType', 'length', 'input'];
+  options: any[] = [{ value: null, text: 'Please select an Adabas Map' }];
+  record: any[] = [];
+  query: { search: string, fields: string } = { search: '', fields: '' };
+
+
   created() {
-    if (this.$data.maps.length == 0) {
+    if (this.maps.length == 0) {
       this.refreshMapList();
     } else {
       this.adaptMapOptions();
     }
   }
   increment(): void {
-    if (this.$data.curIndex < this.$data.record.length - 1) {
-      this.$data.curIndex++;
+    if (this.curIndex < this.record.length - 1) {
+      this.curIndex++;
       (this.$refs.table as any).refresh();
     }
   }
   decrement(): void {
-    if (this.$data.curIndex === 0) {
+    if (this.curIndex === 0) {
       alert('Negative quantity not allowed');
     } else {
-      this.$data.curIndex--;
+      this.curIndex--;
       (this.$refs.table as any).refresh();
     }
   }
   getCurrentIsn(): number {
-    if (this.$data.record.length > this.$data.curIndex) {
-      return this.$data.record[this.$data.curIndex].ISN;
+    if (this.record.length > this.curIndex) {
+      return this.record[this.curIndex].ISN;
     }
     return -1;
   }
   getSelectedItem(myarg: any): void {
     // Just a regular js function that takes 1 arg
-    this.$data.query.search = '';
-    this.$data.query.fields = '';
-    this.$data.mapName = myarg;
-    this.$data.url = config.Url() + '/rest/metadata/map/' + myarg;
+    this.query.search = '';
+    this.query.fields = '';
+    this.mapName = myarg;
+    this.url = config.Url() + '/rest/metadata/map/' + myarg;
 
     store.dispatch('QUERY_MAP_FIELDS', myarg).then((response) => {
-      this.$data.mapFields = [{ name: 'ISN', formatType: 'B', shortName: '' }];
+      this.mapFields = [{ name: 'ISN', formatType: 'B', shortName: '' }];
       response.data.Map.fields.forEach((element: any) => {
-        this.$data.mapFields.push(element);
+        this.mapFields.push(element);
       });
       this.readData();
     });
   }
   changeInput(event: any, item: any): void {
     const ref = item.reference;
-    let r = this.$data.record[this.$data.curIndex];
+    let r = this.record[this.curIndex];
     //let l = r;
     // console.log("Reference " + ref+" -> "+JSON.stringify(r));
     if (ref) {
@@ -244,7 +241,7 @@ export default class ModifyData extends Vue {
     }
   }
   getData(ref: string): void {
-    let r = this.$data.record[this.$data.curIndex];
+    let r = this.record[this.curIndex];
     // console.log("Reference " + ref+" -> "+JSON.stringify(r));
     if (ref) {
       ref.split('.').forEach((x: any) => {
@@ -256,13 +253,13 @@ export default class ModifyData extends Vue {
   }
   adaptMapOptions(): void {
     const options = [{ value: null, text: 'Please select an Adabas Map' }];
-    this.$data.maps.forEach((i: any) => {
+    this.maps.forEach((i: any) => {
       options.push({ value: i, text: i });
-      this.$data.options = options;
+      this.options = options;
     });
   }
   refreshMapList(): void {
-    console.log('Refresh maps: ' + this.$data.maps.length);
+    console.log('Refresh maps: ' + this.maps.length);
     store
       .dispatch('INIT_MAPS')
       .then((response) => {
@@ -274,44 +271,44 @@ export default class ModifyData extends Vue {
       });
   }
   readData(): Promise<void> {
-    this.$data.dataUrl = config.Url() + '/rest/map/' + this.$data.mapName; //+ "/" + this.$data.index;
-    if (this.$data.query.search !== '' || this.$data.query.fields !== '') {
-      this.$data.dataUrl = this.$data.dataUrl + '?';
-      if (this.$data.query.search !== '') {
-        this.$data.dataUrl =
-          this.$data.dataUrl + 'search=' + this.$data.query.search;
+    this.dataUrl = config.Url() + '/rest/map/' + this.mapName; //+ "/" + this.index;
+    if (this.query.search !== '' || this.query.fields !== '') {
+      this.dataUrl = this.dataUrl + '?';
+      if (this.query.search !== '') {
+        this.dataUrl =
+          this.dataUrl + 'search=' + this.query.search;
       }
-      if (this.$data.query.search !== '' && this.$data.query.fields !== '') {
-        this.$data.dataUrl = this.$data.dataUrl + '&';
+      if (this.query.search !== '' && this.query.fields !== '') {
+        this.dataUrl = this.dataUrl + '&';
       }
-      if (this.$data.query.fields !== '') {
-        this.$data.dataUrl =
-          this.$data.dataUrl + 'fields=' + this.$data.query.fields;
+      if (this.query.fields !== '') {
+        this.dataUrl =
+          this.dataUrl + 'fields=' + this.query.fields;
       }
     }
     const getConfig = {
       headers: authHeader('application/json'),
       useCredentails: true,
     };
-    store.commit('SET_URL', { url: this.$data.dataUrl, method: 'get' });
+    store.commit('SET_URL', { url: this.dataUrl, method: 'get' });
     return axios
-      .get(this.$data.dataUrl, getConfig)
+      .get(this.dataUrl, getConfig)
       .then((response: any) => {
         console.log('Data response: ' + JSON.stringify(response));
-        this.$data.curIndex = 0;
-        this.$data.record = response.data.Records;
-        this.$data.mapFields.forEach((element: any) => {
+        this.curIndex = 0;
+        this.record = response.data.Records;
+        this.mapFields.forEach((element: any) => {
           //console.log("Work on " + element.name);
-          let n = this.searchReference(element.name, this.$data.record[0]);
+          let n = this.searchReference(element.name, this.record[0]);
           // console.log("Found search " + n);
           // element.reference = n;
           // console.log("Search : " + JSON.stringify(element));
           if (n) {
-            Vue.set(element, 'reference', n);
+            element.reference = n;
           }
         });
-        if (this.$data.query.fields !== '') {
-          this.refreshRecordMapList(this.$data.record[0]);
+        if (this.query.fields !== '') {
+          this.refreshRecordMapList(this.record[0]);
           (this.$refs.table as any).refresh();
         }
       })
@@ -327,18 +324,18 @@ export default class ModifyData extends Vue {
   }
   refreshRecordMapList(data: any): void {
     let newMapList = [] as any[];
-    this.$data.mapFields.forEach((element: any) => {
+    this.mapFields.forEach((element: any) => {
       // console.log("Search "+element.name);
       let s = this.searchReference(
         element.name,
-        this.$data.record[this.$data.curIndex],
+        this.record[this.curIndex],
       );
       // console.log("Found for "+element.name+" -> "+s);
       if (s !== '') {
         newMapList.push(element);
       }
     });
-    this.$data.mapFields = newMapList;
+    this.mapFields = newMapList;
   }
   updateRecord(): Promise<void> {
     const getConfig = {
@@ -346,8 +343,8 @@ export default class ModifyData extends Vue {
       useCredentails: true,
     };
     const inputData = { Store: [] as any[] };
-    inputData.Store.push(this.$data.record[this.$data.curIndex]);
-    let url = config.Url() + '/rest/map/' + this.$data.mapName;
+    inputData.Store.push(this.record[this.curIndex]);
+    let url = config.Url() + '/rest/map/' + this.mapName;
     return axios
       .put(url, inputData, getConfig)
       .then((response: AxiosResponse<any>) => {
