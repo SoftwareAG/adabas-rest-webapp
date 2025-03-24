@@ -340,7 +340,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-facing-decorator';
 import { AdabasAdmin } from '../adabas/admin';
 import { userService } from '../user/service';
 import CreateDatabase from './CreateDatabase.vue';
@@ -512,7 +512,9 @@ export default class DatabaseList extends Vue {
   }
 
   beforeDestroy(): void {
-    clearInterval(this.$data.timer);
+    if (this.timer) {
+      clearInterval(this.timer);
+    }
   }
 }
 </script>

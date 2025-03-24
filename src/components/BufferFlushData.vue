@@ -122,7 +122,7 @@ import {
   onBeforeUnmount,
   defineComponent,
 } from "@vue/composition-api";
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { Component, Prop, Vue } from "vue-facing-decorator";
 import Sidebar from "./Sidebar.vue";
 import store from "../store/index";
 import StatusBar from "./StatusBar.vue";

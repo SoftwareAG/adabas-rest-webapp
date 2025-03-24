@@ -89,7 +89,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { Component, Prop, Vue } from "vue-facing-decorator";
 import axios from "axios";
 import { config } from "../store/config";
 import { authHeader } from "../user/auth-header";
@@ -101,7 +101,7 @@ Vue.use(ModalPlugin);
 
 @Component
 export default class CreateFile extends Vue {
-  @Prop(String) readonly url: string | undefined;
+  @Prop({ type: String, required: false }) readonly url!: string | undefined;
   data() {
     return {
       file: null,

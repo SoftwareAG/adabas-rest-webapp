@@ -52,7 +52,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-facing-decorator';
 import Sidebar from './Sidebar.vue';
 import StatusBar from './StatusBar.vue';
 import store from '../store/index';
@@ -67,7 +67,7 @@ import { SearchDatabases } from '@/adabas/admin';
   },
 })
 export default class CommandqueueList extends Vue {
-  @Prop(String) readonly url: string | undefined;
+  @Prop({ type: String, required: false }) readonly url!: string | undefined;
   data() {
     return {
       fields: [
@@ -101,8 +101,10 @@ export default class CommandqueueList extends Vue {
       });
      });
   }
-  beforeDestroy() {
-    clearInterval(this.$data.timer);
+  beforeDestroy(): void {
+    if (this.timer) {
+      clearInterval(this.timer);
+    }
   }
 }
 </script>

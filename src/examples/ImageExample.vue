@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.-->
 
+
 <template>
   <div class="imageexample p-2">
     <MyHeader></MyHeader>
@@ -38,9 +39,9 @@
           the Adabas RESTful server installation.
         </p>
         <Url :url="xURL"/>
-        <b-modal centered size="xl" id="modal-definition" title="Image" ok-only
-          ><b-img fluid :src="currentPic"
-        /></b-modal>
+        <b-modal centered size="xl" id="modal-definition" title="Image" ok-only>
+          <b-img fluid :src="currentPic" />
+        </b-modal>
         <b-pagination
           v-model="currentPage"
           :total-rows="image.length"
@@ -62,18 +63,20 @@
           <template v-slot:cell(image)="row">
             <b-button
               v-b-modal.modal-definition
-              v-on:click="loadImage(row.item.ISN)"
+              @click="loadImage(row.item.ISN)"
             >
               <b-img-lazy :src="loadThumbnail(row.item.ISN)" alt="Thumbnail" />
             </b-button>
-          </template> </b-table></b-card-body
-    ></b-card>
+          </template>
+        </b-table>
+      </b-card-body>
+    </b-card>
     <StatusBar />
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-facing-decorator';
 import { authHeader } from '../user/auth-header';
 import { config } from '../store/config';
 import { userService } from '../user/service';
@@ -92,50 +95,48 @@ import axios, { ResponseType } from 'axios';
 })
 export default class ImageExample extends Vue {
   @Prop() private msg!: string;
-  data() {
-    return {
-      perPage: 10,
-      currentPage: 1,
-      currentPic: '',
-      fields: [
-        { label: 'ISN', key: 'ISN' },
-        { label: 'Filename', key: 'Location.Filename' },
-        { label: 'Size', key: 'Type.Size' },
-        { label: 'Camera Model', key: 'EXIFinformation.Model' },
-        { label: 'Date', key: 'EXIFinformation.DateOriginal' },
-        'image',
-        { label: 'DateEXIF', key: 'EXIFinformation.DateEXIF' },
-        { label: 'Orientation', key: 'EXIFinformation.Orientation' },
-        { label: 'Height', key: 'EXIFinformation.Height' },
-        { label: 'Width', key: 'EXIFinformation.Width' },
-        { label: 'ExposureTime', key: 'EXIFinformation.ExposureTime' },
-      ],
-      image: [],
-      xURL:
-        '/rest/map/LOBEXAMPLE?fields=Filename,Size,@Thumbnail,@Picture,Model,DateOriginal,EXIFinformation&limit=0',
-    };
-  }
+  
+  // Declare all the necessary data properties
+  perPage: number = 10;
+  currentPage: number = 1;
+  currentPic: string = '';
+  fields: Array<{ label: string; key: string }> = [
+    { label: 'ISN', key: 'ISN' },
+    { label: 'Filename', key: 'Location.Filename' },
+    { label: 'Size', key: 'Type.Size' },
+    { label: 'Camera Model', key: 'EXIFinformation.Model' },
+    { label: 'Date', key: 'EXIFinformation.DateOriginal' },
+    { label: 'DateEXIF', key: 'EXIFinformation.DateEXIF' },
+    { label: 'Orientation', key: 'EXIFinformation.Orientation' },
+    { label: 'Height', key: 'EXIFinformation.Height' },
+    { label: 'Width', key: 'EXIFinformation.Width' },
+    { label: 'ExposureTime', key: 'EXIFinformation.ExposureTime' },
+  ];
+  image: any[] = [];
+  xURL: string =
+    '/rest/map/LOBEXAMPLE?fields=Filename,Size,@Thumbnail,@Picture,Model,DateOriginal,EXIFinformation&limit=0';
+
   created() {
     const getConfig = {
       headers: authHeader('application/json'),
       useCredentails: true,
     };
     store.commit('SET_URL', {
-      url: config.Url() + this.$data.xURL,
+      url: config.Url() + this.xURL,
       method: 'get',
     });
     return axios
-      .get(config.Url() + this.$data.xURL, getConfig)
+      .get(config.Url() + this.xURL, getConfig)
       .then((response: any) => {
         store.commit('SET_STATUS', 'OK');
         store.commit('SET_RESPONSE', JSON.stringify(response));
-        this.$data.image = response.data.Records;
+        this.image = response.data.Records;
       })
       .catch((error: any) => {
         console.log('ERROR: ' + JSON.stringify(error));
         if (error.response) {
           store.commit('SET_STATUS', JSON.stringify(error.response));
-          if (error.response.status == 401 || error.response.status == 403) {
+          if (error.response.status === 401 || error.response.status === 403) {
             userService.logout();
             location.reload();
           }
@@ -145,14 +146,14 @@ export default class ImageExample extends Vue {
         throw error;
       });
   }
+
   loadThumbnail(isn: any): string {
-    let imageFilter = this.$data.image.filter((i: any) => i.ISN == isn);
+    const imageFilter = this.image.filter((i: any) => i.ISN === isn);
     if (imageFilter.length === 0) {
       return '';
     }
-    let image = imageFilter[0];
+    const image = imageFilter[0];
     if (!image.pic) {
-      // console.log("Load image " + index);
       const getConfig = {
         headers: authHeader(''),
         useCredentails: true,
@@ -164,13 +165,12 @@ export default class ImageExample extends Vue {
           const bytes = new Uint8Array(response.data);
           const binary = bytes.reduce(
             (data, b) => (data += String.fromCharCode(b)),
-            '',
+            ''
           );
           const res = 'data:image/jpeg;base64,' + btoa(binary);
           image['pic'] = res;
-          this.$data.currentPic = res;
+          this.currentPic = res;
           (this.$refs.table as any).refresh();
-          return res;
         })
         .catch((error: any) => {
           console.log('ERROR: ' + JSON.stringify(error));
@@ -179,12 +179,13 @@ export default class ImageExample extends Vue {
     }
     return image['pic'];
   }
+
   loadImage(isn: any) {
-    let imageFilter = this.$data.image.filter((i: any) => i.ISN == isn);
+    const imageFilter = this.image.filter((i: any) => i.ISN === isn);
     if (imageFilter.length === 0) {
       return '';
     }
-    let image = imageFilter[0];
+    const image = imageFilter[0];
     const getConfig = {
       headers: authHeader(''),
       useCredentails: true,
@@ -196,10 +197,10 @@ export default class ImageExample extends Vue {
         const bytes = new Uint8Array(response.data);
         const binary = bytes.reduce(
           (data, b) => (data += String.fromCharCode(b)),
-          '',
+          ''
         );
         const res = 'data:image/jpeg;base64,' + btoa(binary);
-        this.$data.currentPic = res;
+        this.currentPic = res;
         return res;
       })
       .catch((error: any) => {
