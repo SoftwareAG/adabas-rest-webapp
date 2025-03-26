@@ -26,7 +26,8 @@ export function Url() {
          return 'http://localhost:8190'; // GO
       // return 'http://localhost:8091'; // Java
    }
-   let ref = window.location.origin+window.location.pathname;
+   // let ref = window.location.origin+window.location.pathname;
+   let ref = window.location.origin;
    console.log('Ref before:' + ref + ':');
    ref =  ref.replace(/\/+$/g,'')
    console.log('Ref after:' + ref + ':');

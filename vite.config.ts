@@ -13,7 +13,7 @@ export default defineConfig({
   plugins: [vue()],
   base: './',
   build: {
-    outDir: "dist",
+    outDir: "/../../../../../SoftwareAG/AdabasRestAdministration/static",
     sourcemap: true,
   emptyOutDir: true,
   },

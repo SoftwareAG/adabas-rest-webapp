@@ -162,17 +162,27 @@ export default {
         return;
       }
       loading.value = true;
-      // userService.login(username.value, password.value).then(
-      userService.login("admin", "manage").then(
+      userService.login(username.value, password.value).then(
+      // userService.login("admin", "manage").then(
         (user) => {
+          console.log('Login OK');
+          setTimeout(() => {
+            console.log("5 seconds later...");
+          }, 5000);
+          console.log('Login OK after sleep');
           router.push(returnUrl.value);
           if (returnUrl.value === '/') {
             location.reload();
           }
         },
         (error) => {
+          console.log('Login error');
+          setTimeout(() => {
+            console.log("5 seconds later...");
+          }, 5000);
           error.value = error;
           console.log('Login error:' + JSON.stringify(error));
+          console.log('Login error after sleep');
           loading.value = false;
         }
       );
