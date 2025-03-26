@@ -16,3 +16,8 @@
 *   limitations under the License.
 *
 */
+declare module 'vuex' {
+    import { Store } from 'vuex';
+    export * from 'vuex';
+    export default Store;
+  }

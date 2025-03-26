@@ -35,7 +35,6 @@
   ],
   "exclude": [
     "node_modules"
-  ]
-  // ,
-  // "types": ["vuex"]
+  ],
+  "types": ["vuex"]
 }

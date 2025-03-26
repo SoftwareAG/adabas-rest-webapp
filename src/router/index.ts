@@ -23,8 +23,8 @@ import Map from '../views/Map.vue'
 import Modify from '../views/Modify.vue'
 import Database from '../views/Database.vue'
 import Metadata from '../views/Metadata.vue'
-import LoginPage from '../login/LoginPage.vue';
-import Databases from '../admin_views/Databases.vue'
+import LoginPage from '@/login/LoginPage.vue';
+import Databases from '@/admin_views/Databases.vue'
 import Containers from '../admin_views/Containers.vue'
 import Browser from '../admin_views/Browser.vue'
 import Files from '../admin_views/Files.vue'

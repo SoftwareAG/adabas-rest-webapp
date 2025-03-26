@@ -48,55 +48,56 @@ export default createStore({
     respData: {json: ""},
   },
   mutations: {
-    SET_DATABASES: (state, dbs) => {
+    SET_DATABASES: (state: any, dbs: any) => {
       dbs.forEach((element: any, index: number) => {
         state.databases[index] = element;
       });
     },
-    SET_ADMIN_DATABASES: (state, dbs) => {
+    SET_ADMIN_DATABASES: (state: any, dbs: any) => {
       state.adminDatabases = dbs;
     },
-    SET_ADMIN_CLUSTER: (state, cls) => {
+    SET_ADMIN_CLUSTER: (state: any, cls: any) => {
       state.cluster = { ...state.cluster, cluster: cls };
     },
-    SET_ADMIN_JOBS: (state, jobs) => {
+    SET_ADMIN_JOBS: (state: any, jobs: any) => {
       jobs.forEach((element: any, index: number) => {
         state.adminJobs[index] = element;
       });
     },
-    SET_MAPS: (state, maps) => {
+    SET_MAPS: (state: any, maps: any) => {
       // console.log("Set maps " + JSON.stringify(maps));
       maps.forEach((element: any, index: number) => {
         state.maps[index] = element;
       });
     },
-    SET_METADATA: (state, metadata) => {
+    SET_METADATA: (state: any, metadata: any) => {
       // console.log("Set metadata " + JSON.stringify(metadata));
       state.metadata.Map = metadata.Map;
     },
-    SET_FIELDS: (state, fields) => {
+    SET_FIELDS: (state: any, fields: any) => {
       // console.log("Set fields " + JSON.stringify(fields));
       state.fields.File = fields;
     },
-    SET_RECORDS: (state, records) => {
+    SET_RECORDS: (state: any, records: any) => {
       state.records = [records];
     },
-    CLEAR_RECORDS: (state, records) => {
+    CLEAR_RECORDS: (state: any, records: any) => {
       state.records = [];
     },
-    SET_URL: (state, url) => {
+    SET_URL: (state: any, url: any) => {
       state.url.query = url;
     },
-    SET_STATUS: (state, status) => {
+    SET_STATUS: (state: any, status: any) => {
       // state.status = status;
       state.status.status = status;
     },
-    SET_RESPONSE: (state, respData) => {
+    SET_RESPONSE: (state: any, respData: any) => {
       state.respData = reactive({ json: respData });
     },
   },
   actions: {
-    INIT_DATABASES: async (context): Promise<any> => {
+    INIT_DATABASES: async (context: any): Promise<any> => {
+      
       const getConfig = {
         headers: authHeader('application/json'),
         useCredentails: true,
@@ -118,7 +119,7 @@ export default createStore({
             return Promise.reject(new Error(error));
           }
           if (response === undefined) {
-            console.log("Response undefined ..." + response.text());
+            // console.log("Response undefined ..." + response.text());
             return;
           }
           if (response.data === undefined) {
@@ -143,7 +144,7 @@ export default createStore({
           return error
         });
     },
-    INIT_MAPS: async (context): Promise<any> => {
+    INIT_MAPS: async (context: any): Promise<any> => {
       const getConfig = {
         headers: authHeader('application/json'),
         useCredentails: true,
@@ -189,28 +190,28 @@ export default createStore({
           return error
         });
     },
-    SYNC_ADMIN_DBS: async (context): Promise<any> => {
+    SYNC_ADMIN_DBS: async (context: any): Promise<any> => {
       return loadDatabases().then((databases) => {
         context.commit('SET_ADMIN_DATABASES', databases);
         context.commit("SET_RESPONSE", JSON.stringify(databases));
         return databases;
       });
     },
-    SYNC_ADMIN_CLUSTER: async (context): Promise<any> => {
+    SYNC_ADMIN_CLUSTER: async (context: any): Promise<any> => {
       return loadCluster().then((cluster) => {
         context.commit('SET_ADMIN_CLUSTER', cluster);
         context.commit("SET_RESPONSE", JSON.stringify(cluster));
         return cluster;
       });
     },
-    SYNC_ADMIN_JOBS: async (context): Promise<any> => {
+    SYNC_ADMIN_JOBS: async (context: any): Promise<any> => {
       return loadJobs().then((jobs) => {
         context.commit('SET_ADMIN_JOBS', jobs);
         context.commit("SET_RESPONSE", JSON.stringify(jobs));
         return jobs;
       });
     },
-    QUERY_DB_FILES: async (context, db): Promise<any> => {
+    QUERY_DB_FILES: async (context: any, db: any): Promise<any> => {
       const getConfig = {
         headers: authHeader('application/json'),
         useCredentails: true,
@@ -237,7 +238,7 @@ export default createStore({
           return error;
         });
     },
-    QUERY_MAP_FIELDS: async (context, mapname): Promise<any> => {
+    QUERY_MAP_FIELDS: async (context: any, mapname: any): Promise<any> => {
       const getConfig = {
         headers: authHeader('application/json'),
         useCredentails: true,
@@ -264,7 +265,7 @@ export default createStore({
           return error;
         });
     },
-    QUERY_FILE_FIELDS: async (context, db): Promise<any> => {
+    QUERY_FILE_FIELDS: async (context: any, db: any): Promise<any> => {
       const getConfig = {
         headers: authHeader('application/json'),
         useCredentails: true,
@@ -288,7 +289,7 @@ export default createStore({
           return error;
         });
     },
-    QUERY_RECORDS: async (context, query): Promise<any> => {
+    QUERY_RECORDS: async (context: any, query: any): Promise<any> => {
       const getConfig = {
         headers: authHeader('application/json'),
         useCredentails: true,
@@ -319,16 +320,17 @@ export default createStore({
     },
   },
   getters: {
-    search: (state) => (dbid: number) => {
-      if (state.adminDatabases.length == 0) {
+    search: (state: { adminDatabases: { dbid: () => number }[] }) => (dbid: number) => {
+      if (state.adminDatabases.length === 0) {
         console.log("No admin databases found");
         return undefined;
-      }
-      const x = state.adminDatabases.filter(s => s.dbid() == dbid);
+      } 
+      const x = state.adminDatabases.filter((s) => s.dbid() === dbid);
+      
       if (x.length > 0) {
         return x[0];
       }
-      console.log("Result fail: "+JSON.stringify(x)+" for "+dbid);
+      console.log("Result fail: " + JSON.stringify(x) + " for " + dbid);
       return undefined;
     }
   },

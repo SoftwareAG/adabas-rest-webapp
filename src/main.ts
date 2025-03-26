@@ -27,7 +27,7 @@ import type { RouteLocationNormalized, NavigationGuardNext } from 'vue-router';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js"; 
 
-const app = createApp(App);
+const app = createApp(App).use(router).use(store);
 app.config.globalProperties.productionTip = false
 export const eventBus = app;
 

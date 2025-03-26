@@ -96,13 +96,21 @@ export default defineComponent({
     const numberMaps = ref(0);
     const mappingConfigExample = ref('<Mapping>\n <Directory url="file:xtsurl.cfg" />\n <Database dbid="111(adatcp://localhost:64111)" file="4" />\n</Mapping>');
 
-    onMounted(() => {
-      store.dispatch("INIT_DATABASES").then((dbs) => {
-        numberDbs.value = dbs.length;
-      });
-      store.dispatch("INIT_MAPS").then((response) => {
-        numberMaps.value = response.data.Maps.length;
-      });
+    onMounted(async () => {
+      try {
+
+        const dbs = await store.dispatch("INIT_DATABASES");
+        if (dbs && Array.isArray(dbs)) {
+          numberDbs.value = dbs.length;
+        }
+
+        const response = await store.dispatch("INIT_MAPS");
+        if (response?.data?.Maps) {
+          numberMaps.value = response.data.Maps.length;
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
     });
 
     return {
