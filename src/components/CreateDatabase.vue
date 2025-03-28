@@ -15,439 +15,352 @@
 
 <template>
   <div class="createdatabase p-2">
-    <b-button v-b-modal.modal-1 variant="primary"
-      >Create Adabas database</b-button
-    >
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-1">
+      Create Adabas database
+    </button>
 
-    <b-modal
-      @ok="handleOk"
-      id="modal-1"
-      size="xl"
-      variant="outline-danger"
-      title="Create Adabas database"
-    >
-      <p class="my-4">Please provide database parameters</p>
-      <b-card bg-variant="light">
-        <b-form-group
-          label-cols-lg="3"
-          label="Adabas database parameters"
-          label-size="lg"
-          label-class="font-weight-bold pt-0"
-          class="mb-0"
-        >
-          <b-form-group
-            label-cols-sm="3"
-            label="Database ID (dbid):"
-            label-align-sm="right"
-            label-for="nested-dbid"
-          >
-            <b-form-input
-              v-model.number="createDatabase.Dbid"
-              id="nested-dbid"
-              type="number"
-            ></b-form-input>
-          </b-form-group>
-          <b-form-group
-            label-cols-sm="3"
-            label="Name:"
-            label-align-sm="right"
-            label-for="nested-name"
-          >
-            <b-form-input
-              v-model="createDatabase.Name"
-              id="nested-name"
-            ></b-form-input>
-          </b-form-group>
-          <b-form-group
-            label-cols-sm="3"
-            label="Create database creation job (need extra start):"
-            label-align-sm="right"
-            class="mb-0"
-          >
-            <b-form-checkbox
-              id="checkbox-job"
-              v-model="useJob"
-              name="checkbox-job"
-              value="true"
-              unchecked-value="false"
-            >
-            </b-form-checkbox>
-          </b-form-group>
-          <b-form-group
-            label-cols-sm="3"
-            label="Checkpoint File:"
-            label-align-sm="right"
-            label-for="nested-checkpoint"
-          >
-            <b-form-input
-              v-model.number="createDatabase.CheckpointFile"
-              id="nested-checkpoint"
-              type="number"
-            ></b-form-input>
-          </b-form-group>
-
-          <b-form-group
-            label-cols-sm="3"
-            label="Security File:"
-            label-align-sm="right"
-            label-for="nested-security"
-          >
-            <b-form-input
-              v-model.number="createDatabase.SecurityFile"
-              id="nested-security"
-              type="number"
-            ></b-form-input>
-          </b-form-group>
-          <b-form-group
-            label-cols-sm="3"
-            label="User File:"
-            label-align-sm="right"
-            label-for="nested-user"
-          >
-            <b-form-input
-              v-model.number="createDatabase.UserFile"
-              id="nested-user"
-              type="number"
-            ></b-form-input>
-          </b-form-group>
-
-          <b-form-group
-            label-cols-sm="3"
-            label="Associator file (ASSO1):"
-            label-align-sm="right"
-            label-for="nested-state"
-          >
-            <b-container fluid class="pl-1">
-              <b-row>
-                <b-col sm="12">
-                  <b-form-input
-                    id="type-x"
-                    v-model="createDatabase.ContainerList[0].Path"
-                    type="text"
-                  ></b-form-input>
-                </b-col>
-              </b-row>
-              <b-row>
-                <b-col sm="3">
-                  <b-form-select
-                    v-model="createDatabase.ContainerList[0].BlockSize"
-                    size="sm"
-                    :options="blockOptions"
-                  ></b-form-select>
-                </b-col>
-                <b-col sm="9">
-                  <b-form-input
-                    v-model="createDatabase.ContainerList[0].ContainerSize"
-                    size="sm"
-                  ></b-form-input>
-                </b-col>
-              </b-row>
-            </b-container>
-          </b-form-group>
-          <b-form-group
-            label-cols-sm="3"
-            label="Associator file (ASSO2):"
-            label-align-sm="right"
-            label-for="nested-state"
-          >
-            <b-container fluid class="pl-1">
-              <b-row>
-                <b-col sm="12">
-                  <b-form-input
-                    id="type-x"
-                    v-model="createDatabase.ContainerList[1].Path"
-                    type="text"
-                  ></b-form-input>
-                </b-col>
-              </b-row>
-              <b-row>
-                <b-col sm="3">
-                  <b-form-select
-                    v-model="createDatabase.ContainerList[1].BlockSize"
-                    size="sm"
-                    :options="blockOptions"
-                  ></b-form-select>
-                </b-col>
-                <b-col sm="9">
-                  <b-form-input
-                    v-model="createDatabase.ContainerList[1].ContainerSize"
-                    size="sm"
-                  ></b-form-input>
-                </b-col>
-              </b-row>
-            </b-container>
-          </b-form-group>
-          <b-form-group
-            label-cols-sm="3"
-            label="Data file (DATA1):"
-            label-align-sm="right"
-            label-for="nested-state"
-          >
-            <b-container fluid class="pl-1">
-              <b-row>
-                <b-col sm="12">
-                  <b-form-input
-                    id="type-x"
-                    v-model="createDatabase.ContainerList[2].Path"
-                    type="text"
-                  ></b-form-input>
-                </b-col>
-              </b-row>
-              <b-row>
-                <b-col sm="3">
-                  <b-form-select
-                    v-model="createDatabase.ContainerList[2].BlockSize"
-                    size="sm"
-                    :options="blockOptions"
-                  ></b-form-select>
-                </b-col>
-                <b-col sm="9">
-                  <b-form-input
-                    v-model="createDatabase.ContainerList[2].ContainerSize"
-                    size="sm"
-                  ></b-form-input>
-                </b-col>
-              </b-row>
-            </b-container>
-          </b-form-group>
-          <b-form-group
-            label-cols-sm="3"
-            label="Work file (WORK1):"
-            label-align-sm="right"
-            label-for="nested-state"
-          >
-            <b-container fluid class="pl-1">
-              <b-row>
-                <b-col sm="12">
-                  <b-form-input
-                    id="type-x"
-                    v-model="createDatabase.ContainerList[3].Path"
-                    type="text"
-                  ></b-form-input>
-                </b-col>
-              </b-row>
-              <b-row>
-                <b-col sm="3">
-                  <b-form-select
-                    v-model="createDatabase.ContainerList[3].BlockSize"
-                    size="sm"
-                    :options="blockOptions"
-                  ></b-form-select>
-                </b-col>
-                <b-col sm="9">
-                  <b-form-input
-                    v-model="createDatabase.ContainerList[3].ContainerSize"
-                    size="sm"
-                  ></b-form-input>
-                </b-col>
-              </b-row>
-            </b-container>
-          </b-form-group>
-
-          <b-form-group
-            label-cols-sm="3"
-            label="Load examples:"
-            label-align-sm="right"
-            class="mb-0"
-          >
-            <b-form-checkbox
-              id="checkbox-loadDemo"
-              v-model="createDatabase.LoadDemo"
-              name="checkbox-loadDemo"
-              value="true"
-              unchecked-value="false"
-            >
-            </b-form-checkbox>
-          </b-form-group>
-        </b-form-group>
-      </b-card>
-    </b-modal>
+    <div class="modal fade" id="modal-1" tabindex="-1" aria-labelledby="modal-1-label" aria-hidden="true">
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modal-1-label">Create Adabas database</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p class="my-4">Please provide database parameters</p>
+            <div class="card bg-light">
+              <div class="card-body">
+                <div class="mb-3 row">
+                  <label for="nested-dbid" class="col-lg-3 col-form-label col-form-label-lg font-weight-bold pt-0">Adabas database parameters</label>
+                  <div class="col-sm-9">
+                    <div class="mb-3 row">
+                      <label for="nested-dbid" class="col-sm-3 col-form-label text-sm-end">Database ID (dbid):</label>
+                      <div class="col-sm-9">
+                        <input type="number" class="form-control" id="nested-dbid" v-model.number="createDatabase.Dbid">
+                      </div>
+                    </div>
+                    <div class="mb-3 row">
+                      <label for="nested-name" class="col-sm-3 col-form-label text-sm-end">Name:</label>
+                      <div class="col-sm-9">
+                        <input type="text" class="form-control" id="nested-name" v-model="createDatabase.Name">
+                      </div>
+                    </div>
+                    <div class="mb-3 row">
+                      <label class="col-sm-3 col-form-label text-sm-end">Create database creation job (need extra start):</label>
+                      <div class="col-sm-9">
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" id="checkbox-job" v-model="useJob">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="mb-3 row">
+                      <label for="nested-checkpoint" class="col-sm-3 col-form-label text-sm-end">Checkpoint File:</label>
+                      <div class="col-sm-9">
+                        <input type="number" class="form-control" id="nested-checkpoint" v-model.number="createDatabase.CheckpointFile">
+                      </div>
+                    </div>
+                    <div class="mb-3 row">
+                      <label for="nested-security" class="col-sm-3 col-form-label text-sm-end">Security File:</label>
+                      <div class="col-sm-9">
+                        <input type="number" class="form-control" id="nested-security" v-model.number="createDatabase.SecurityFile">
+                      </div>
+                    </div>
+                    <div class="mb-3 row">
+                      <label for="nested-user" class="col-sm-3 col-form-label text-sm-end">User File:</label>
+                      <div class="col-sm-9">
+                        <input type="number" class="form-control" id="nested-user" v-model.number="createDatabase.UserFile">
+                      </div>
+                    </div>
+                    <div class="mb-3 row">
+                      <label for="nested-state" class="col-sm-3 col-form-label text-sm-end">Associator file (ASSO1):</label>
+                      <div class="col-sm-9">
+                        <input type="text" class="form-control" id="type-x" v-model="createDatabase.ContainerList[0].Path">
+                        <div class="row mt-2">
+                          <div class="col-sm-3">
+                            <select class="form-select form-select-sm" v-model="createDatabase.ContainerList[0].BlockSize">
+                              <option v-for="option in blockOptions" :key="option" :value="option">{{ option }}</option>
+                            </select>
+                          </div>
+                          <div class="col-sm-9">
+                            <input type="text" class="form-control form-control-sm" v-model="createDatabase.ContainerList[0].ContainerSize">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="mb-3 row">
+                      <label for="nested-state" class="col-sm-3 col-form-label text-sm-end">Associator file (ASSO2):</label>
+                      <div class="col-sm-9">
+                        <input type="text" class="form-control" id="type-x" v-model="createDatabase.ContainerList[1].Path">
+                        <div class="row mt-2">
+                          <div class="col-sm-3">
+                            <select class="form-select form-select-sm" v-model="createDatabase.ContainerList[1].BlockSize">
+                              <option v-for="option in blockOptions" :key="option" :value="option">{{ option }}</option>
+                            </select>
+                          </div>
+                          <div class="col-sm-9">
+                            <input type="text" class="form-control form-control-sm" v-model="createDatabase.ContainerList[1].ContainerSize">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="mb-3 row">
+                      <label for="nested-state" class="col-sm-3 col-form-label text-sm-end">Data file (DATA1):</label>
+                      <div class="col-sm-9">
+                        <input type="text" class="form-control" id="type-x" v-model="createDatabase.ContainerList[2].Path">
+                        <div class="row mt-2">
+                          <div class="col-sm-3">
+                            <select class="form-select form-select-sm" v-model="createDatabase.ContainerList[2].BlockSize">
+                              <option v-for="option in blockOptions" :key="option" :value="option">{{ option }}</option>
+                            </select>
+                          </div>
+                          <div class="col-sm-9">
+                            <input type="text" class="form-control form-control-sm" v-model="createDatabase.ContainerList[2].ContainerSize">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="mb-3 row">
+                      <label for="nested-state" class="col-sm-3 col-form-label text-sm-end">Work file (WORK1):</label>
+                      <div class="col-sm-9">
+                        <input type="text" class="form-control" id="type-x" v-model="createDatabase.ContainerList[3].Path">
+                        <div class="row mt-2">
+                          <div class="col-sm-3">
+                            <select class="form-select form-select-sm" v-model="createDatabase.ContainerList[3].BlockSize">
+                              <option v-for="option in blockOptions" :key="option" :value="option">{{ option }}</option>
+                            </select>
+                          </div>
+                          <div class="col-sm-9">
+                            <input type="text" class="form-control form-control-sm" v-model="createDatabase.ContainerList[3].ContainerSize">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="mb-3 row">
+                      <label class="col-sm-3 col-form-label text-sm-end">Load examples:</label>
+                      <div class="col-sm-9">
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" id="checkbox-loadDemo" v-model="createDatabase.LoadDemo">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" @click="handleOk">Save changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { defineComponent, ref, onMounted } from "vue";
 import axios from "axios";
 import { config } from "../store/config";
 import { authHeader } from "../user/auth-header";
 import { insertJob } from "../adabas/jobs";
 import { userService } from "../user/service";
 
-@Component
-export default class CreateDatabase extends Vue {
-  @Prop() private msg!: string;
-  data() {
-    return {
-      useJob: false,
-      createDatabase: {
-        CheckpointFile: 1,
-        SecurityFile: 2,
-        UserFile: 3,
-        ContainerList: [
-          {
-            BlockSize: "8K",
-            ContainerSize: "20M",
-            Path: "${ADADATADIR}/db${DBID}/ASSO1.${DBID}",
-          },
-          {
-            BlockSize: "32K",
-            ContainerSize: "20M",
-            Path: "${ADADATADIR}/db${DBID}/ASSO2.${DBID}",
-          },
-          {
-            BlockSize: "32K",
-            ContainerSize: "20M",
-            Path: "${ADADATADIR}/db${DBID}/DATA1.${DBID}",
-          },
-          {
-            BlockSize: "16K",
-            ContainerSize: "20M",
-            Path: "${ADADATADIR}/db${DBID}/WORK.${DBID}",
-          },
-        ],
-        Dbid: 75 as number,
-        LoadDemo: true,
-        Name: "DEMODB",
-      },
-      createJob: {
-        Job: {
-          User: "",
-          Name: "Create-Job",
-          Description: "",
-          Utility: "ADAFRM",
-          Scripts: "(null)",
-          Parameters: [
-            { Parameter: "dbid=" },
-            { Parameter: "name=" },
-            { Parameter: "assosize=(300M,300M)" },
-            { Parameter: "assoblock=(4k,16k)" },
-            { Parameter: "datasize=800M" },
-            { Parameter: "datablock=32k" },
-            { Parameter: "worksize=500M" },
-          ],
-          Environments: [],
-          CronScheduler: "(null)",
+export default defineComponent({
+  props: {
+    msg: {
+      type: String,
+      required: true,
+    },
+  },
+  setup() {
+    const useJob = ref(false);
+    const createDatabase = ref({
+      CheckpointFile: 1,
+      SecurityFile: 2,
+      UserFile: 3,
+      ContainerList: [
+        {
+          BlockSize: "8K",
+          ContainerSize: "20M",
+          Path: "${ADADATADIR}/db${DBID}/ASSO1.${DBID}",
         },
+        {
+          BlockSize: "32K",
+          ContainerSize: "20M",
+          Path: "${ADADATADIR}/db${DBID}/ASSO2.${DBID}",
+        },
+        {
+          BlockSize: "32K",
+          ContainerSize: "20M",
+          Path: "${ADADATADIR}/db${DBID}/DATA1.${DBID}",
+        },
+        {
+          BlockSize: "16K",
+          ContainerSize: "20M",
+          Path: "${ADADATADIR}/db${DBID}/WORK.${DBID}",
+        },
+      ],
+      Dbid: 75 as number,
+      LoadDemo: true,
+      Name: "DEMODB",
+    });
+    const createJob = ref({
+      Job: {
+        User: "",
+        Name: "Create-Job",
+        Description: "",
+        Utility: "ADAFRM",
+        Scripts: "(null)",
+        Parameters: [
+          { Parameter: "dbid=" },
+          { Parameter: "name=" },
+          { Parameter: "assosize=(300M,300M)" },
+          { Parameter: "assoblock=(4k,16k)" },
+          { Parameter: "datasize=800M" },
+          { Parameter: "datablock=32k" },
+          { Parameter: "worksize=500M" },
+        ],
+        Environments: [],
+        CronScheduler: "(null)",
       },
-      blockOptions: ["2K", "4K", "8K", "16K", "32K"],
-    };
-  }
-  created() {
-    this.$data.createJob.Job.User = userService.getUsername();
-    this.$data.createJob.Job.Name = "CreateJob-" + new Date().getTime();
-  }
-  handleOk(bvModalEvt: any) {
-    if (this.$data.useJob) {
-      this.createDatabaseJob();
-    } else {
-      this.createDatabaseAPI();
-    }
-  }
-  createDatabaseAPI(): void {
-    const getConfig = {
-      headers: authHeader("application/json"),
-    };
-    axios
-      .post(
-        config.Url() + "/adabas/database",
-        this.$data.createDatabase,
-        getConfig
-      )
-      .then(function(response) {
-        console.log(response);
-      })
-      .catch(function(error) {
-        console.log(
-          error.response.statusText + ":" + JSON.stringify(error.response)
-        );
-      });
-  }
-  changeUseJob(): void {
-    console.log("Change use job "+this.$data.useJob);
-  }
-  createDatabaseJob(): void {
-    this.$data.createJob.Job.Parameters = [];
-    this.$data.createJob.Job.Parameters.push({
-      Parameter: "dbid=" + this.$data.createDatabase.Dbid,
     });
-    this.$data.createJob.Job.Parameters.push({
-      Parameter: "name=" + this.$data.createDatabase.Name,
-    });
-    this.$data.createJob.Job.Parameters.push({
-      Parameter:
-        "sysfiles=(" +
-        this.$data.createDatabase.CheckpointFile +
-        "," +
-        this.$data.createDatabase.SecurityFile +
-        "," +
-        this.$data.createDatabase.UserFile +
-        ")",
-    });
-    this.$data.createJob.Job.Parameters.push({
-      Parameter:
-        "assosize=(" +
-        this.$data.createDatabase.ContainerList[0].ContainerSize +
-        "," +
-        this.$data.createDatabase.ContainerList[1].ContainerSize +
-        ")",
-    });
-    this.$data.createJob.Job.Parameters.push({
-      Parameter:
-        "assoblock=(" +
-        this.$data.createDatabase.ContainerList[0].BlockSize +
-        "," +
-        this.$data.createDatabase.ContainerList[1].BlockSize +
-        ")",
-    });
-    this.$data.createJob.Job.Parameters.push({
-      Parameter:
-        "datasize=" + this.$data.createDatabase.ContainerList[2].ContainerSize,
-    });
-    this.$data.createJob.Job.Parameters.push({
-      Parameter:
-        "datablock=" + this.$data.createDatabase.ContainerList[2].BlockSize,
-    });
-    this.$data.createJob.Job.Parameters.push({
-      Parameter:
-        "worksize=" + this.$data.createDatabase.ContainerList[3].ContainerSize,
-    });
-    this.$data.createJob.Job.Parameters.push({
-      Parameter:
-        "workblock=" + this.$data.createDatabase.ContainerList[3].BlockSize,
-    });
-    this.$data.createJob.Job.Environments = [];
-    //  this.$data.createJob.Job.Environments.push({
-    //   Parameter: "ASSO1=" + this.replaceValue(this.$data.createDatabase.ContainerList[0].Path),
-    // });
-    // this.$data.createJob.Job.Environments.push({
-    //   Parameter: "ASSO2=" + this.replaceValue(this.$data.createDatabase.ContainerList[1].Path),
-    // });
-    // this.$data.createJob.Job.Environments.push({
-    //   Parameter: "DATA1=" + this.replaceValue(this.$data.createDatabase.ContainerList[2].Path),
-    // });
-    // this.$data.createJob.Job.Environments.push({
-    //   Parameter: "WORK1=" + this.replaceValue(this.$data.createDatabase.ContainerList[3].Path),
-    // });
-    insertJob(this.$data.createJob);
-  }
-  replaceValue(str: string): string {
-    const regex = /\$\{([^$]*)\}/gm;
-    let m;
-    let newstr = str;
-    while ((m = regex.exec(str)) !== null) {
-      // This is necessary to avoid infinite loops with zero-width matches
-      if (m.index === regex.lastIndex) {
-        regex.lastIndex++;
-      }
+    const blockOptions = ref(["2K", "4K", "8K", "16K", "32K"]);
 
-      if (m[1] === "DBID") {
-        let d = String(this.$data.createDatabase.Dbid).padStart(3, "0");
-        newstr = newstr.replace(m[0], d);
+    onMounted(() => {
+      createJob.value.Job.User = userService.getUsername();
+      createJob.value.Job.Name = "CreateJob-" + new Date().getTime();
+    });
+
+    const handleOk = (bvModalEvt: any) => {
+      if (useJob.value) {
+        createDatabaseJob();
+      } else {
+        createDatabaseAPI();
       }
-    }
-    return newstr;
-  }
-}
+    };
+
+    const createDatabaseAPI = () => {
+      const getConfig = {
+        headers: authHeader("application/json"),
+      };
+      axios
+        .post(
+          config.Url() + "/adabas/database",
+          createDatabase.value,
+          getConfig
+        )
+        .then(function(response) {
+          console.log(response);
+        })
+        .catch(function(error) {
+          console.log(
+            error.response.statusText + ":" + JSON.stringify(error.response)
+          );
+        });
+    };
+
+    const changeUseJob = () => {
+      console.log("Change use job " + useJob.value);
+    };
+
+    const createDatabaseJob = () => {
+      createJob.value.Job.Parameters = [];
+      createJob.value.Job.Parameters.push({
+        Parameter: "dbid=" + createDatabase.value.Dbid,
+      });
+      createJob.value.Job.Parameters.push({
+        Parameter: "name=" + createDatabase.value.Name,
+      });
+      createJob.value.Job.Parameters.push({
+        Parameter:
+          "sysfiles=(" +
+          createDatabase.value.CheckpointFile +
+          "," +
+          createDatabase.value.SecurityFile +
+          "," +
+          createDatabase.value.UserFile +
+          ")",
+      });
+      createJob.value.Job.Parameters.push({
+        Parameter:
+          "assosize=(" +
+          createDatabase.value.ContainerList[0].ContainerSize +
+          "," +
+          createDatabase.value.ContainerList[1].ContainerSize +
+          ")",
+      });
+      createJob.value.Job.Parameters.push({
+        Parameter:
+          "assoblock=(" +
+          createDatabase.value.ContainerList[0].BlockSize +
+          "," +
+          createDatabase.value.ContainerList[1].BlockSize +
+          ")",
+      });
+      createJob.value.Job.Parameters.push({
+        Parameter:
+          "datasize=" + createDatabase.value.ContainerList[2].ContainerSize,
+      });
+      createJob.value.Job.Parameters.push({
+        Parameter:
+          "datablock=" + createDatabase.value.ContainerList[2].BlockSize,
+      });
+      createJob.value.Job.Parameters.push({
+        Parameter:
+          "worksize=" + createDatabase.value.ContainerList[3].ContainerSize,
+      });
+      createJob.value.Job.Parameters.push({
+        Parameter:
+          "workblock=" + createDatabase.value.ContainerList[3].BlockSize,
+      });
+      createJob.value.Job.Environments = [];
+      //  createJob.value.Job.Environments.push({
+      //   Parameter: "ASSO1=" + replaceValue(createDatabase.value.ContainerList[0].Path),
+      // });
+      // createJob.value.Job.Environments.push({
+      //   Parameter: "ASSO2=" + replaceValue(createDatabase.value.ContainerList[1].Path),
+      // });
+      // createJob.value.Job.Environments.push({
+      //   Parameter: "DATA1=" + replaceValue(createDatabase.value.ContainerList[2].Path),
+      // });
+      // createJob.value.Job.Environments.push({
+      //   Parameter: "WORK1=" + replaceValue(createDatabase.value.ContainerList[3].Path),
+      // });
+      insertJob(createJob.value);
+    };
+
+    const replaceValue = (str: string): string => {
+      const regex = /\$\{([^$]*)\}/gm;
+      let m;
+      let newstr = str;
+      while ((m = regex.exec(str)) !== null) {
+        // This is necessary to avoid infinite loops with zero-width matches
+        if (m.index === regex.lastIndex) {
+          regex.lastIndex++;
+        }
+
+        if (m[1] === "DBID") {
+          let d = String(createDatabase.value.Dbid).padStart(3, "0");
+          newstr = newstr.replace(m[0], d);
+        }
+      }
+      return newstr;
+    };
+
+    return {
+      useJob,
+      createDatabase,
+      createJob,
+      blockOptions,
+      handleOk,
+      createDatabaseAPI,
+      changeUseJob,
+      createDatabaseJob,
+      replaceValue,
+    };
+  },
+});
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

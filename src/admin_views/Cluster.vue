@@ -21,15 +21,15 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { defineComponent } from 'vue';
 import MyHeader from '@/components/Header.vue';
 import ClusterList from '@/components/ClusterList.vue';
 
-@Component({
+export default defineComponent({
+  name: 'Cluster',
   components: {
     MyHeader,
     ClusterList,
   },
-})
-export default class Cluster extends Vue {}
+});
 </script>

@@ -11,7 +11,7 @@ import {
   ref,
   computed,
   onMounted,
-} from "@vue/composition-api";
+} from "vue";
 import { BarChart, useBarChart } from "vue-chart-3";
 import store from "../store/index";
 import { eventBus } from "../main";

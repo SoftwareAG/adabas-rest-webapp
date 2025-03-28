@@ -16,12 +16,11 @@
 <template>
   <div class="descriptorexample">
     <MyHeader></MyHeader>
-    <b-card
-      :header="title"
-      border-variant="secondary"
-      header-border-variant="secondary"
-    >
-      <b-card-body>
+    <div class="card border-secondary">
+      <div class="card-header border-secondary">
+        {{ title }}
+      </div>
+      <div class="card-body">
         <p>
           This application provides access to Adabas data using the Adabas
           RESTful administration and the Adabas Map technology defined and being
@@ -31,32 +30,33 @@
           {{ infoText }}
         </p>
         <Url :url="xURL"/>
-        <b-pagination
-          v-model="currentPage"
-          :total-rows="records.length"
-          :per-page="perPage"
-          aria-controls="my-table"
-        ></b-pagination>
-        <b-table
-          ref="table"
-          class="w-100 p-3"
-          striped
-          bordered
-          hover
-          small
-          :per-page="perPage"
-          :current-page="currentPage"
-          :items="records"
-          :fields="fields"
-        >
-        </b-table></b-card-body
-    ></b-card>
+        <nav aria-label="Page navigation">
+          <ul class="pagination">
+            <li class="page-item" v-for="page in totalPages" :key="page">
+              <a class="page-link" href="#" @click.prevent="currentPage = page">{{ page }}</a>
+            </li>
+          </ul>
+        </nav>
+        <table class="table table-striped table-bordered table-hover table-sm">
+          <thead>
+            <tr>
+              <th v-for="field in fields" :key="field">{{ field }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="record in paginatedRecords" :key="record.id">
+              <td v-for="field in fields" :key="field">{{ record[field] }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
     <StatusBar />
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { defineComponent, ref, onMounted, computed } from 'vue';
 import { authHeader } from '../user/auth-header';
 import { config } from '../store/config';
 import { userService } from '../user/service';
@@ -66,68 +66,86 @@ import StatusBar from '@/components/StatusBar.vue';
 import Url from '@/components/Url.vue';
 import axios from 'axios';
 
-@Component({
+export default defineComponent({
+  name: 'GenericExample',
   components: {
     MyHeader,
     Url,
-    StatusBar,
+   StatusBar,
   },
-})
-export default class GenericExample extends Vue {
-  @Prop() private URL!: string;
-  @Prop() private text!: string;
-  @Prop() private title!: string;
-  data() {
-    return {
-      perPage: 10,
-      currentPage: 1,
-      xURL: this.URL,
-      infoText: this.text,
-      fields: [] as any[],
-      records: [],
-    };
-  }
-  created(): void {
-    const getConfig = {
-      headers: authHeader('application/json'),
-      useCredentails: true,
-    };
-    store.commit('SET_URL', {
-      url: config.Url() + this.$data.xURL,
-      method: 'get',
-    });
-    axios
-      .get(config.Url() + this.$data.xURL, getConfig)
-      .then((response: any) => {
-        store.commit('SET_STATUS', 'OK');
-        this.$data.records = response.data.Records;
-        this.adaptFields();
-      })
-      .catch((error: any) => {
-        console.log('ERROR: ' + JSON.stringify(error));
-        if (error.response) {
-          store.commit('SET_STATUS', JSON.stringify(error.response));
-          if (error.response.status == 401 || error.response.status == 403) {
-            userService.logout();
-            location.reload();
-          }
-        } else {
-          store.commit('SET_STATUS', JSON.stringify(error));
-        }
-        throw error;
+  props: {
+    URL: String,
+    text: String,
+    title: String,
+  },
+  setup(props) {
+    const perPage = ref(10);
+    const currentPage = ref(1);
+    const xURL = ref(props.URL);
+    const infoText = ref(props.text);
+    const fields = ref([]);
+    const records = ref([]);
+
+    // const totalPages = computed(() => Math.ceil(records.value.length / perPage.value));
+    // const paginatedRecords = computed(() => {
+    //   const start = (currentPage.value - 1) * perPage.value;
+    //   const end = start + perPage.value;
+    //   return records.value.slice(start, end);
+    // });
+
+    onMounted(() => {
+      const getConfig = {
+        headers: authHeader('application/json'),
+        useCredentails: true,
+      };
+      store.commit('SET_URL', {
+        url: config.Url() + xURL.value,
+        method: 'get',
       });
-  }
-  adaptFields(): void {
-    const fs = [];
-    /* Adapt and parse received data */
-    if (this.$data.records && this.$data.records.length > 0) {
-      for (const x in this.$data.records[0]) {
-        fs.push(x);
+      axios
+        .get(config.Url() + xURL.value, getConfig)
+        .then((response: any) => {
+          store.commit('SET_STATUS', 'OK');
+          records.value = response.data.Records;
+          adaptFields();
+        })
+        .catch((error: any) => {
+          console.log('ERROR: ' + JSON.stringify(error));
+          if (error.response) {
+            store.commit('SET_STATUS', JSON.stringify(error.response));
+            if (error.response.status == 401 || error.response.status == 403) {
+              userService.logout();
+              location.reload();
+            }
+          } else {
+            store.commit('SET_STATUS', JSON.stringify(error));
+          }
+          throw error;
+        });
+    });
+
+    const adaptFields = () => {
+      const fs = [];
+      if (records.value && records.value.length > 0) {
+        for (const x in records.value[0]) {
+          fs.push(x);
+        }
       }
-    }
-    this.$data.fields = fs;
-  }
-}
+      fields.value = fs;
+    };
+
+    return {
+      perPage,
+      currentPage,
+      xURL,
+      infoText,
+      fields,
+      records,
+      // totalPages,
+      // paginatedRecords,
+    };
+  },
+});
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

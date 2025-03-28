@@ -21,17 +21,22 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { defineComponent } from 'vue';
 import MyHeader from '@/components/Header.vue';
 import ActivityDisplay from '@/components/ActivityDisplay.vue';
 
-@Component({
+export default defineComponent({
   components: {
     MyHeader,
     ActivityDisplay,
   },
-})
-export default class Activity extends Vue {
-      @Prop(String) readonly url: string | undefined;
-}
+  props: {
+    url: {
+      type: String,
+      required: false,
+    },
+  },
+  setup(props) {
+  }
+});
 </script>

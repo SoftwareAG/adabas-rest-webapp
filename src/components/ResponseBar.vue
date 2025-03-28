@@ -15,41 +15,43 @@
 
 <template>
   <div class="responsebar">
-    <b-card
-      no-body
-      class="mb-1"
-      border-variant="secondary"
-      header-border-variant="secondary"
-    >
-      <b-card-header header-tag="header" class="p-1" role="tab">
-        <b-button block v-b-toggle.accordion-2 variant="outline-primary" >JSON response</b-button>
-      </b-card-header>
-      <b-collapse id="accordion-2" accordion="my-accordion" role="tabpanel">
-        <b-card-body class="p-1">
-          <b-card-text>{{ jsonString.json }}</b-card-text>
-        </b-card-body>
-      </b-collapse>
-    </b-card>
+    <div class="card mb-1 border-secondary">
+      <div class="card-header p-1" role="tab">
+        <button class="btn btn-outline-primary w-100" data-bs-toggle="collapse" data-bs-target="#accordion-2">JSON response</button>
+      </div>
+      <div id="accordion-2" class="collapse" data-bs-parent="#my-accordion" role="tabpanel">
+        <div class="card-body p-1">
+          <p class="card-text">{{ jsonString.json }}</p>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { defineComponent, ref } from 'vue';
 import store from "../store/index";
 
-@Component
-export default class ResponseBar extends Vue {
-  @Prop(String) readonly url: string | undefined;
-  data() {
-    return {
-      jsonString: store.state.respData,
+export default defineComponent({
+  props: {
+    url: {
+      type: String,
+      required: false,
+    },
+  },
+  setup() {
+    const jsonString = ref(store.state.respData);
+
+    const setResponse = (data: any) => {
+      console.log("Got response ..." + JSON.stringify(data));
     };
-  }
-  setResponse(data: any) {
-    // Your code.
-    console.log("Got response ..." + JSON.stringify(data));
-  }
-}
+
+    return {
+      jsonString,
+      setResponse,
+    };
+  },
+});
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

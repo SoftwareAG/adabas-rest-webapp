@@ -1,19 +1,18 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "module": "esnext",
+    "module": "NodeNext",
     "strict": true,
     "jsx": "preserve",
     "importHelpers": true,
-    "moduleResolution": "node",
+    "moduleResolution": "node16",
     "experimentalDecorators": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
     "baseUrl": ".",
-    "types": [
-      "webpack-env"
+    "types": ["node"
     ],
     "paths": {
       "@/*": [
@@ -36,5 +35,6 @@
   ],
   "exclude": [
     "node_modules"
-  ]
+  ],
+  "types": ["vuex"]
 }

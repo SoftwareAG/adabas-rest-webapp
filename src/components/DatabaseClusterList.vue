@@ -16,143 +16,137 @@
 <template>
   <div class="databaseclusterlist p-2">
     <Sidebar :url="url" />
-    <b-card
-      header="Adabas database cluster"
-      border-variant="secondary"
-      header-border-variant="secondary"
-    >
-      <b-card-body>
-        <b-container fluid>
-          <b-row>
-            <b-col>
+    <div class="card border-secondary">
+      <div class="card-header bg-secondary text-white">
+        Adabas database cluster
+      </div>
+      <div class="card-body">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col">
               This page provides access to the list of nodes in an Adabas database cluster to
               be administrate through this Adabas RESTful server.
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col><Url url="/adabas/cluster" /> </b-col>
-          </b-row>
-          <b-row>
-            <b-col class="text-right">State ID</b-col
-            ><b-col>UUID: {{ cluster.View.StateID.StateID }}</b-col>
-          </b-row>
-          <b-row>
-            <b-col class="text-right"></b-col
-            ><b-col>Sequence No: {{ cluster.View.StateID.SeqNo }}</b-col>
-          </b-row>
-          <b-row>
-            <b-col class="text-right">Last Committed</b-col
-            ><b-col>UUID: {{ cluster.View.LastCommitted.StateID }}</b-col>
-          </b-row>
-          <b-row>
-            <b-col class="text-right"></b-col
-            ><b-col>Sequence No: {{ cluster.View.LastCommitted.SeqNo }}</b-col>
-          </b-row>
-          <b-row>
-            <b-col class="text-right">Number of Members</b-col
-            ><b-col>{{ cluster.View.NumberOfMembers }}</b-col>
-          </b-row>
-          <b-row>
-            <b-col class="text-right">Status</b-col
-            ><b-col>{{ cluster.View.Status }}</b-col>
-          </b-row>
-          <b-row>
-            <b-col class="text-right">Local send</b-col
-            ><b-col
-              >{{ cluster.View.LocalSendQueue }} /
-              {{ cluster.View.LocalSendQueueMax }}</b-col
-            >
-          </b-row>
-          <b-row>
-            <b-col class="text-right">Local receive</b-col
-            ><b-col
-              >{{ cluster.View.LocalRecvQueue }} /
-              {{ cluster.View.LocalRecvQueueMax }}</b-col
-            >
-          </b-row>
-          <b-row>
-            <b-col>
-              <b-table
-                id="my-table"
-                class="w-100 p-3"
-                striped
-                bordered
-                hover
-                :per-page="perPage"
-                :current-page="currentPage"
-                small
-                :filter="filter"
-                :filterIncludedFields="filterOn"
-                selectable
-                responsive="true"
-                select-mode="single"
-                no-select-on-click
-                :items="cluster.Members"
-                :fields="fields"
-              ></b-table></b-col
-          ></b-row>
-        </b-container>
-      </b-card-body>
-    </b-card>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col"><Url url="/adabas/cluster" /> </div>
+          </div>
+          <div class="row">
+            <div class="col text-end">State ID</div>
+            <div class="col">UUID: {{ cluster.View.StateID.StateID }}</div>
+          </div>
+          <div class="row">
+            <div class="col text-end"></div>
+            <div class="col">Sequence No: {{ cluster.View.StateID.SeqNo }}</div>
+          </div>
+          <div class="row">
+            <div class="col text-end">Last Committed</div>
+            <div class="col">UUID: {{ cluster.View.LastCommitted.StateID }}</div>
+          </div>
+          <div class="row">
+            <div class="col text-end"></div>
+            <div class="col">Sequence No: {{ cluster.View.LastCommitted.SeqNo }}</div>
+          </div>
+          <div class="row">
+            <div class="col text-end">Number of Members</div>
+            <div class="col">{{ cluster.View.NumberOfMembers }}</div>
+          </div>
+          <div class="row">
+            <div class="col text-end">Status</div>
+            <div class="col">{{ cluster.View.Status }}</div>
+          </div>
+          <div class="row">
+            <div class="col text-end">Local send</div>
+            <div class="col">
+              {{ cluster.View.LocalSendQueue }} /
+              {{ cluster.View.LocalSendQueueMax }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col text-end">Local receive</div>
+            <div class="col">
+              {{ cluster.View.LocalRecvQueue }} /
+              {{ cluster.View.LocalRecvQueueMax }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <table class="table table-striped table-bordered table-hover w-100 p-3">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Status</th>
+                    <th>Remote Access</th>
+                    <th>ID</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="member in cluster.Members" :key="member.BaseId">
+                    <td>{{ member.BaseName }}</td>
+                    <td>{{ member.Status }}</td>
+                    <td>{{ member.BaseIncoming }}</td>
+                    <td>{{ member.BaseId }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <StatusBar />
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { defineComponent, ref, onMounted, onBeforeUnmount } from "vue";
 import { AdabasAdmin } from "../adabas/admin";
 import { userService } from "../user/service";
-import { BIconXCircle } from "bootstrap-vue";
+// import { BIconXCircle } from 'bootstrap-vue-next/dist/icons';
 import store from "../store/index";
-import StatusBar from "./StatusBar.vue";
+import StatusBar from '@/components/StatusBar.vue';
 import Url from "./Url.vue";
 import router from "../router/index";
 
-@Component({
+export default defineComponent({
   components: {
-    BIconXCircle,
-    StatusBar,
+    // BIconXCircle,
+   StatusBar,
     Url,
   },
-})
-export default class DatabaseClusterList extends Vue {
-  @Prop(String) readonly url: string | undefined;
-  @Prop() private msg!: string;
-  data() {
-    return {
-      perPage: 10,
-      currentPage: 1,
-      filter: "",
-      filterOn: [],
-      fields: [
-        { label: "Name", key: "BaseName" },
-        { label: "Status", key: "Status" },
-        { label: "Remote Access", key: "BaseIncoming" },
-        { label: "ID", key: "BaseId" },
-      ],
-      cluster: {
-        members: [],
-        View: { StateID: "", Status: "No cluster", NumberOfMembers: 0, 
-        LastCommitted: 0 },
-      },
-      timer: "",
-      jsonString: "<No data received>",
-    };
-  }
-  created() {
-    this.loadCluster();
-    this.$data.timer = setInterval(this.loadCluster, 5000);
-  }
-  /*
-   * submit the request to get the list of Adabas databases.
-   * The list contains database which are able to be administrated.
-   */
-  loadCluster(): void {
-    this.$data.db.cluster().then((response: any) => {
-        this.$data.cluster = response;
-        this.$data.jsonString = JSON.stringify(response);
-     })      .catch((error: any) => {
-        // console.log('ERROR DBLIST: ' + JSON.stringify(error));
+  props: {
+    url: {
+      type: String,
+      required: false,
+    },
+    msg: {
+      type: String,
+      required: true,
+    },
+  },
+  setup(props) {
+    const perPage = ref(10);
+    const currentPage = ref(1);
+    const filter = ref("");
+    const filterOn = ref([]);
+    const fields = ref([
+      { label: "Name", key: "BaseName" },
+      { label: "Status", key: "Status" },
+      { label: "Remote Access", key: "BaseIncoming" },
+      { label: "ID", key: "BaseId" },
+    ]);
+    const cluster = ref({
+      members: [],
+      View: { StateID: "", Status: "No cluster", NumberOfMembers: 0, LastCommitted: 0 },
+    });
+    const timer = ref(null);
+    const jsonString = ref("<No data received>");
+
+    const loadCluster = () => {
+      this.$data.db.cluster().then((response: any) => {
+        cluster.value = response;
+        jsonString.value = JSON.stringify(response);
+      }).catch((error: any) => {
         if (error.response) {
           store.commit("SET_STATUS", JSON.stringify(error.response));
           if (error.response.status == 401 || error.response.status == 403) {
@@ -164,13 +158,30 @@ export default class DatabaseClusterList extends Vue {
           userService.logout();
           location.reload();
         }
-        // throw error;
       });
-  }
-  beforeDestroy(): void {
-    clearInterval(this.$data.timer);
-  }
-}
+    };
+
+    onMounted(() => {
+      loadCluster();
+      timer.value = setInterval(loadCluster, 5000);
+    });
+
+    onBeforeUnmount(() => {
+      clearInterval(timer.value);
+    });
+
+    return {
+      perPage,
+      currentPage,
+      filter,
+      filterOn,
+      fields,
+      cluster,
+      jsonString,
+      loadCluster,
+    };
+  },
+});
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

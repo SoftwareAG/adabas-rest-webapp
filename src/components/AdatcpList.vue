@@ -16,114 +16,130 @@
 <template>
   <div class="adatcplist p-2">
     <Sidebar :url="url" />
-    <b-card
-      :header="'Adabas Database ADATCP information for database ' + url"
-      border-variant="secondary"
-      header-border-variant="secondary"
-    >
-      <b-card-body>
-        <b-container fluid>
-          <b-row>
-            <b-col>
+    <div class="card border-secondary mb-3">
+      <div class="card-header border-secondary">
+        Adabas Database ADATCP information for database {{ url }}
+      </div>
+      <div class="card-body">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col">
               This page provides the list of Adabas database ADATCP connections.
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
               <Url url="/adabas/database" />
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col>
-              <b-table
-                striped
-                bordered
-                hover
-                small
-                :items="adatcp"
-                :fields="fields"
-              >
-                <template v-slot:cell(statistics)="row">
-                  <b-progress
-                    :show-value="false"
-                    :value="row.item.Percent"
-                    max="100"
-                    :precision="2"
-                    class="mb-3"
-                  ></b-progress>
-                </template>
-                <template v-slot:cell(stop)="row">
-                  <div class="mx-auto text-center">
-                    <b-icon-x-circle
-                      scale="2"
-                      variant="danger"
-                      v-on:click="stopConnection(row.item)"
-                    ></b-icon-x-circle>
-                  </div>
-                </template>
-              </b-table>
-            </b-col>
-          </b-row>
-        </b-container> </b-card-body
-    ></b-card>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <table class="table table-striped table-bordered table-hover table-sm">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>RecvID</th>
+                    <th>RemoteHost</th>
+                    <th>RemoteIP</th>
+                    <th>RemoteUser</th>
+                    <th>RemotePort</th>
+                    <th>Stop</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="row in adatcp" :key="row.ID">
+                    <td>{{ row.ID }}</td>
+                    <td>{{ row.RecvID }}</td>
+                    <td>{{ row.RemoteHost }}</td>
+                    <td>{{ row.RemoteIP }}</td>
+                    <td>{{ row.RemoteUser }}</td>
+                    <td>{{ row.RemotePort }}</td>
+                    <td>
+                      <div class="mx-auto text-center">
+                        <i class="bi bi-x-circle-fill text-danger" @click="stopConnection(row)"></i>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <StatusBar />
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Provide, Vue } from 'vue-property-decorator';
+import { defineComponent, ref, onMounted, onBeforeUnmount } from 'vue';
 import Sidebar from './Sidebar.vue';
-import store from '../store/index';
-import StatusBar from './StatusBar.vue';
+import StatusBar from '@/components/StatusBar.vue';
 import Url from './Url.vue';
-import { SearchDatabases } from '@/adabas/admin';
-import { BIconXCircle } from "bootstrap-vue";
+import { SearchDatabases, Database } from '@/adabas/admin';
+// import 'bootstrap-icons/font/bootstrap-icons.css';
 
-@Component({
+
+export default defineComponent({
+  name: 'AdatcpList',
   components: {
     StatusBar,
     Sidebar,
-    BIconXCircle,
+    // BIconXCircle,
     Url,
   },
-})
-export default class AdatcpList extends Vue {
-  @Prop(String) readonly url: string | undefined;
-  @Provide() type = 'static';
-  data() {
-    return {
-      db: null,
-      fields: [
-        'ID',
-        'RecvID',
-        'RemoteHost',
-        'RemoteIP',
-        'RemoteUser',
-        'RemotePort',
-        'Stop',
-      ],
-      adatcp: [] as any[],
-      timer: '',
+  props: {
+    url: {
+      type: String,
+      required: true,
+    },
+  },
+  setup(props) {
+    const db = ref<Database | null>(null);
+    const fields = ref([
+      'ID',
+      'RecvID',
+      'RemoteHost',
+      'RemoteIP',
+      'RemoteUser',
+      'RemotePort',
+      'Stop',
+    ]);
+    const adatcp = ref([]);
+    const timer = ref(null);
+
+    const queryParameters = () => {
+      if (db.value) {
+        db.value.adatcp().then((response: any) => {
+          adatcp.value = response.data;
+        });
+      }
     };
-  }
-  created(): void {
-    this.$data.db = SearchDatabases(this.url);
-    this.$data.timer = setInterval(this.queryParameters, 5000);
-    this.queryParameters();
-  }
-  queryParameters(): void {
-    this.$data.db.adatcp().then((response: any) => {
-      this.$data.adatcp = response.Entry;
+
+    const stopConnection = (tcp: any) => {
+      console.log("TCP: " + JSON.stringify(tcp));
+      if (db.value) {
+        db.value.closeConnection(tcp.ID);
+      }
+    };
+
+    onMounted(() => {
+      db.value = SearchDatabases(props.url);
+      timer.value = setInterval(queryParameters, 5000);
+      queryParameters();
     });
-  }
-  beforeDestroy(): void {
-    clearInterval(this.$data.timer);
-  }
-  stopConnection(tcp: any): void {
-    console.log("TCP: "+JSON.stringify(tcp));
-    this.$data.db.closeConnection(tcp.ID);
-  }
-}
+
+    onBeforeUnmount(() => {
+      clearInterval(timer.value);
+    });
+
+    return {
+      fields,
+      adatcp,
+      stopConnection,
+    };
+  },
+});
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

@@ -16,178 +16,195 @@
 <template>
   <div class="checkpointlist p-2">
     <Sidebar :url="url" />
-    <b-card
-      :header="'Checkpoint List of Adabas database ' + url"
-      border-variant="secondary"
-      header-border-variant="secondary"
-    >
-      <b-card-body>
-        <b-container fluid>
-          <b-row
-            ><b-col>
+    <div class="card border-secondary mb-3">
+      <div class="card-header border-secondary">
+        Checkpoint List of Adabas database {{ url }}
+      </div>
+      <div class="card-body">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col">
               This page provides the list of Adabas database checkpoint to
               be administrate through this Adabas RESTful server.
-            </b-col>
-          </b-row>
-          <b-row
-            ><b-col>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
               <Url url="/adabas/database" />
-            </b-col>
-          </b-row>
-          <b-row
-            ><b-col class="text-right">Start data:</b-col
-            ><b-col>
-              <b-form-datepicker
-                id="from-datepicker"
+            </div>
+          </div>
+          <div class="row">
+            <div class="col text-right">Start data:</div>
+            <div class="col">
+              <input
+                type="date"
                 v-model="from"
-                class="mb-2"
+                class="form-control mb-2"
                 :min="min"
                 :max="max"
-                @context="onContext"
-              ></b-form-datepicker> </b-col
-            ><b-col>
-              <b-form-timepicker
+                @change="onContext"
+              />
+            </div>
+            <div class="col">
+              <input
+                type="time"
                 v-model="fromTime"
-                locale="en"
-              ></b-form-timepicker> </b-col></b-row
-          ><b-row
-            ><b-col class="text-right">End data:</b-col
-            ><b-col>
-              <b-form-datepicker
-                id="to-datepicker"
+                class="form-control"
+              />
+            </div>
+          </div>
+          <div class="row">
+            <div class="col text-right">End data:</div>
+            <div class="col">
+              <input
+                type="date"
                 v-model="to"
-                class="mb-2"
+                class="form-control mb-2"
                 :min="min"
                 :max="max"
-              ></b-form-datepicker></b-col
-            ><b-col>
-              <b-form-timepicker
+              />
+            </div>
+            <div class="col">
+              <input
+                type="time"
                 v-model="toTime"
-                locale="en"
-              ></b-form-timepicker> </b-col></b-row
-          ><b-row
-            ><b-col class="text-right">
-              <b-form-group
-                label="Filter"
-                label-cols-sm="3"
-                label-align-sm="right"
-                label-size="sm"
-                label-for="filterInput"
-                class="mb-0"
-              >
-                <b-input-group size="sm">
-                  <b-form-input
-                    v-model="filter"
-                    type="search"
-                    id="filterInput"
-                    placeholder="Type to Search"
-                  ></b-form-input>
-                  <b-input-group-append>
-                    <b-button :disabled="!filter" @click="filter = ''"
-                      >Clear</b-button
-                    >
-                  </b-input-group-append>
-                </b-input-group>
-              </b-form-group>
-            </b-col></b-row
-          ><b-row
-            ><b-col>
-              <b-table
-                :filter="filter"
-                :filterIncludedFields="filterOn"
-                striped
-                bordered
-                hover
-                small
-                :items="checkpoints"
-                :fields="fields"
-              >
-              </b-table> </b-col></b-row></b-container></b-card-body
-    ></b-card>
+                class="form-control"
+              />
+            </div>
+          </div>
+          <div class="row">
+            <div class="col text-right">
+              <div class="form-group row mb-0">
+                <label for="filterInput" class="col-sm-3 col-form-label col-form-label-sm text-right">Filter</label>
+                <div class="col-sm-9">
+                  <div class="input-group input-group-sm">
+                    <input
+                      v-model="filter"
+                      type="search"
+                      id="filterInput"
+                      class="form-control"
+                      placeholder="Type to Search"
+                    />
+                    <div class="input-group-append">
+                      <button class="btn btn-secondary" :disabled="!filter" @click="filter = ''">Clear</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <table class="table table-striped table-bordered table-hover table-sm">
+                <thead>
+                  <tr>
+                    <th v-for="field in fields" :key="field">{{ field }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="checkpoint in checkpoints" :key="checkpoint.id">
+                    <td v-for="field in fields" :key="field">{{ checkpoint[field] }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <StatusBar />
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { ref, onMounted, defineComponent } from "vue";
 import Sidebar from "./Sidebar.vue";
-import store from "../store/index";
-import StatusBar from "./StatusBar.vue";
+import StatusBar from '@/components/StatusBar.vue';
 import Url from "./Url.vue";
-import { SearchDatabases } from '@/adabas/admin';
+import { SearchDatabases } from "@/adabas/admin";
 
-@Component({
+export default defineComponent({
+  name: "CheckpointList",
   components: {
-    StatusBar,
     Sidebar,
+   StatusBar,
     Url,
   },
-})
-export default class CheckpointList extends Vue {
-  @Prop(String) readonly url: string | undefined;
-  data() {
-    const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    // 15th two months prior
-    const minDate = new Date(today);
-    minDate.setFullYear(minDate.getFullYear() - 2);
-    // 15th in two months
-    const maxDate = now;
+  props: {
+    url: String,
+  },
+  setup(props) {
+    const filter = ref("");
+    const filterOn = ref(["Details", "Name"]);
+    const min = ref(new Date(new Date().setFullYear(new Date().getFullYear() - 2)));
+    const max = ref(new Date());
+    const from = ref(null);
+    const to = ref(null);
+    const fromTime = ref(null);
+    const toTime = ref(null);
+    const fields = ref(["Date", "Details", "Name", "Session"]);
+    const checkpoints = ref([]);
+
+    const convertDate = (currentdate: Date): string => {
+      return (
+        new String(currentdate.getFullYear()).padStart(4, "0") +
+        "-" +
+        new String(currentdate.getMonth() + 1).padStart(2, "0") +
+        "-" +
+        new String(currentdate.getDate()).padStart(2, "0")
+      );
+    };
+
+    const convertTime = (currentdate: Date): string => {
+      return (
+        new String(currentdate.getHours()).padStart(2, "0") +
+        ":" +
+        new String(currentdate.getMinutes()).padStart(2, "0") +
+        ":" +
+        new String(currentdate.getSeconds()).padStart(2, "0")
+      );
+    };
+
+    const updateCheckpoints = () => {
+      let toDate = to.value + "+" + toTime.value;
+      let fromDate = from.value + "+" + fromTime.value;
+      const db = SearchDatabases(props.url);
+      db.checkpoints(fromDate, toDate).then((response: any) => {
+        checkpoints.value = response;
+      });
+    };
+
+    const onContext = (ctx: any) => {
+      updateCheckpoints();
+    };
+
+    onMounted(() => {
+      var currentdate = new Date();
+      to.value = convertDate(currentdate);
+      toTime.value = convertTime(currentdate);
+      currentdate = new Date();
+      var day = 60 * 60 * 1000;
+      currentdate = new Date(currentdate.getTime() - day);
+      from.value = convertDate(currentdate);
+      fromTime.value = convertTime(currentdate);
+      updateCheckpoints();
+    });
 
     return {
-      filter: "",
-      filterOn: ["Details", "Name"],
-      min: minDate,
-      max: maxDate,
-      from: null,
-      to: null,
-      fromTime: null,
-      toTime: null,
-      fields: ["Date", "Details", "Name", "Session"],
-      checkpoints: [],
+      filter,
+      filterOn,
+      min,
+      max,
+      from,
+      to,
+      fromTime,
+      toTime,
+      fields,
+      checkpoints,
+      onContext,
     };
-  }
-  created() {
-    var currentdate = new Date();
-    this.$data.to = this.convertDate(currentdate);
-    this.$data.toTime = this.convertTime(currentdate);
-    currentdate = new Date();
-    var day = 60 * 60 * 1000;
-    currentdate = new Date(currentdate.getTime() - day);
-    this.$data.from = this.convertDate(currentdate);
-    this.$data.fromTime = this.convertTime(currentdate);
-    this.updateCheckpoints();
-  }
-  updateCheckpoints(): void {
-    let to = this.$data.to + "+" + this.$data.toTime;
-    let from = this.$data.from + "+" + this.$data.fromTime;
-    const db = SearchDatabases(this.url);
-    db.checkpoints(from, to).then((response: any) => {
-      this.$data.checkpoints = response;
-    });
-  }
-  convertDate(currentdate: Date): string {
-    return (
-      new String(currentdate.getFullYear()).padStart(4, "0") +
-      "-" +
-      new String(currentdate.getMonth() + 1).padStart(2, "0") +
-      "-" +
-      new String(currentdate.getDate()).padStart(2, "0")
-    );
-  }
-  convertTime(currentdate: Date): string {
-    return (
-      new String(currentdate.getHours()).padStart(2, "0") +
-      ":" +
-      new String(currentdate.getMinutes()).padStart(2, "0") +
-      ":" +
-      new String(currentdate.getSeconds()).padStart(2, "0")
-    );
-  }
-  onContext(ctx: any): void {
-    this.updateCheckpoints();
-  }
-}
+  },
+});
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

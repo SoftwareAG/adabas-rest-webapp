@@ -16,118 +16,106 @@
 <template>
   <div class="bufferflushdisplay p-2">
     <Sidebar :url="url" />
-    <b-card
-      :header="'Adabas Database Buffer Flush for database ' + url"
-      border-variant="secondary"
-      header-border-variant="secondary"
-    >
-      <b-card-body>
-        <b-container fluid>
-          <b-row
-            ><b-col>
+    <div class="card border-secondary mb-3">
+      <div class="card-header border-secondary">
+        Adabas Database Buffer Flush for database {{ url }}
+      </div>
+      <div class="card-body">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col">
               This page provides the statistics of Adabas database Buffer Flush.
-            </b-col>
-          </b-row>
-          <b-row
-            ><b-col>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
               <Url url="/adabas/database" />
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col class="text-right"> Total number of flushed </b-col>
-            <b-col>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col text-right"> Total number of flushed </div>
+            <div class="col">
               {{ countFlushes() }}
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col class="text-right"> Explicit </b-col>
-            <b-col>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col text-right"> Explicit </div>
+            <div class="col">
               {{ checkUndefinedIndex(bufferflush.BfFlushCounter, 1) }}
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col class="text-right"> Write Limit </b-col>
-            <b-col>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col text-right"> Write Limit </div>
+            <div class="col">
               {{ checkUndefinedIndex(bufferflush.BfFlushCounter, 0) }}
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col class="text-right"> WORK Limit </b-col>
-            <b-col>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col text-right"> WORK Limit </div>
+            <div class="col">
               {{ checkUndefinedIndex(bufferflush.BfFlushCounter, 2) }}
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col class="text-right"> Space </b-col>
-            <b-col>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col text-right"> Space </div>
+            <div class="col">
               {{ checkUndefinedIndex(bufferflush.BfFlushCounter, 3) }}
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col class="text-right"> Emergency </b-col>
-            <b-col>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col text-right"> Emergency </div>
+            <div class="col">
               {{ checkUndefinedIndex(bufferflush.BfFlushCounter, 4) }}
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col class="text-right"> Ignored blocks </b-col>
-            <b-col>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col text-right"> Ignored blocks </div>
+            <div class="col">
               {{ checkUndefinedIndex(bufferflush.BfFlushCounter, 5) }}
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col class="text-right">
-              <b-table :items="bufferflush.LStat" :fields="tableMetadata.fields">
-                <template v-slot:cell(WriteLimit)="row">
-                  {{ row.item.WriteLimit / 10 }}
-                </template>
-                <template v-slot:cell(FlushPagesSum)="row">
-                  {{ formatBytes(row.item.FlushPagesSum) }}
-                </template>
-                <template v-slot:cell(StartTime)="row">
-                  {{ new Date(row.item.StartTime).toUTCString() }}
-                </template>
-                <template v-slot:cell(AverageIO)="row">
-                  {{ avgioMsec(row.item) }}
-                </template>
-                <template v-slot:cell(Duration)="row">
-                  {{ checkUndefined(row.item.BfDiffEndBf) }}
-                </template>
-                <template v-slot:cell(Rejected)="row">
-                  {{ checkUndefined(row.item.BfListEntryLockReject) }}
-                </template>
-              </b-table>
-            </b-col>
-            <b-col class="text-right">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col text-right">
+              <table class="table table-striped table-bordered table-hover table-sm">
+                <thead>
+                  <tr>
+                    <th v-for="field in tableMetadata.fields" :key="field">{{ field }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="l in bufferflush.LStat" :key="l.StartTime">
+                    <td>{{ new Date(l.StartTime).toUTCString() }}</td>
+                    <td>{{ l.WriteLimit / 10 }}</td>
+                    <td>{{ l.NoEntries }}</td>
+                    <td>{{ formatBytes(l.FlushPagesSum) }}</td>
+                    <td>{{ avgioMsec(l) }}</td>
+                    <td>{{ checkUndefined(l.BfDiffEndBf) }}</td>
+                    <td>{{ checkUndefined(l.BfListEntryLockReject) }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="col text-right">
               <div class="small Chart w-100">
                 <LineChart v-bind="lineChartProps" />
                 <img style="width: 300px" v-if="imgData" :src="imgData" />
               </div>
-            </b-col>
-          </b-row>
-        </b-container>
-      </b-card-body>
-    </b-card>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <StatusBar />
   </div>
 </template>
 
 <script>
-import { Chart } from "chart.js/auto";
+import { ref, onMounted, onBeforeUnmount, computed, defineComponent } from "vue";
 import { LineChart, useLineChart } from "vue-chart-3";
-import {
-  ref,
-  onMounted,
-  computed,
-  onBeforeUnmount,
-  defineComponent,
-} from "@vue/composition-api";
-import { Component, Prop, Vue } from "vue-property-decorator";
 import Sidebar from "./Sidebar.vue";
-import store from "../store/index";
-import StatusBar from "./StatusBar.vue";
+import StatusBar from '@/components/StatusBar.vue';
 import Url from "./Url.vue";
-import { SearchDatabases } from '@/adabas/admin';
+import { SearchDatabases } from "@/adabas/admin";
 
 export default defineComponent({
   name: "BufferFlushData",
@@ -137,16 +125,15 @@ export default defineComponent({
     StatusBar,
     Url,
   },
-  props: ["url"],
+  props: {
+    url: String,
+  },
   setup(props) {
     const data = ref([]);
     const legendTop = ref(true);
     const imgData = ref(null);
-    const url = props.url;
-    let last = null;
     const bufferflush = ref({ LStat: [] });
-    let timer = null;
-    let index = 1;
+    const timer = ref(null);
     const labels = ref(["Interval"]);
     const tableMetadata = {
       perPage: 20,
@@ -164,6 +151,7 @@ export default defineComponent({
       ],
     };
     let db = null;
+
     const options = computed(() => ({
       responsive: true,
       maintainAspectRatio: false,
@@ -185,6 +173,7 @@ export default defineComponent({
         },
       },
     }));
+
     const chartData = computed(() => ({
       labels: labels.value,
       datasets: [
@@ -203,18 +192,8 @@ export default defineComponent({
       chartData,
       options,
     });
-    onMounted(() => {
-      db = SearchDatabases(props.url);
-      if (timer == null) {
-        timer = setInterval(loadCommandStat, 5000);
-      }
-      loadCommandStat();
-    });
-    onBeforeUnmount(() => {
-      clearInterval(timer);
-      timer = null;
-    });
-    function loadCommandStat() {
+
+    const loadCommandStat = () => {
       if (!db || db == null) {
         db = SearchDatabases(props.url);
         return;
@@ -225,12 +204,13 @@ export default defineComponent({
         }
         bufferflush.value = response.Statistics;
         data.value = [];
-        response.Statistics.LStat.forEach((l)=>{
+        response.Statistics.LStat.forEach((l) => {
           data.value.push(l.FlushPagesSum);
         });
       });
-    }
-    function formatBytes(bytes, decimals = 2) {
+    };
+
+    const formatBytes = (bytes, decimals = 2) => {
       if (bytes === 0) return "0 Bytes";
 
       const k = 1024;
@@ -240,44 +220,61 @@ export default defineComponent({
       const i = Math.floor(Math.log(bytes) / Math.log(k));
 
       return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
-    }
-    function avgioMsec(item) {
+    };
+
+    const avgioMsec = (item) => {
       var avgioMsec = 0;
       if (!item.BfDiffEndBf || !item.BfFlushPagesSum) {
         return 0;
       }
       if (item.BfDiffEndBf != 0 && item.BfFlushPagesSum > 0) {
-        /* Average I/O time in msec*100 (because of editing) */
         avgioMsec =
           ((item.BfDiffEndBf - item.BfDiffStartIO) * 100) /
           item.BfFlushPagesSum;
       }
       return avgioMsec;
-    }
-    function checkUndefined(v) {
+    };
+
+    const checkUndefined = (v) => {
       if (!v) {
         return 0;
       }
       return v;
-    }
-    function checkUndefinedIndex(v, index) {
+    };
+
+    const checkUndefinedIndex = (v, index) => {
       if (!v) {
         return 0;
       }
       return v[index];
-    }
-    function countFlushes() {
+    };
+
+    const countFlushes = () => {
       let c = 0;
       if (!bufferflush.value.BfFlushCounter) {
         return 0;
       }
-      bufferflush.value.BfFlushCounter.foreach((element, index) => {
+      bufferflush.value.BfFlushCounter.forEach((element, index) => {
         if (index != 6) {
           c += element;
         }
       });
       return c;
-    }
+    };
+
+    onMounted(() => {
+      db = SearchDatabases(props.url);
+      if (timer.value == null) {
+        timer.value = setInterval(loadCommandStat, 5000);
+      }
+      loadCommandStat();
+    });
+
+    onBeforeUnmount(() => {
+      clearInterval(timer.value);
+      timer.value = null;
+    });
+
     return {
       avgioMsec,
       checkUndefined,

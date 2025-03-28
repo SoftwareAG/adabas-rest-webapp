@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  
+  <script>
+    window.PUBLIC_PATH = window.location.pathname;
+  </script>
+
+  <link rel="apple-touch-icon" href="/apple-icon.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png">
+  <link rel="apple-touch-icon" sizes="167x167" href="/touch-icon-ipad-retina.png">
+  <link rel="manifest" href="\public\img\manifest.json">
+  <link rel="icon" href="/favicon.ico">
+
+  <title><script>document.write(import.meta.env.VITE_APP_TITLE || 'Default Title');</script></title>
+</head>
+<body>
+  <noscript>
+    <strong>We're sorry but this app doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
+  </noscript>
+  
+  <div id="app"></div>
+
+  <script type="module">
+    document.title = import.meta.env.VITE_APP_TITLE || 'Default Title';
+  </script>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

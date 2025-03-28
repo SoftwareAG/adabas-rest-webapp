@@ -21,15 +21,14 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { defineComponent } from 'vue';
 import MyHeader from '@/components/Header.vue';
 import MapMetadata from '@/components/MapMetadata.vue';
 
-@Component({
+export default defineComponent({
   components: {
     MyHeader,
     MapMetadata,
   },
-})
-export default class Metadata extends Vue {}
+});
 </script>

@@ -15,289 +15,291 @@
 
 <template>
   <div class="createjob">
-    <b-button variant="success" v-b-modal.modal-createjob
-      >Create RESTful server job</b-button
-    >
+    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modal-createjob">
+      Create RESTful server job
+    </button>
 
-    <b-modal
-      @ok="insertJobInServer"
-      id="modal-createjob"
-      size="xl"
-      title="Create job"
-    >
-      <p class="my-4">Please provide job parameters</p>
-      <b-card bg-variant="light">
-        <form ref="jobForm" @submit.stop.prevent="handleSubmit">
-          <b-form-group
-            label-cols-lg="3"
-            label="Job information"
-            label-size="lg"
-            label-class="font-weight-bold pt-0"
-            class="mb-0"
-          >
-            <b-form-group
-              label-cols-sm="3"
-              label="Job name:"
-              label-align-sm="right"
-              label-for="nested-jobname"
-              invalid-feedback="Name is required"
-            >
-              <b-form-input
-                v-model="newJob.Job.Name"
-                id="nested-jobname"
-                required
-              ></b-form-input>
-            </b-form-group>
-            <b-form-group
-              label-cols-sm="3"
-              label="Job Utility:"
-              label-align-sm="right"
-              label-for="nested-utility"
-            >
-              <b-form-select
-                v-model="newJob.Job.Utility"
-                :options="utilities"
-                id="nested-utility"
-                size="sm"
-                class="mt-3"
-              ></b-form-select>
-            </b-form-group>
-            <b-form-group
-              label-cols-sm="3"
-              label="Job User:"
-              label-align-sm="right"
-              label-for="nested-user"
-            >
-              <b-form-input
-                v-model="newJob.Job.User"
-                id="nested-user"
-                disabled="true"
-              ></b-form-input>
-            </b-form-group>
-            <b-form-group
-              label-cols-sm="3"
-              label="Job Description:"
-              label-align-sm="right"
-              label-for="nested-description"
-            >
-              <b-form-input
-                v-model="newJob.Job.Description"
-                id="nested-description"
-              ></b-form-input>
-            </b-form-group>
-            <b-form-group
-              label-cols-sm="3"
-              label="Job Parameters:"
-              label-align-sm="right"
-              label-for="nested-parameters"
-            >
-              <b-table :items="newJob.Job.Parameters" :fields="paraFields">
-                <template v-slot:head(action)>
-                  <b-button
-                    v-on:click="prepareParameter"
-                    v-b-modal.modal-parameter
-                    >Add</b-button
-                  >
-                </template>
-                <template v-slot:cell(action)="row">
-                  <b-button v-on:click="removeParameter(row.index)"
-                    >Remove</b-button
-                  >
-                  <b-button
-                    v-on:click="editParameter(row.index)"
-                    v-b-modal.modal-parameter
-                    >Edit</b-button
-                  >
-                </template>
-              </b-table>
-              <b-modal
-                id="modal-parameter"
-                ref="modal"
-                :title="operation + ' ' + editable"
-                @show="resetModal"
-                @hidden="resetModal"
-                @ok="handleOk"
-              >
-                <form ref="form">
-                  <b-form-group
-                    :state="nameState"
-                    :label="description"
-                    label-for="name-input"
-                    invalid-feedback="Name is required"
-                  >
-                    <b-form-input
-                      id="name-input"
-                      v-model="parameter"
-                      :state="nameState"
-                      required
-                    ></b-form-input>
-                  </b-form-group>
-                </form>
-              </b-modal>
-            </b-form-group>
-            <b-form-group
-              label-cols-sm="3"
-              label="Job Environment:"
-              label-align-sm="right"
-              label-for="nested-environment"
-            >
-              <b-table
-                :items="newJob.Job.Environments"
-                :fields="envFields"
-                responsive="sm"
-              >
-                <template v-slot:head(action)>
-                  <b-button
-                    v-on:click="prepareEnvironment"
-                    v-b-modal.modal-parameter
-                    >Add</b-button
-                  >
-                </template>
-              </b-table>
-            </b-form-group>
-          </b-form-group>
-        </form>
-      </b-card>
-    </b-modal>
+    <div class="modal fade" id="modal-createjob" tabindex="-1" aria-labelledby="modal-createjob-label" aria-hidden="true">
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modal-createjob-label">Create job</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p class="my-4">Please provide job parameters</p>
+            <div class="card bg-light">
+              <form ref="jobForm" @submit.stop.prevent="handleSubmit">
+                <div class="mb-3 row">
+                  <label for="nested-jobname" class="col-sm-3 col-form-label text-end">Job name:</label>
+                  <div class="col-sm-9">
+                    <input type="text" class="form-control" id="nested-jobname" v-model="newJob.Job.Name" required>
+                  </div>
+                </div>
+                <div class="mb-3 row">
+                  <label for="nested-utility" class="col-sm-3 col-form-label text-end">Job Utility:</label>
+                  <div class="col-sm-9">
+                    <select class="form-select mt-3" id="nested-utility" v-model="newJob.Job.Utility">
+                      <option v-for="utility in utilities" :key="utility" :value="utility">{{ utility }}</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="mb-3 row">
+                  <label for="nested-user" class="col-sm-3 col-form-label text-end">Job User:</label>
+                  <div class="col-sm-9">
+                    <input type="text" class="form-control" id="nested-user" v-model="newJob.Job.User" disabled>
+                  </div>
+                </div>
+                <div class="mb-3 row">
+                  <label for="nested-description" class="col-sm-3 col-form-label text-end">Job Description:</label>
+                  <div class="col-sm-9">
+                    <input type="text" class="form-control" id="nested-description" v-model="newJob.Job.Description">
+                  </div>
+                </div>
+                <div class="mb-3 row">
+                  <label for="nested-parameters" class="col-sm-3 col-form-label text-end">Job Parameters:</label>
+                  <div class="col-sm-9">
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th>Parameter</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr v-for="(parameter, index) in newJob.Job.Parameters" :key="index">
+                          <td>{{ parameter.Parameter }}</td>
+                          <td>
+                            <button type="button" class="btn btn-danger" @click="removeParameter(index)">Remove</button>
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-parameter" @click="editParameter(index)">Edit</button>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modal-parameter" @click="prepareParameter">Add</button>
+                  </div>
+                </div>
+                <div class="mb-3 row">
+                  <label for="nested-environment" class="col-sm-3 col-form-label text-end">Job Environment:</label>
+                  <div class="col-sm-9">
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th>Parameter</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr v-for="(environment, index) in newJob.Job.Environments" :key="index">
+                          <td>{{ environment.Parameter }}</td>
+                          <td>
+                            <button type="button" class="btn btn-danger" @click="removeEnvironment(index)">Remove</button>
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-parameter" @click="editEnvironment(index)">Edit</button>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modal-parameter" @click="prepareEnvironment">Add</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" @click="insertJobInServer">Save changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="modal-parameter" tabindex="-1" aria-labelledby="modal-parameter-label" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modal-parameter-label">{{ operation + ' ' + editable }}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form ref="form">
+              <div class="mb-3">
+                <label for="name-input" class="form-label">{{ description }}</label>
+                <input type="text" class="form-control" id="name-input" v-model="parameter" :class="{'is-invalid': !nameState}" required>
+                <div class="invalid-feedback">Name is required</div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" @click="handleOk">Save changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { defineComponent, ref, onMounted } from "vue";
 import { userService } from "../user/service";
 import { insertJob } from "../adabas/jobs";
 
-@Component
-export default class CreateJob extends Vue {
-  @Prop() private msg!: string;
-  data() {
-    return {
-      newJob: {
-        Job: {
-          User: "",
-          Name: "",
-          Description: "Job Description",
-          Utility: "ADAOPR",
-          Scripts: "",
-          Parameters: [{ Parameter: "db=24" }, { Parameter: "disp=cq" }],
-          Environments: [],
-          CronScheduler: "(null)",
-        },
+export default defineComponent({
+  props: {
+    msg: {
+      type: String,
+      required: true,
+    },
+  },
+  setup() {
+    const newJob = ref({
+      Job: {
+        User: "",
+        Name: "",
+        Description: "Job Description",
+        Utility: "ADAOPR",
+        Scripts: "",
+        Parameters: [{ Parameter: "db=24" }, { Parameter: "disp=cq" }],
+        Environments: [],
+        CronScheduler: "(null)",
       },
-      newSavedJob: null,
-      editable: "Parameter",
-      operation: "Add",
-      description: "xxx",
-      parameterDescription: "The parameter for the Adabas utility",
-      environmentDescription:
-        "The environment defined with {VAR}={VALUE} for the Adabas utility",
-      parameter: "",
-      parameterEditIndex: -1,
-      nameState: null,
-      submittedNames: [],
-      paraFields: ["Parameter", "action"],
-      envFields: ["Parameter", "action"],
-      utilities: [
-        "ADABCK",
-        "ADACMP",
-        "ADADBM",
-        "ADADCU",
-        "ADAFDU",
-        "ADAFIN",
-        "ADAFRM",
-        "ADAMUP",
-        "ADAOPR",
-        "ADAORD",
-        "ADAREP",
-        "ADAULD",
-      ],
-    };
-  }
-  created() {
-    this.$data.newJob.Job.User = userService.getUsername();
-    this.$data.newSavedJob = this.$data.newJob;
-    this.$root.$on("editJob", (data: any) => {
-      this.$data.newJob = data;
+    });
+    const newSavedJob = ref(null);
+    const editable = ref("Parameter");
+    const operation = ref("Add");
+    const description = ref("xxx");
+    const parameterDescription = ref("The parameter for the Adabas utility");
+    const environmentDescription = ref("The environment defined with {VAR}={VALUE} for the Adabas utility");
+    const parameter = ref("");
+    const parameterEditIndex = ref(-1);
+    const nameState = ref(null);
+    const submittedNames = ref([]);
+    const paraFields = ref(["Parameter", "action"]);
+    const envFields = ref(["Parameter", "action"]);
+    const utilities = ref([
+      "ADABCK",
+      "ADACMP",
+      "ADADBM",
+      "ADADCU",
+      "ADAFDU",
+      "ADAFIN",
+      "ADAFRM",
+      "ADAMUP",
+      "ADAOPR",
+      "ADAORD",
+      "ADAREP",
+      "ADAULD",
+    ]);
+
+    onMounted(() => {
+      newJob.value.Job.User = userService.getUsername();
+      newSavedJob.value = newJob.value;
+      this.$root.$on("editJob", (data: any) => {
+        newJob.value = data;
+      });
     });
 
-  }
-  removeParameter(parameter: number): void {
-    this.$data.newJob.Job.Parameters.splice(parameter, 1);
-  }
-  editParameter(parameter: number): void {
-    console.log("Edit " + parameter);
-    this.$data.parameterEditIndex = parameter;
-    this.$data.parameter = this.$data.newJob.Job.Parameters[
-      parameter
-    ].Parameter;
-    this.$data.editable = "Parameter";
-    this.$data.operation = "Edit";
-    this.$data.description = this.$data.parameterDescription;
-  }
-  prepareParameter(): void {
-    this.$data.editable = "Parameter";
-    this.$data.operation = "Add";
-    this.$data.description = this.$data.parameterDescription;
-  }
-  prepareEnvironment(): void {
-    this.$data.editable = "Environment";
-    this.$data.operation = "Add";
-    this.$data.description = this.$data.environmentDescription;
-  }
-  handleOk(bvModalEvt: any): void {
-    if (this.$data.operation === "Edit") {
-      if (this.$data.editable === "Environment") {
-        this.$data.newJob.Job.Environments[
-          this.$data.parameterEditIndex
-        ].Parameter = this.$data.parameter;
+    const removeParameter = (parameter: number) => {
+      newJob.value.Job.Parameters.splice(parameter, 1);
+    };
+
+    const editParameter = (parameter: number) => {
+      console.log("Edit " + parameter);
+      parameterEditIndex.value = parameter;
+      parameter.value = newJob.value.Job.Parameters[parameter].Parameter;
+      editable.value = "Parameter";
+      operation.value = "Edit";
+      description.value = parameterDescription.value;
+    };
+
+    const prepareParameter = () => {
+      editable.value = "Parameter";
+      operation.value = "Add";
+      description.value = parameterDescription.value;
+    };
+
+    const prepareEnvironment = () => {
+      editable.value = "Environment";
+      operation.value = "Add";
+      description.value = environmentDescription.value;
+    };
+
+    const handleOk = (bvModalEvt: any) => {
+      if (operation.value === "Edit") {
+        if (editable.value === "Environment") {
+          newJob.value.Job.Environments[parameterEditIndex.value].Parameter = parameter.value;
+        } else {
+          newJob.value.Job.Parameters[parameterEditIndex.value].Parameter = parameter.value;
+        }
       } else {
-        this.$data.newJob.Job.Parameters[
-          this.$data.parameterEditIndex
-        ].Parameter = this.$data.parameter;
+        if (editable.value === "Environment") {
+          console.log("Add environment " + parameter.value);
+          newJob.value.Job.Environments.push({
+            Parameter: parameter.value,
+          });
+        } else {
+          newJob.value.Job.Parameters.push({
+            Parameter: parameter.value,
+          });
+        }
       }
-    } else {
-      if (this.$data.editable === "Environment") {
-        console.log("Add environment " + this.$data.parameter);
-        this.$data.newJob.Job.Environments.push({
-          Parameter: this.$data.parameter,
-        });
-      } else {
-        this.$data.newJob.Job.Parameters.push({
-          Parameter: this.$data.parameter,
-        });
+    };
+
+    const checkFormValidity = (): boolean => {
+      const valid = (this.$refs.jobForm as Vue & {
+        checkValidity: () => boolean;
+      }).checkValidity();
+      return valid;
+    };
+
+    const insertJobInServer = (bvModalEvt: any) => {
+      bvModalEvt.preventDefault();
+      handleSubmit();
+    };
+
+    const handleSubmit = () => {
+      if (!checkFormValidity()) {
+        return;
       }
-    }
-  }
-  checkFormValidity(): boolean {
-    //const valid = this.$refs.jobForm.checkValidity()
-    const valid = (this.$refs.jobForm as Vue & {
-      checkValidity: () => boolean;
-    }).checkValidity();
-    return valid;
-  }
-  insertJobInServer(bvModalEvt: any): void {
-    // Prevent modal from closing
-    bvModalEvt.preventDefault();
-    // Trigger submit handler
-    this.handleSubmit();
-  }
-  handleSubmit(): void {
-    // Exit when the form isn't valid
-    if (!this.checkFormValidity()) {
-      return;
-    }
-    console.log("Insert job");
-    insertJob(this.$data.newJob);
-    // Hide the modal manually
-    this.$nextTick(() => {
-      this.$bvModal.hide("modal-createjob");
-    });
-  }
-  resetModal(): void {
-    this.$data.name = "";
-    this.$data.nameState = null;
-  }
-}
+      console.log("Insert job");
+      insertJob(newJob.value);
+      this.$nextTick(() => {
+        this.$bvModal.hide("modal-createjob");
+      });
+    };
+
+    const resetModal = () => {
+      parameter.value = "";
+      nameState.value = null;
+    };
+
+    return {
+      newJob,
+      newSavedJob,
+      editable,
+      operation,
+      description,
+      parameterDescription,
+      environmentDescription,
+      parameter,
+      parameterEditIndex,
+      nameState,
+      submittedNames,
+      paraFields,
+      envFields,
+      utilities,
+      removeParameter,
+      editParameter,
+      prepareParameter,
+      prepareEnvironment,
+      handleOk,
+      checkFormValidity,
+      insertJobInServer,
+      handleSubmit,
+      resetModal,
+    };
+  },
+});
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

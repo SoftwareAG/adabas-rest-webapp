@@ -17,20 +17,21 @@
   <div id="app">
     <router-view />
     <Footer></Footer>
- </div>
+  </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { defineComponent } from 'vue';
 import Footer from '@/components/Footer.vue';
 
-@Component({
+export default defineComponent({
   components: {
     Footer,
   },
-})
-export default class App extends Vue {
-}
+  setup() {
+    // Composition API logic can be added here if needed
+  }
+});
 </script>
 
 <style lang="scss">

@@ -16,24 +16,31 @@
 <template>
   <div class="statusbar p-0 mb-0">
     <ResponseBar />
-    <b-alert variant="outline-primary" show>Status: {{ status.status }}</b-alert>
+    <div class="alert alert-primary" role="alert">Status: {{ status.status }}</div>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { defineComponent, ref } from 'vue';
 import store from "../store/index";
 import ResponseBar from "./ResponseBar.vue";
 
-@Component({components:{ResponseBar}})
-export default class StatusBar extends Vue {
-  @Prop() private msg!: string;
-    data() {
+export default defineComponent({
+  components: { ResponseBar },
+  props: {
+    msg: {
+      type: String,
+      required: true,
+    },
+  },
+  setup() {
+    const status = ref(store.state.status);
+
     return {
-      status: store.state.status,
+      status,
     };
-  }
-}
+  },
+});
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

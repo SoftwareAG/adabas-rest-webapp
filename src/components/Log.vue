@@ -16,69 +16,79 @@
 <template>
   <div class="log p-2">
     <MyHeader></MyHeader>
-    <b-card
-      :header="'Adabas REST server log'"
-      border-variant="secondary"
-      header-border-variant="secondary"
-    >
-      <b-card-body>
-        <b-container fluid>
-          <b-row
-            ><b-col>
+    <div class="card border-secondary">
+      <div class="card-header border-secondary">
+        Adabas REST server log
+      </div>
+      <div class="card-body">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col">
               This page provides the Adabas REST server log output.
-            </b-col></b-row
-          >
-          <b-row
-            ><b-col> <Url url="/adabas/rest/log" /> </b-col
-          ></b-row>
-          <b-row
-            ><b-col>
-              <b-alert show variant="secondary"
-                ><pre>{{ log }}</pre></b-alert
-              >
-            </b-col></b-row
-          ></b-container
-        ></b-card-body
-      ></b-card
-    >
-    <StatusBar />
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <Url url="/adabas/rest/log" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <div class="alert alert-secondary" role="alert">
+                <pre>{{ log }}</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+        <StatusBar />
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { defineComponent, ref, onMounted, onBeforeUnmount } from 'vue';
 import MyHeader from '@/components/Header.vue';
 import { AdabasConfig } from '../adabas/config';
 import Url from './Url.vue';
 import store from '../store/index';
+import StatusBar from '@/components/StatusBar.vue';
 
-@Component({
+export default defineComponent({
   components: {
     MyHeader,
+    Url,
+    StatusBar,
   },
-})
-export default class Configuration extends Vue {
-  @Prop(String) readonly url: string | undefined;
-  data() {
-    return {
-      log: '' as string,
-      c: null,
+  props: {
+    url: String,
+  },
+  setup() {
+    const log = ref('');
+    const c = ref(null);
+    const timer = ref(null);
+
+    const loadLog = () => {
+      c.value.readLog().then((response: any) => {
+        log.value = response.Log.Log;
+      });
     };
-  }
-  created() {
-    this.$data.c = new AdabasConfig();
-    this.$data.timer = setInterval(this.loadLog, 5000);
-    this.loadLog();
-  }
-  loadLog() {
-    this.$data.c.readLog().then((response: any) => {
-      this.$data.log = response.Log.Log;
+
+    onMounted(() => {
+      c.value = new AdabasConfig();
+      timer.value = setInterval(loadLog, 5000);
+      loadLog();
     });
-  }
-  beforeDestroy() {
-    clearInterval(this.$data.timer);
-  }
-}
+
+    onBeforeUnmount(() => {
+      clearInterval(timer.value);
+    });
+
+    return {
+      log,
+    };
+  },
+});
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

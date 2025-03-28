@@ -21,15 +21,14 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { defineComponent } from 'vue';
 import MyHeader from '@/components/Header.vue';
 import JobList from '@/components/JobList.vue';
 
-@Component({
+export default defineComponent({
   components: {
     MyHeader,
     JobList,
   },
-})
-export default class Jobs extends Vue {}
+});
 </script>
