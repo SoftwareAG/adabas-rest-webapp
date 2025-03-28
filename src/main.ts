@@ -44,7 +44,10 @@ router.beforeEach((to: RouteLocationNormalized, from: RouteLocationNormalized, n
   const publicPages = ['/login'];
   const authRequired = !publicPages.includes(to.path);
   const loggedIn = localStorage.getItem('user');
-  //console.log(to.fullPath+" -> "+from.fullPath+" "+JSON.stringify(next));
+  // console.log(to.fullPath+" -> "+from.fullPath+" "+JSON.stringify(next));
+  if (to.path === '/login' && authRequired) {
+    next('/'); // Redirect to home if already logged in
+  }
   if (authRequired && !loggedIn) {
     next({
       path: '/login',

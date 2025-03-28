@@ -79,25 +79,28 @@ export class AdabasAdmin {
     }
     // Provide text file of Nucleus Log
     nucleusLogList(): Promise<any> {
+        // return triggerCall("/adabas/database/" + this.status.Dbid + "/nuclog" + AdminCommands[20].command);
         return triggerCallCommand(this.status.Dbid, 20);
     }
     // Provide text file of Nucleus Log
-    async nucleusLog(s:string): Promise<any> {
+    async nucleusLog(s: string): Promise<any> {
         const getConfig = {
             headers: authHeader("application/json"),
             useCredentails: true,
         };
-        store.commit('SET_URL', { url: config.Url() + "/adabas/database/" + this.status.Dbid + "/nuclog?name="+s, method: "get" });
+    
+        const url = `${config.Url()}/adabas/database/${this.status.Dbid}/nuclog?name=${s}`;
+        store.commit('SET_URL', { url, method: "get" });
+    
         try {
-            const response = await axios
-                .get(config.Url() + "/adabas/database/" + this.status.Dbid + "/nuclog?name="+s, getConfig);
+            const response = await axios.get(url, getConfig);
             return response.data.Log.Log;
-        }
-        catch (error: any) {
-            if (error.response.status == 401 || error.response.status == 403) {
+        } catch (error: any) {
+            if (error.response && (error.response.status === 401 || error.response.status === 403)) {
                 userService.logout();
                 location.reload();
             }
+            console.error("Error fetching nucleus log:", error.message || error);
             throw error;
         }
     }
@@ -677,12 +680,14 @@ export async function loadCluster(): Promise<any> {
 // Trigger a call loading all database and create a list of AdabasAdmin instances
 // per stored database.
 export function SearchDatabases(url: any): any {
-    if (!url) {
-        return url;
-    }
-    var db = store.getters.search(url);
-    if (!db && db != null) {
+    if (!url) return null; 
+
+    let db = store.getters.search(url);
+    
+    if (!db) {
         loadDatabases();
+        return null;
     }
+
     return db;
 }

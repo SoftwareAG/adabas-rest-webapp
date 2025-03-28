@@ -98,13 +98,19 @@ export default defineComponent({
       loadNucleus();
     };
 
-    onMounted(() => {
-      db.value = SearchDatabases(props.url);
-      timer.value = setInterval(loadNucleus, 5000);
-      loadNucleus();
-      db.value.nucleusLogList().then((response: any) => {
+    onMounted(async () => {
+      try {
+        db.value = SearchDatabases(props.url);
+        if (!db.value) {
+          throw new Error("Database not found for URL: " + props.url);
+        }   
+        await loadNucleus();
+        timer.value = setInterval(loadNucleus, 5000);   
+        const response = await db.value.nucleusLogList();
         nucleusOptions.value = response.NucleusLogs;
-      });
+      } catch (error: any) {
+        console.error("Error in onMounted:", error.message || error);
+      }
     });
 
     onBeforeUnmount(() => {

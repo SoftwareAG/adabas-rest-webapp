@@ -80,7 +80,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="row in filteredDatabases" :key="row.status.Dbid">
+                  <tr v-for="row in databases" :key="row.status.Dbid">
                     <td>{{ row.status.Dbid }}</td>
                     <td>
                       <router-link :to="'/information/' + row.status.Dbid">{{ row.status.Name }}</router-link>
@@ -201,30 +201,30 @@ export default defineComponent({
     const databases = ref([] as AdabasAdmin[]);
     const timer = ref('');
     const jsonString = ref('<No data received>');
+    const loadDatabases = async () => {
+      try {
+        const response = await store.dispatch('SYNC_ADMIN_DBS');
 
-    const loadDatabases = () => {
-      store
-        .dispatch('SYNC_ADMIN_DBS')
-        .then((response: any) => {
+        if (response) {
           databases.value = response;
           jsonString.value = JSON.stringify(response);
-          store.commit('SET_STATUS', 'Database list received...');
-        })
-        .catch((error: any) => {
-          console.log('ERROR DBLIST: ' + JSON.stringify(error));
-          if (error.response) {
-            store.commit('SET_STATUS', JSON.stringify(error.response));
-            if (error.response.status == 401 || error.response.status == 403) {
-              userService.logout();
-              location.reload();
-            }
-          } else {
-            store.commit('SET_STATUS', JSON.stringify(error));
-            userService.logout();
-            location.reload();
-          }
-          throw error;
-        });
+          store.commit('SET_STATUS', 'Database list received.');
+        } else {
+        }
+      } catch (error: any) {
+
+        const errorMessage = error.response
+          ? JSON.stringify(error.response)
+          : JSON.stringify(error);
+
+        store.commit('SET_STATUS', errorMessage);
+
+        // Handle authentication errors
+        if (error.response?.status === 401 || error.response?.status === 403) {
+          userService.logout();
+          location.reload();
+        }
+      }
     };
 
     const startDatabase = (dbid: AdabasAdmin) => {

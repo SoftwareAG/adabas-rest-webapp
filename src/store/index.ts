@@ -325,12 +325,12 @@ export default createStore({
         console.log("No admin databases found");
         return undefined;
       } 
-      const x = state.adminDatabases.filter((s) => s.dbid() === dbid);
+      const x = state.adminDatabases.filter((s) => s.dbid() == dbid);
       
       if (x.length > 0) {
         return x[0];
       }
-      console.log("Result fail: " + JSON.stringify(x) + " for " + dbid);
+
       return undefined;
     }
   },

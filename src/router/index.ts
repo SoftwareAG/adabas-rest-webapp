@@ -18,49 +18,49 @@
 */
 
 
-import Home from '../views/Home.vue'
-import Map from '../views/Map.vue'
-import Modify from '../views/Modify.vue'
-import Database from '../views/Database.vue'
-import Metadata from '../views/Metadata.vue'
+import Home from '@/views/Home.vue'
+import Map from '@/views/Map.vue'
+import Modify from '@/views/Modify.vue'
+import Database from '@/views/Database.vue'
+import Metadata from '@/views/Metadata.vue'
 import LoginPage from '@/login/LoginPage.vue';
 import Databases from '@/admin_views/Databases.vue'
-import Containers from '../admin_views/Containers.vue'
-import Browser from '../admin_views/Browser.vue'
-import Files from '../admin_views/Files.vue'
-import Permission from '../admin_views/Permission.vue'
-import Userqueue from '../admin_views/Userqueue.vue'
-import Commandqueue from '../admin_views/Commandqueue.vue'
-import Holdqueue from '../admin_views/Holdqueue.vue'
-import Parameters from '../admin_views/Parameters.vue'
-import Highwater from '../admin_views/Highwater.vue'
-import Adatcp from '../admin_views/Adatcp.vue'
-import NucLog from '../admin_views/NucLog.vue'
-import Threadtable from '../admin_views/Threadtable.vue'
-import UCB from '../admin_views/UCB.vue'
-import Activity from '../admin_views/Activity.vue'
-import Bufferpool from '../admin_views/Bufferpool.vue'
-import Bufferflush from '../admin_views/Bufferflush.vue'
-import Commandstats from '../admin_views/Commandstats.vue'
-import Monitor from '../admin_views/Monitor.vue'
-import DatabaseInfo from '../admin_views/DatabaseInfo.vue'
-import DatabasePlog from '../admin_views/DatabasePlog.vue'
-import Cluster from '../admin_views/Cluster.vue'
-import DatabaseCluster from '../admin_views/DatabaseCluster.vue'
-import Jobs from '../admin_views/Jobs.vue'
-import Checkpoints from '../admin_views/Checkpoints.vue'
-import Description from '../examples/Description.vue'
-import ImageExample from '../examples/ImageExample.vue'
-import UnicodeExample from '../examples/UnicodeExample.vue'
-import NewEmployeeExample from '../examples/NewEmployeeExample.vue'
-import SortedExample from '../examples/SortedExample.vue'
-import DescriptorExample from '../examples/DescriptorExample.vue'
-import Configuration from '../components/Configuration.vue'
-import Log from '../components/Log.vue'
+import Containers from '@/admin_views/Containers.vue'
+import Browser from '@/admin_views/Browser.vue'
+import Files from '@/admin_views/Files.vue'
+import Permission from '@/admin_views/Permission.vue'
+import Userqueue from '@/admin_views/Userqueue.vue'
+import Commandqueue from '@/admin_views/Commandqueue.vue'
+import Holdqueue from '@/admin_views/Holdqueue.vue'
+import Parameters from '@/admin_views/Parameters.vue'
+import Highwater from '@/admin_views/Highwater.vue'
+import Adatcp from '@/admin_views/Adatcp.vue'
+import NucLog from '@/admin_views/NucLog.vue'
+import Threadtable from '@/admin_views/Threadtable.vue'
+import UCB from '@/admin_views/UCB.vue'
+import Activity from '@/admin_views/Activity.vue'
+import Bufferpool from '@/admin_views/Bufferpool.vue'
+import Bufferflush from '@/admin_views/Bufferflush.vue'
+import Commandstats from '@/admin_views/Commandstats.vue'
+import Monitor from '@/admin_views/Monitor.vue'
+import DatabaseInfo from '@/admin_views/DatabaseInfo.vue'
+import DatabasePlog from '@/admin_views/DatabasePlog.vue'
+import Cluster from '@/admin_views/Cluster.vue'
+import DatabaseCluster from '@/admin_views/DatabaseCluster.vue'
+import Jobs from '@/admin_views/Jobs.vue'
+import Checkpoints from '@/admin_views/Checkpoints.vue'
+import Description from '@/examples/Description.vue'
+import ImageExample from '@/examples/ImageExample.vue'
+import UnicodeExample from '@/examples/UnicodeExample.vue'
+import NewEmployeeExample from '@/examples/NewEmployeeExample.vue'
+import SortedExample from '@/examples/SortedExample.vue'
+import DescriptorExample from '@/examples/DescriptorExample.vue'
+import Configuration from '@/components/Configuration.vue'
+import Log from '@/components/Log.vue'
 
-import { createRouter, createWebHistory } from 'vue-router';
+import { createRouter, createWebHashHistory } from 'vue-router';
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHashHistory(),
   routes: [
   {
     path: '/',
@@ -68,7 +68,7 @@ const router = createRouter({
     component: Home,
   },
   { path: '/login', 
-    name: 'login', 
+    name: 'Login', 
     component: LoginPage 
   },
   {

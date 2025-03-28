@@ -32,26 +32,26 @@
               Adabas Data access
             </a>
             <ul class="dropdown-menu" aria-labelledby="adabasDataAccessDropdown">
-              <li><a class="dropdown-item" href="/map">Adabas Map access</a></li>
-              <li><a class="dropdown-item" href="/database">Adabas classic access</a></li>
-              <li><a class="dropdown-item" href="/metadata">Adabas Map Metadata</a></li>
-              <li><a class="dropdown-item" href="/modify">Modify record</a></li>
+              <li><a class="dropdown-item" href="/#/map">Adabas Map access</a></li>
+              <li><a class="dropdown-item" href="/#/database">Adabas classic access</a></li>
+              <li><a class="dropdown-item" href="/#/metadata">Adabas Map Metadata</a></li>
+              <li><a class="dropdown-item" href="/#/modify">Modify record</a></li>
             </ul>
           </li>
           <li class="nav-item">
-            <a class="nav-link" :class="{ disabled: !isAdministrator }" href="/databases/">Database Administration</a>
+            <a class="nav-link" :class="{ disabled: !isAdministrator }" href="/#/databases/">Database Administration</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" :class="{ disabled: !isAdministrator }" href="/jobs">List of tasks</a>
+            <a class="nav-link" :class="{ disabled: !isAdministrator }" href="/#/jobs">List of tasks</a>
           </li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="configureRestServerDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
               Configure REST server
             </a>
             <ul class="dropdown-menu" aria-labelledby="configureRestServerDropdown">
-              <li><a class="dropdown-item" href="/configuration/">Configuration</a></li>
-              <li><a class="dropdown-item" href="/browser/">File Browser</a></li>
-              <li><a class="dropdown-item" href="/log/">RESTful Log</a></li>
+              <li><a class="dropdown-item" href="/#/configuration/">Configuration</a></li>
+              <li><a class="dropdown-item" href="/#/browser/">File Browser</a></li>
+              <li><a class="dropdown-item" href="/#/log/">RESTful Log</a></li>
             </ul>
           </li>
           <li class="nav-item dropdown">
@@ -59,16 +59,16 @@
               Examples
             </a>
             <ul class="dropdown-menu" aria-labelledby="examplesDropdown">
-              <li><a class="dropdown-item" href="/example_description">Description</a></li>
-              <li><a class="dropdown-item" href="/example_image">Image example</a></li>
-              <li><a class="dropdown-item" href="/example_unicode">Unicode access</a></li>
-              <li><a class="dropdown-item" href="/example_new_employees">New employees file</a></li>
-              <li><a class="dropdown-item" href="/example_sorted">Sorted access</a></li>
-              <li><a class="dropdown-item" href="/example_descriptor">Descriptor read</a></li>
+              <li><a class="dropdown-item" href="/#/example_description">Description</a></li>
+              <li><a class="dropdown-item" href="/#/example_image">Image example</a></li>
+              <li><a class="dropdown-item" href="/#/example_unicode">Unicode access</a></li>
+              <li><a class="dropdown-item" href="/#/example_new_employees">New employees file</a></li>
+              <li><a class="dropdown-item" href="/#/example_sorted">Sorted access</a></li>
+              <li><a class="dropdown-item" href="/#/example_descriptor">Descriptor read</a></li>
             </ul>
           </li>
           <li class="nav-item">
-            <a class="nav-link" target="_blank" href="/docs">Swagger API</a>
+            <a class="nav-link" target="_blank" href="/#/docs">Swagger API</a>
           </li>
         </ul>
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
