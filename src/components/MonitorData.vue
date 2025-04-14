@@ -14,7 +14,7 @@
  * limitations under the License.-->
 
 <template>
-  <div class="monitordata p-2">
+  <div class="monitordata p-2" overflow-y="auto">
     <Sidebar :url="url" />
     <div class="card border-secondary mb-3">
       <div class="card-header">

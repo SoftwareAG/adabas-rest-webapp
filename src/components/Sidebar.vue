@@ -14,7 +14,7 @@
  * limitations under the License.-->
 
 <template>
-  <div class="sidebar p-2">
+  <div class="sidebar p-2" overflow-y="auto">
     <div class="offcanvas offcanvas-start" tabindex="-1" id="sidebar-1">
       <div class="offcanvas-header">
         <h5 class="offcanvas-title">Sidebar</h5>

@@ -14,7 +14,7 @@
  * limitations under the License.-->
 
 <template>
-  <div class="filesbrowser p-2">
+  <div class="filesbrowser p-2" overflow-y="auto">
     <div class="modal fade" id="modal-xl" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-xl">
         <div class="modal-content">

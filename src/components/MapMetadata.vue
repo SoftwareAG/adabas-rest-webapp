@@ -14,7 +14,7 @@
  * limitations under the License.-->
 
 <template>
-  <div class="mapmetadata p-2">
+  <div class="mapmetadata p-2" overflow-y="auto">
     <div class="card border-secondary">
       <div class="card-header bg-secondary text-white">Adabas Map Metadata</div>
       <div class="card-body">

@@ -14,7 +14,7 @@
  * limitations under the License.-->
 
 <template>
-  <div class="modifydata p-2">
+  <div class="modifydata p-2" overflow-y="auto">
     <div class="card border-secondary">
       <div class="card-header border-secondary">
         Modify Adabas database

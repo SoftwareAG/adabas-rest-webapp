@@ -14,7 +14,7 @@
  * limitations under the License.-->
 
 <template>
-  <div class="description p-2">
+  <div class="description p-2" overflow-y="auto">
     <MyHeader></MyHeader>
     <div class="card border-secondary mb-3">
       <div class="card-header bg-secondary text-white">Adabas example description</div>

@@ -14,7 +14,7 @@
  * limitations under the License.-->
 
 <template>
-  <div class="imageexample p-2">
+  <div class="imageexample p-2" overflow-y="auto">
     <MyHeader></MyHeader>
     <div class="card border-secondary mb-3">
       <div class="card-header">Adabas Large objects data example</div>

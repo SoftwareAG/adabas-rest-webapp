@@ -14,7 +14,7 @@
  * limitations under the License.-->
 
 <template>
-  <div class="log p-2">
+  <div class="log p-2" overflow-y="auto">
     <MyHeader></MyHeader>
     <div class="card border-secondary">
       <div class="card-header border-secondary">

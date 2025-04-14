@@ -14,7 +14,7 @@
  * limitations under the License.-->
 
 <template>
-  <div class="descriptorexample p-2">
+  <div class="descriptorexample p-2" overflow-y="auto">
     <GenericExample
       URL="/rest/map/EMPLOYEES-NAT-DDM?descriptor=true&sorted_by=DEPARTMENT"
       title="Descriptor example"

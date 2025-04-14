@@ -14,7 +14,7 @@
  * limitations under the License.-->
 
 <template>
-  <div class="databaselist p-2">
+  <div class="databaselist p-2" overflow-y="auto">
     <div class="card border-secondary">
       <div class="card-header border-secondary">
         List of local Adabas Databases available for administration
@@ -110,11 +110,11 @@
                       </div>
                     </td>
                     <td>
-                      <button class="btn btn-outline-primary btn-sm" :to="'/parameters/' + row.status.Dbid">Parameters</button>
-                      <button class="btn btn-outline-primary btn-sm" :to="'/containers/' + row.status.Dbid">Containers</button>
-                      <button class="btn btn-outline-primary btn-sm" :to="'/nuclog/' + row.status.Dbid">Nucleus Log</button>
-                      <button class="btn btn-outline-primary btn-sm" :to="'/files/' + row.status.Dbid">Files</button>
-                      <button v-if="row.status.Active" class="btn btn-outline-primary btn-sm" :to="'/permission/' + row.status.Dbid">Permissions</button>
+                      <router-link :to="'/parameters/' + row.status.Dbid" class="btn btn-outline-primary btn-sm">Parameters</router-link>
+                      <router-link :to="'/containers/' + row.status.Dbid" class="btn btn-outline-primary btn-sm">Containers</router-link>
+                      <router-link :to="'/nuclog/' + row.status.Dbid" class="btn btn-outline-primary btn-sm">Nucleus Log</router-link>
+                      <router-link :to="'/files/' + row.status.Dbid" class="btn btn-outline-primary btn-sm">Files</router-link>
+                      <router-link :to="'/permission/' + row.status.Dbid" v-if="row.status.Active" class="btn btn-outline-primary btn-sm">Permissions</router-link>
                       <div v-if="row.status.Active" class="dropdown">
                         <button class="btn btn-outline-primary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
                           Statistics

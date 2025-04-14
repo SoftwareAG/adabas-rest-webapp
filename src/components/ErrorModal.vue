@@ -14,7 +14,7 @@
  * limitations under the License.-->
 
 <template>
-  <div class="errormodal p-2">
+  <div class="errormodal p-2" overflow-y="auto">
     <div class="modal fade" id="modal-error" tabindex="-1" aria-labelledby="modal-error-label" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">

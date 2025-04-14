@@ -14,7 +14,7 @@
  * limitations under the License.-->
 
 <template>
-  <div class="configuration p-2">
+  <div class="configuration p-2" overflow-y="auto">
     <MyHeader></MyHeader>
     <div class="modal fade" id="modal-db" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
       <div class="modal-dialog modal-xl">

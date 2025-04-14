@@ -14,7 +14,7 @@
  * limitations under the License.-->
 
 <template>
-  <div class="createfile p-2">
+  <div class="createfile p-2" overflow-y="auto">
     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-1">Create Adabas file</button>
     <div class="modal fade" id="modal-multi-1" tabindex="-1" aria-labelledby="modal-multi-1-label" aria-hidden="true">
       <div class="modal-dialog modal-xl">

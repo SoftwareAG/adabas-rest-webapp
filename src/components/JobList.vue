@@ -14,7 +14,7 @@
  * limitations under the License.-->
 
 <template>
-  <div class="joblist p-2">
+  <div class="joblist p-2" overflow-y="auto">
     <div class="card border-secondary mb-3">
       <div class="card-header">Job administration</div>
       <div class="card-body">

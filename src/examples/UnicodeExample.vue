@@ -14,7 +14,7 @@
  * limitations under the License.-->
 
 <template>
-  <div class="unicodeexample p-2">
+  <div class="unicodeexample p-2" overflow-y="auto">
     <MyHeader></MyHeader>
     <div class="card border-secondary mb-3">
       <div class="card-header">Adabas Unicode example</div>

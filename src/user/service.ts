@@ -76,10 +76,7 @@ async function login(username: string, password: string): Promise<Response> {
     };
     const response = await fetch(`${config.Url()}/login`, requestOptions);
     const user = await handleResponse(response);
-    console.log("Waiting for 5 seconds...");
-    console.log("adarest call = ", `${config.Url()}/login`);
-    await sleep(5000);
-    console.log("5 seconds passed!");
+
     // login successful if there's a user in the response
     if (user) {
         // store user details and basic auth credentials in local storage

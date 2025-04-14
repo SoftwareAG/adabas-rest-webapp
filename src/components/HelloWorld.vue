@@ -14,7 +14,7 @@
  * limitations under the License.-->
 
 <template>
-  <div class="hello p-2">
+  <div class="hello p-2" overflow-y="auto">
     <div class="card border-secondary">
       <div class="card-header border-secondary">
         Adabas data access

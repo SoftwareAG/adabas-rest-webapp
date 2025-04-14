@@ -68,7 +68,7 @@
             </ul>
           </li>
           <li class="nav-item">
-            <a class="nav-link" target="_blank" href="/#/docs">Swagger API</a>
+            <a class="nav-link" target="_blank" href="/docs#/">Swagger API</a>
           </li>
         </ul>
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0">

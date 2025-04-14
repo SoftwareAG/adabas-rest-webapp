@@ -1,5 +1,5 @@
 <template>
-  <div class="commandstatsdata p-2">
+  <div class="commandstatsdata p-2" overflow-y="auto">
     <Sidebar :url="url" />
     <div class="card border-secondary">
       <div class="card-header border-secondary">

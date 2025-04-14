@@ -88,8 +88,8 @@ export class AdabasAdmin {
             headers: authHeader("application/json"),
             useCredentails: true,
         };
-    
         const url = `${config.Url()}/adabas/database/${this.status.Dbid}/nuclog?name=${s}`;
+        console.log("URL = "+ url)
         store.commit('SET_URL', { url, method: "get" });
     
         try {

@@ -14,7 +14,7 @@
  * limitations under the License.-->
 
 <template>
-  <div class="mapdata p-2">
+  <div class="mapdata p-2" overflow-y="auto">
     <div class="card border-secondary mb-3">
       <div class="card-header bg-secondary text-white">Query Access Parameter</div>
       <div class="card-body">

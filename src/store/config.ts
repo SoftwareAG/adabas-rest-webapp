@@ -28,9 +28,7 @@ export function Url() {
    }
    // let ref = window.location.origin+window.location.pathname;
    let ref = window.location.origin;
-   console.log('Ref before:' + ref + ':');
    ref =  ref.replace(/\/+$/g,'')
-   console.log('Ref after:' + ref + ':');
    return ref;
 }
 

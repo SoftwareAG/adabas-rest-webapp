@@ -14,7 +14,7 @@
  * limitations under the License.-->
 
 <template>
-  <div class="nucleuslog p-2">
+  <div class="nucleuslog p-2" overflow-y="auto">
     <Sidebar :url="url" />
     <div class="card border-secondary">
       <div class="card-header border-secondary">
@@ -86,11 +86,15 @@ export default defineComponent({
     const show = ref(true);
     const timer = ref(null);
 
-    const loadNucleus = () => {
-      db.value.nucleusLog(selected.value).then((response: any) => {
+    const loadNucleus = async () => {
+      try {
+        const response = await db.value.nucleusLog(selected.value);
         log.value = response;
         show.value = false;
-      });
+      } catch (error) {
+        console.error("Error loading nucleus log:", error);
+        store.commit('SET_STATUS', 'Failed to load nucleus log: '+error);
+      }
     };
 
     const changeLog = () => {

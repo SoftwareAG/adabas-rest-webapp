@@ -14,7 +14,7 @@
  * limitations under the License.-->
 
 <template>
-  <div class="newemployeeexample p-2">
+  <div class="newemployeeexample p-2" overflow-y="auto">
     <GenericExample
       URL="/rest/map/NEW_EMPLOYEES"
       title="New employees example"

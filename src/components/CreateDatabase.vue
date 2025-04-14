@@ -14,7 +14,7 @@
  * limitations under the License.-->
 
 <template>
-  <div class="createdatabase p-2">
+  <div class="createdatabase p-2" overflow-y="auto">
     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-1">
       Create Adabas database
     </button>

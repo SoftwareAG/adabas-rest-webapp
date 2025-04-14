@@ -14,7 +14,7 @@
  * limitations under the License.-->
 
 <template>
-  <div class="databaseclusterlist p-2">
+  <div class="databaseclusterlist p-2" overflow-y="auto">
     <Sidebar :url="url" />
     <div class="card border-secondary">
       <div class="card-header bg-secondary text-white">

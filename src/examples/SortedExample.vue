@@ -14,7 +14,7 @@
  * limitations under the License.-->
 
 <template>
-  <div class="sortedexample p-2">
+  <div class="sortedexample p-2" overflow-y="auto">
     <GenericExample
       URL="/rest/map/EMPLOYEES-NAT-DDM?search=NAME='SMITH'&fields=FULL-NAME,DEPARTMENT&sorted_by=DEPARTMENT"
       title="Sorting example"

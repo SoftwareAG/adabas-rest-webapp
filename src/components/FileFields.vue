@@ -14,7 +14,7 @@
  * limitations under the License.-->
 
 <template>
-  <div class="filefields p-2">
+  <div class="filefields p-2" overflow-y="auto">
       File Fields
   </div>
 </template>
