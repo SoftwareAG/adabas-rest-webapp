@@ -145,6 +145,7 @@ export default defineComponent({
     });
 
     function getSelectedItem(myarg: any) {
+      myarg = (event.target as HTMLSelectElement).value;
       if (query.value.map !== myarg) {
         url.value = config.Url() + '/rest/metadata/map/' + myarg;
         query.value.map = myarg;

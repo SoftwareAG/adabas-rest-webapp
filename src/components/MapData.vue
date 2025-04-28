@@ -352,9 +352,9 @@ export default defineComponent({
     });
 
     function getSelectedItem(myarg: any) {
+        myarg = (event.target as HTMLSelectElement).value;
       if (props.classicMode == 'true') {
-        var n = myarg.indexOf('(');
-        let s = myarg.substring(0, n != -1 ? n : myarg.length);
+        let s = myarg;
         query.value.database.url = s;
         url.value = config.Url() + '/rest/db/' + s;
         store.dispatch('QUERY_DB_FILES', s).then((dbFiles) => {

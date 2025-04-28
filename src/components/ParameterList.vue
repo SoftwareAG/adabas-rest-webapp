@@ -232,7 +232,7 @@ export default defineComponent({
       { value: 'static', text: 'Static parameters' },
       { value: 'dynamic', text: 'Dynamic parameters' },
     ]);
-    const parameters = ref([]);
+    const parameters = ref([] as any[]);
     const optionOptionsOffline = ref([
       { text: 'Auto Expand', value: 'AUTO_EXPAND' },
       { text: 'Utilities only', value: 'UTILITIES_ONLY' },
@@ -262,7 +262,7 @@ export default defineComponent({
       { text: 'Userexit 11', value: 11 },
       { text: 'Userexit 14', value: 14 },
     ]);
-    const db = ref(null);
+    const db = ref<any>();
     const type = ref('static');
 
     const queryParameters = () => {
@@ -301,7 +301,7 @@ export default defineComponent({
       db.value.parameterInfo().then((response: any) => {
         parameters.value.forEach((element: any) => {
           let name = element.Name;
-          switch (element.Name) {
+          switch (name) {
             case 'ADATCPATB':
               name = 'TCPATB';
               break;
@@ -334,7 +334,6 @@ export default defineComponent({
             element.Description = '<not available>';
           }
         });
-        (this.$refs.paraTable as any).refresh();
       });
     };
 
@@ -357,7 +356,7 @@ export default defineComponent({
 
     const submit = (item: any) => {
       item.changed = true;
-      (this.$refs.paraTable as any).refresh();
+      //(this.$refs.paraTable as any).refresh();
     };
 
     const updateParameter = () => {
@@ -391,7 +390,7 @@ export default defineComponent({
         headers: authHeader('application/json'),
         useCredentails: true,
       };
-      return axios.put(changeUrl, {}, getConfig).catch((error: any) => {
+            return axios.put(changeUrl, {}, getConfig).catch((error: any) => {
         store.commit('SET_STATUS', JSON.stringify(error));
         if (error.response) {
           if (error.response.status === 401 || error.response.status === 403) {
