@@ -85,10 +85,11 @@
                   </tbody>
                 </table>
                 <div class="mb-3">
-                  <input class="form-control" type="file" accept=".fdt" @change="handleFileUpload" placeholder="Choose a file or drop it here...">
+                  <input class="form-control" type="file" accept=".fdt" @change="handleFileChange" placeholder="Choose a file or drop it here...">
                 </div>
                 <button type="button" class="btn btn-primary" @click="handleFileUpload">Upload</button>
                 <div class="mt-3">Selected file: {{ file ? file.name : "" }}</div>
+                <div v-if="errorMsg" class="text-danger mt-3">{{ errorMsg }}</div>
               </div>
             </div>
           </div>
@@ -119,7 +120,8 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const file = ref(null);
+    const file = ref<File | null>(null);
+    const errorMsg = ref<string>('');
     const useJob = ref(false);
     const fdtFields = ref<{ level: any; shortName: any; length: any; format: any; flags: any; comment: any }[]>([]);
     const fields = ref([
@@ -132,51 +134,51 @@ export default defineComponent({
     const constructorFields = ref(["descriptor"]);
     const fdtConstructors = ref([]);
     const createFile = ref({
-      fileNumber: 350,
+      fileNumber: "350",
       fduOptions: {
         fduName: "GO_TEST",
-        fduBlocksizeDS: 0,
-        fduBlocksizeAC: 0,
-        fduBlocksizeNI: 0,
-        fduBlocksizeUI: 0,
-        fduACrabn: 0,
-        fduAssoPfac: 0,
-        fduNiBlocksize: 0,
-        fduNobt: 0,
-        fduCipher: 0,
-        fduContiguous: 0,
-        fduDataPfac: 0,
-        fduNoDsst: 0,
-        fduUiBlocksize: 0,
-        fduDSRabn: 0,
-        fduDSSize: 0,
-        fduErase: 0,
-        fduPGMRefresh: 0,
-        fduDSMUnitNILong: 0,
-        fduDSMUnitUILong: 0,
-        fduIsnSize: 0,
-        fduNiRabn: 0,
-        fduNISize: 0,
-        fduReuse: 0,
-        fduUIRabn: 0,
-        fduUISize: 0,
-        fduDSMUnitDS: 0,
-        fduDSMUnitNI: 0,
-        fduDSMUnitUI: 0,
-        fduAdamKey: 0,
-        fduLobFileOption: 0,
-        fduMaxRecordLength: 0,
-        fduAdamDsBlocks: 0,
-        fduParamAdam: 0,
-        fduLobFile: 0,
-        fduAdamOffset: 0,
+        fduBlocksizeDS: "0",
+        fduBlocksizeAC: "0",
+        fduBlocksizeNI: "0",
+        fduBlocksizeUI: "0",
+        fduACrabn: "0",
+        fduAssoPfac: "0",
+        fduNiBlocksize: "0",
+        fduNobt: "0",
+        fduCipher: "0",
+        fduContiguous: "0",
+        fduDataPfac: "0",
+        fduNoDsst: "0",
+        fduUiBlocksize: "0",
+        fduDSRabn: "0",
+        fduDSSize: "0",
+        fduErase: "0",
+        fduPGMRefresh: "0",
+        fduDSMUnitNILong: "0",
+        fduDSMUnitUILong: "0",
+        fduIsnSize: "0",
+        fduNiRabn: "0",
+        fduNISize: "0",
+        fduReuse: "0",
+        fduUIRabn: "0",
+        fduUISize: "0",
+        fduDSMUnitDS: "0",
+        fduDSMUnitNI: "0",
+        fduDSMUnitUI: "0",
+        fduAdamKey: "0",
+        fduLobFileOption: "0",
+        fduMaxRecordLength: "0",
+        fduAdamDsBlocks: "0",
+        fduParamAdam: "0",
+        fduLobFile: "0",
+        fduAdamOffset: "0",
         fduAdamByteKey: "",
-        fduOverflowAdam: 0,
-        fduNiLongRabn: 0,
-        fduNiLongSize: 0,
-        fduUiLongRabn: 0,
-        fduUiLongSize: 0,
-        fduSystemFileMaxMu: 0,
+        fduOverflowAdam: "0",
+        fduNiLongRabn: "0",
+        fduNiLongSize: "0",
+        fduUiLongRabn: "0",
+        fduUiLongSize: "0",
+        fduSystemFileMaxMu: "0",
       },
       fdtDefinition: "1,AQ%2,AF,15,A,NU%1,NN,20,A,DE,UQ%1,VN,20,A,DE",
     });
@@ -185,6 +187,7 @@ export default defineComponent({
     const errorResponse = ref(null);
 
     onMounted(() => {
+      errorMsg.value="";
       db.value = SearchDatabases(props.url);
 
       // Predefined
@@ -203,31 +206,45 @@ export default defineComponent({
       });
     });
 
+    const handleFileChange = (e: Event) => {
+      errorMsg.value="";
+      const target = e.target as HTMLInputElement;
+      if (target.files && target.files.length > 0) {
+        file.value = target.files[0];
+        console.log('Selected file:', file.value.name);
+      } else {
+        errorMsg.value = 'No file selected in input.';
+        console.log('No file selected in input');
+      }
+    };
+
     const handleFileUpload = () => {
+      errorMsg.value="";
       if (!file.value) {
+        errorMsg.value = 'No file selected.';
+        console.warn("No file selected");
         return;
       }
-      var reader = new FileReader();
+      const reader = new FileReader();
       reader.onload = (e) => {
-        if (e && e.target != null) {
-          var contents = e.target.result;
-          var v = contents as string;
-          let lines = v.split("\n");
+        if (e?.target?.result) {
+          const contents = e.target.result as string;
+          const lines = contents.split("\n");
+          
           fdtFields.value = [];
+          fdtConstructors.value = [];
           createFile.value.fdtDefinition = "";
           lines.forEach((line: string) => {
             line = line.replace(/;.*/g, "").trim();
-            if (line != "") {
-              createFile.value.fdtDefinition =
-                createFile.value.fdtDefinition + line + "%";
-              if (line.indexOf("=") > 0) {
-                let fdtField = {
-                  descriptor: line,
-                };
+            if (line !== "") {
+              createFile.value.fdtDefinition += line + "%";
+
+              if (line.includes("=")) {
+                const fdtField = { descriptor: line };
                 fdtConstructors.value.push(fdtField);
               } else {
-                let f = line.split(",");
-                let fdtField = {
+                const f = line.split(",");
+                const fdtField = {
                   level: f[0],
                   shortName: f[1],
                   length: f[2],
@@ -245,6 +262,8 @@ export default defineComponent({
     };
 
     const handleOk = (bvModalEvt: any) => {
+      errorMsg.value="";
+      createFile.value.fileNumber = String(createFile.value.fileNumber);
       const getConfig = {
         headers: authHeader("application/json"),
       };
@@ -266,14 +285,16 @@ export default defineComponent({
           } else {
             errorResponse.value = error.response;
           }
-          this.$root.$emit("bv::show::modal", "modal-multi-1", "#btnShow");
+          errorMsg.value=error.response.status+":"+error.response.statusText+","+error.response.data.Error.code+":"+error.response.data.Error.message;
           console.log(
             error.response.statusText + ":" + JSON.stringify(error.response)
           );
         });
+        return;
     };
 
     const addLobFile = () => {
+      errorMsg.value="";
       if (lobFile.value > 0) {
         const getConfig = {
           headers: authHeader("application/json"),
@@ -306,6 +327,7 @@ export default defineComponent({
 
     return {
       file,
+      errorMsg,
       useJob,
       fdtFields,
       fields,
@@ -316,6 +338,7 @@ export default defineComponent({
       db,
       errorResponse,
       handleFileUpload,
+      handleFileChange,
       handleOk,
       addLobFile,
     };

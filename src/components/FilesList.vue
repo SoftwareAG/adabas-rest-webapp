@@ -76,7 +76,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="file in filteredFiles" :key="file.FileNr" @click="onRowSelected(file)">
+                  <tr v-for="file in files" :key="file.FileNr" @click="onRowSelected(file)">
                     <td>{{ file.FileNr }}</td>
                     <td>{{ file.Name }}</td>
                     <td>{{ file.Type }}</td>
@@ -392,30 +392,12 @@ export default defineComponent({
     const infoDeleteFile = (item: any) => {
       currentFile.value = item.FileNr;
       console.log('Delete ' + item.FileNr + ' ' + JSON.stringify(item));
-      this.$bvModal
-        .msgBoxConfirm(
-          'Please confirm that you want to delete the Adabas file ' + item.FileNr + '.',
-          {
-            title: 'Please Confirm',
-            size: 'sm',
-            buttonSize: 'sm',
-            okVariant: 'danger',
-            okTitle: 'YES',
-            cancelTitle: 'NO',
-            footerClass: 'p-2',
-            hideHeaderClose: false,
-            centered: true,
-          }
-        )
-        .then((value) => {
-          console.log('Selected value: ' + currentFile.value + ' ' + JSON.stringify(value));
-          if (value) {
-            db.value.deleteFile(currentFile.value);
-          }
-        })
-        .catch((err) => {
-          console.log('Catching err ' + err);
-        });
+    
+      const confirmed = window.confirm(`Please confirm that you want to delete the Adabas file ${item.FileNr}.`);
+    
+      if (confirmed) {
+        db.value.deleteFile(currentFile.value);
+      }
     };
 
     const infoRenumberFile = (item: any) => {

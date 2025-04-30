@@ -13,6 +13,7 @@
     "async": "^2.6.4",
     "axios": "^1.8.4",
     "bootstrap": "^5.3.3",
+    "bootstrap-vue-next": "^0.28.6",
     "chart.js": "^3.9.1",
     "minimist": "^1.2.6",
     "mutationobserver-shim": "^0.3.7",
