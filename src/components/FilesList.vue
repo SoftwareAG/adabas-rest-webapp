@@ -165,20 +165,82 @@
                           <tr>
                             <th>Level</th>
                             <th>Name</th>
+                            <th>Length</th>
                             <th>Format</th>
                             <th>Flags</th>
                             <th>Type</th>
-                            <th>SubFields</th>
                           </tr>
                         </thead>
                         <tbody>
                           <tr v-for="field in fileFields" :key="field.Name">
                             <td><pre>{{ levelSpace(field.Level) }}</pre></td>
                             <td>{{ field.Name }}</td>
+                            <td>{{ field.Length }}</td>
                             <td>{{ field.Format }}</td>
                             <td>{{ field.Flags }}</td>
                             <td>{{ field.Type }}</td>
-                            <td>{{ field.SubFields }}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <div v-if="fdtSubAvailable">
+                      SubFields
+                      <table class="table table-striped table-bordered table-hover table-sm">
+                        <thead>
+                          <tr>
+                            <th>Type</th>
+                            <th>Name</th>
+                            <th>Length</th>
+                            <th>Format</th>
+                            <th>Flags</th>
+                            <th>Parent field(s)</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr v-for="subfield in subFields" :key="subfield.Name">
+                            <td>{{ subfield.Type }}</td>
+                            <td>{{ subfield.Name }}</td>
+                            <td>{{ subfield.Length }}</td>
+                            <td>{{ subfield.Format }}</td>
+                            <td>{{ subfield.Flags }}</td>
+                            <td>
+                              <ul v-if="subfield.SubFields">
+                                <ul v-for="subfd in subfield.SubFields" :key="subfd.Name">
+                                  <td>  {{ subfd.SubName }}  </td>
+                                  <td>  ( {{ subfd.From }} - {{ subfd.To }} )</td>
+                                </ul>
+                              </ul>
+                              <ul v-if="subfield.Type === 'COLLATION'">
+                                  <td>  {{ subfield.CollationParent }}  </td>
+                                  <td>  </td>
+                                  <td>  {{ subfield.CollationAttribute }}  </td>
+                              </ul>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <div v-if="fdtRefAvailable">
+                      Referential Integrity
+                      <table class="table table-striped table-bordered table-hover table-sm">
+                        <thead>
+                          <tr>
+                            <th>Type</th>
+                            <th>Name</th>
+                            <th>Refer. file</th>
+                            <th>Primary field</th>
+                            <th>Foreign field</th>
+                            <th>Rules</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr v-for="reffield in refFields" :key="reffield.Name">
+                            <td>{{ reffield.ReferentialType }}</td>
+                            <td>{{ reffield.Name }}</td>
+                            <td>{{ reffield.ReferentialFile }}</td>
+                            <td>{{ reffield.PrimaryField }}</td>
+                            <td>{{ reffield.ForeignField }}</td>
+                            <td>{{ reffield.Flags }}</td>
                           </tr>
                         </tbody>
                       </table>
@@ -283,6 +345,8 @@ export default defineComponent({
     const filterOn = ref(['FileNr', 'Name']);
     const hideFileParameter = ref(true);
     const fdtAvailable = ref(false);
+    const fdtSubAvailable = ref(false);
+    const fdtRefAvailable = ref(false);
     const fileParameter = ref([]);
     const fileParameterOrder = ref([
       'Name',
@@ -326,7 +390,9 @@ export default defineComponent({
     ]);
     const parameterFields = ref(['Name', 'Value']);
     const fileFields = ref([]);
-    const fieldFields = ref(['Level', 'Name', 'Format', 'Flags', 'Type', 'SubFields']);
+    const subFields = ref([]);
+    const refFields = ref([]);
+    const fieldFields = ref(['Level', 'Name', 'Length', 'Format', 'Flags', 'Type', 'SubFields']);
     const timer = ref('');
 
     onMounted(() => {
@@ -352,12 +418,17 @@ export default defineComponent({
     };
 
     const onRowSelected = (items: any) => {
+      fdtSubAvailable.value = false;
+      fdtRefAvailable.value = false;
+
       if (items.length == 0) {
         fileParameter.value = [];
         fileFields.value = [];
+        subFields.value = [];
+        refFields.value = [];
         return;
       }
-      db.value.fileInfo(items[0].FileNr).then((response: any) => {
+      db.value.fileInfo(items.FileNr).then((response: any) => {
         let fileParameterData = response;
         fileParameterData = fileParameterData.filter((a: any) => {
           return !(fileParameterDrop.value.indexOf(a.Name) !== -1);
@@ -371,10 +442,25 @@ export default defineComponent({
         hideFileParameter.value = false;
       });
       db.value
-        .fileFields(items[0].FileNr)
+        .fileFields(items.FileNr)
         .then((response: any) => {
           fileFields.value = response;
           fdtAvailable.value = true;
+          subFields.value = fileFields.value.filter(item => 'SubFields' in item);
+          refFields.value = fileFields.value.filter(item => item.Type === 'REFERENTIAL');
+          subFields.value = subFields.value.filter(item => item.Type !== 'REFERENTIAL');
+          fileFields.value = fileFields.value.filter(item => !('SubFields' in item));
+
+          if(refFields.value.length != 0)
+          {
+            fdtRefAvailable.value = true;
+          }
+          
+          if(subFields.value.length != 0 )
+          {
+            fdtSubAvailable.value = true;
+          }
+          
         })
         .catch((error: any) => {
           fdtAvailable.value = false;
@@ -495,6 +581,8 @@ export default defineComponent({
       fileParameterDrop,
       parameterFields,
       fileFields,
+      subFields,
+      refFields,
       fieldFields,
       timer,
       loadFiles,
@@ -508,6 +596,8 @@ export default defineComponent({
       addLobFile,
       renameFile,
       refreshFile,
+      fdtSubAvailable,
+      fdtRefAvailable,
     };
   },
 });
