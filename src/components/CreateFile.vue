@@ -274,7 +274,7 @@ export default defineComponent({
           getConfig
         )
         .then((response: any) => {
-          console.log("Response file creation" + response);
+          console.log("Response file creation" + response.data.Status.Message);
           if (response.status == 200) {
             addLobFile();
           }

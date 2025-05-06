@@ -319,6 +319,7 @@ import StatusBar from '@/components/StatusBar.vue';
 import CreateFile from './CreateFile.vue';
 import Url from './Url.vue';
 import { SearchDatabases } from '@/adabas/admin';
+import { useRouter } from 'vue-router';
 
 export default defineComponent({
   name: 'FilesList',
@@ -332,6 +333,7 @@ export default defineComponent({
     url: String,
   },
   setup(props) {
+    const router = useRouter();
     const db = ref(null);
     const newName = ref('');
     const newNr = ref(500);
@@ -396,6 +398,7 @@ export default defineComponent({
     const timer = ref('');
 
     onMounted(() => {
+      console.log("onMounted");
       db.value = SearchDatabases(props.url);
       timer.value = setInterval(loadFiles, 15000);
       if (db.value === undefined) {
@@ -475,14 +478,18 @@ export default defineComponent({
       return res + nr;
     };
 
-    const infoDeleteFile = (item: any) => {
+    const infoDeleteFile = async (item: any) => {
       currentFile.value = item.FileNr;
-      console.log('Delete ' + item.FileNr + ' ' + JSON.stringify(item));
-    
       const confirmed = window.confirm(`Please confirm that you want to delete the Adabas file ${item.FileNr}.`);
     
       if (confirmed) {
-        db.value.deleteFile(currentFile.value);
+        try {
+          await db.value.deleteFile(currentFile.value);
+          router.push('/files/'+db.value.status.Dbid);
+        } catch (error) {
+          console.error("Failed to delete file:", error);
+        }
+        return;
       }
     };
 

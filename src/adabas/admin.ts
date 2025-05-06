@@ -382,8 +382,11 @@ export class AdabasAdmin {
             useCredentails: true,
         };
         try {
-            return axios
-                .delete(config.Url() + "/adabas/database/" + this.status.Dbid + "/file/" + file, getConfig);
+            const resp = await axios.delete(
+                config.Url() + "/adabas/database/" + this.status.Dbid + "/file/" + file,
+                getConfig
+              );
+            return resp;
         }
         catch (error: any) {
             if (error.response) {
