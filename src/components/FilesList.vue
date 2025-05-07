@@ -89,11 +89,11 @@
                           Actions
                         </button>
                         <ul class="dropdown-menu">
-                          <li><a class="dropdown-item" href="#" @click="infoDeleteFile(file)">Delete</a></li>
-                          <li><a class="dropdown-item" href="#" @click="infoRenumberFile(file)">Add LOB file</a></li>
-                          <li><a class="dropdown-item" href="#" @click="infoAddLob(file)">Renumber</a></li>
-                          <li><a class="dropdown-item" href="#" @click="refreshFile(file)">Refresh</a></li>
-                          <li><a class="dropdown-item" href="#" @click="infoRenameFile(file)">Rename</a></li>
+                          <li><a class="dropdown-item" href="javascript:void(0)" @click="infoDeleteFile(file)">Delete</a></li>
+                          <li><a class="dropdown-item" href="javascript:void(0)" @click="infoAddLob(file)">Add LOB file</a></li>
+                          <li><a class="dropdown-item" href="javascript:void(0)" @click="infoRenumberFile(file)">Renumber</a></li>
+                          <li><a class="dropdown-item" href="javascript:void(0)" @click="refreshFile(file)">Refresh</a></li>
+                          <li><a class="dropdown-item" href="javascript:void(0)" @click="infoRenameFile(file)">Rename</a></li>
                         </ul>
                       </div>
                     </td>
@@ -320,6 +320,7 @@ import CreateFile from './CreateFile.vue';
 import Url from './Url.vue';
 import { SearchDatabases } from '@/adabas/admin';
 import { useRouter } from 'vue-router';
+import * as bootstrap from 'bootstrap';
 
 export default defineComponent({
   name: 'FilesList',
@@ -333,6 +334,9 @@ export default defineComponent({
     url: String,
   },
   setup(props) {
+    let modalInstance: bootstrap.Modal | null = null;
+    let modalInstanceRename: bootstrap.Modal | null = null;
+    let modalInstanceAddLOB: bootstrap.Modal | null = null;
     const router = useRouter();
     const db = ref(null);
     const newName = ref('');
@@ -399,6 +403,12 @@ export default defineComponent({
 
     onMounted(() => {
       console.log("onMounted");
+      const modalrenumber = document.getElementById('modal-renumber');
+      const modalrename = document.getElementById('modal-rename');
+      const modalAddLob = document.getElementById('modal-addlob');
+      modalInstance = new bootstrap.Modal(modalrenumber);
+      modalInstanceRename = new bootstrap.Modal(modalrename);
+      modalInstanceAddLOB = new bootstrap.Modal(modalAddLob);
       db.value = SearchDatabases(props.url);
       timer.value = setInterval(loadFiles, 15000);
       if (db.value === undefined) {
@@ -485,7 +495,7 @@ export default defineComponent({
       if (confirmed) {
         try {
           await db.value.deleteFile(currentFile.value);
-          router.push('/files/'+db.value.status.Dbid);
+          loadFiles();
         } catch (error) {
           console.error("Failed to delete file:", error);
         }
@@ -496,28 +506,34 @@ export default defineComponent({
     const infoRenumberFile = (item: any) => {
       currentFile.value = item.FileNr;
       console.log('Renumber ' + item.FileNr);
-      this.$root.$emit('bv::show::modal', 'modal-renumber', '#btnShow');
+      if (modalInstance) {
+        modalInstance.show();
+      }
     };
 
     const infoRenameFile = (item: any) => {
       currentFile.value = item.FileNr;
       newName.value = item.Name;
       console.log('Rename ' + item.FileNr);
-      this.$root.$emit('bv::show::modal', 'modal-rename', '#btnShow');
+      if (modalInstanceRename) {
+        modalInstanceRename.show();
+      }
     };
 
     const infoAddLob = (item: any) => {
       currentFile.value = item.FileNr;
       console.log('Add Lob file ' + item.FileNr);
-      this.$root.$emit('bv::show::modal', 'modal-addlob', '#btnShow');
+      if (modalInstanceAddLOB) {
+        modalInstanceAddLOB.show();
+      }
     };
 
-    const renumberFile = () => {
+    const renumberFile = async () => {
       console.log('Renumber ' + currentFile.value + ' to ' + newNr.value);
       if (newNr.value > 0) {
-        db.value.renumberFile(currentFile.value, newNr.value);
+        const response = await db.value.renumberFile(currentFile.value, newNr.value);
       }
-      newNr.value = 0;
+      loadFiles();
     };
 
     const addLobFile = () => {
@@ -526,43 +542,29 @@ export default defineComponent({
         db.value.addLobFile(currentFile.value, newNr.value);
       }
       newNr.value = 0;
+      loadFiles();
     };
 
-    const renameFile = () => {
+    const renameFile = async () => {
       console.log('Renamer ' + currentFile.value + ' with ' + newName.value);
       if (newName.value != '') {
-        db.value.renameFile(currentFile.value, newName.value);
+        const response = await db.value.renameFile(currentFile.value, newName.value);
       }
       newName.value = '';
+      loadFiles();
     };
 
-    const refreshFile = (item: any) => {
+    const refreshFile = async (item: any) => {
       currentFile.value = item.FileNr;
       console.log('Refresh ' + item.FileNr + ' ' + JSON.stringify(item));
-      this.$bvModal
-        .msgBoxConfirm(
-          'Please confirm that you want to refresh the Adabas file ' + item.FileNr + '.',
-          {
-            title: 'Please Confirm',
-            size: 'sm',
-            buttonSize: 'sm',
-            okVariant: 'danger',
-            okTitle: 'YES',
-            cancelTitle: 'NO',
-            footerClass: 'p-2',
-            hideHeaderClose: false,
-            centered: true,
-          }
-        )
-        .then((value) => {
-          console.log('Selected value: ' + currentFile.value + ' ' + JSON.stringify(value));
-          if (value) {
-            db.value.refreshFile(currentFile.value);
-          }
-        })
-        .catch((err) => {
-          console.log('Catching err ' + err);
-        });
+
+      const confirmed = window.confirm(`Please confirm that you want to refresh the Adabas file ${item.FileNr}.`);
+      if (confirmed) {
+        console.log('Confirmed refresh for ' + currentFile.value);
+        await db.value.refreshFile(currentFile.value);
+      } else {
+        console.log('Refresh cancelled');
+      }
     };
 
     onBeforeUnmount(() => {
@@ -605,6 +607,9 @@ export default defineComponent({
       refreshFile,
       fdtSubAvailable,
       fdtRefAvailable,
+      modalInstance,
+      modalInstanceRename,
+      modalInstanceAddLOB,
     };
   },
 });
