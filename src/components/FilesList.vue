@@ -104,6 +104,12 @@
           </div>
           <div class="row">
             <div class="col">
+              <div v-if="showSuccess">
+                <div class="alert alert-success" role="alert">{{successmessage}}</div>
+              </div>
+              <div v-if="showError">
+                <div class="alert alert-danger" role="alert">{{errormessage}}</div>
+              </div>
               <div v-if="hideFileParameter">
                 <div class="alert alert-primary" role="alert">Please select Adabas file</div>
               </div>
@@ -340,6 +346,8 @@ export default defineComponent({
     const router = useRouter();
     const db = ref(null);
     const newName = ref('');
+    const errormessage = ref('');
+    const successmessage = ref('');
     const newNr = ref(500);
     const currentFile = ref(0);
     const perPage = ref(10);
@@ -350,6 +358,8 @@ export default defineComponent({
     const filter = ref('');
     const filterOn = ref(['FileNr', 'Name']);
     const hideFileParameter = ref(true);
+    const showSuccess = ref(false);
+    const showError = ref(false);
     const fdtAvailable = ref(false);
     const fdtSubAvailable = ref(false);
     const fdtRefAvailable = ref(false);
@@ -402,6 +412,8 @@ export default defineComponent({
     const timer = ref('');
 
     onMounted(() => {
+      showError.value=false;
+      showSuccess.value=false;
       console.log("onMounted");
       const modalrenumber = document.getElementById('modal-renumber');
       const modalrename = document.getElementById('modal-rename');
@@ -419,6 +431,8 @@ export default defineComponent({
     });
 
     const loadFiles = () => {
+      showError.value=false;
+      showSuccess.value=false;
       if (db.value === undefined) {
         db.value = SearchDatabases(props.url);
         if (db.value === undefined) {
@@ -494,10 +508,15 @@ export default defineComponent({
     
       if (confirmed) {
         try {
-          await db.value.deleteFile(currentFile.value);
+          const response = await db.value.deleteFile(currentFile.value);
           loadFiles();
+          successmessage.value="File "+currentFile.value+" deleted.";
+          hideFileParameter.value=true;
+          showSuccess.value=true;
         } catch (error) {
-          console.error("Failed to delete file:", error);
+          //console.error("Failed to delete file:", JSON.stringify(error));
+          errormessage.value = "Failed to delete file " +currentFile.value + ", "+ error.data.Error.code + " : " + error.data.Error.message;
+          showError.value=true;
         }
         return;
       }
@@ -584,6 +603,8 @@ export default defineComponent({
       filter,
       filterOn,
       hideFileParameter,
+      showError,
+      showSuccess,
       fdtAvailable,
       fileParameter,
       fileParameterOrder,
@@ -610,6 +631,8 @@ export default defineComponent({
       modalInstance,
       modalInstanceRename,
       modalInstanceAddLOB,
+      errormessage,
+      successmessage,
     };
   },
 });

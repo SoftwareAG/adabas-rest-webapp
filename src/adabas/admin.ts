@@ -395,7 +395,7 @@ export class AdabasAdmin {
                     location.reload();
                 }
             }
-            throw error;
+            throw error.response;
         }
     }
     async renameDatabase(newName: string): Promise<any> {
