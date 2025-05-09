@@ -73,6 +73,7 @@
               </button>
             </div>
           </div>
+          <br>
           <div class="row">
             <div class="col">
               <table class="table table-striped table-bordered table-hover table-sm">
@@ -286,12 +287,17 @@ export default defineComponent({
         parameters.value.forEach((element: any) => {
           element.OrgValue = element.Value;
         });
-        let p = parameters.value.filter((i: any) => i.Name === 'OPTIONS');
-        parseOptions(p[0].Value);
+        let p = parameters.value.filter((i: any) => i.Name === 'OPTIONS');  
+        if(p.length > 0)
+          parseOptions(p[0].Value);
+
         p = parameters.value.filter((i: any) => i.Name === 'LOGGING');
-        parseLogging(p[0].Value);
+        if(p.length)
+          parseLogging(p[0].Value);
+
         p = parameters.value.filter((i: any) => i.Name === 'USEREXITS');
-        parseUserexits(p[0].Value);
+        if(p.length)
+          parseUserexits(p[0].Value);
         optionOptions.value = doStaticType ? optionOptionsOffline.value : optionOptionsOnline.value;
         getParameterInfo();
       });
@@ -337,7 +343,8 @@ export default defineComponent({
       });
     };
 
-    const getTypeItem = (newtype: any) => {
+    const getTypeItem = (event: Event) => {
+      const newtype = (event.target as HTMLSelectElement).value;
       type.value = newtype;
       queryParameters();
     };
@@ -359,7 +366,7 @@ export default defineComponent({
       //(this.$refs.paraTable as any).refresh();
     };
 
-    const updateParameter = () => {
+    const updateParameter = async () => {
       const changedParameter = parameters.value.filter((i: any) => i.changed);
       if (changedParameter.length === 0) {
         return;
@@ -390,16 +397,20 @@ export default defineComponent({
         headers: authHeader('application/json'),
         useCredentails: true,
       };
-            return axios.put(changeUrl, {}, getConfig).catch((error: any) => {
-        store.commit('SET_STATUS', JSON.stringify(error));
+
+      try {
+        const resp = await axios.put(changeUrl, {}, getConfig);
+        queryParameters();
+      } catch (error) {
         if (error.response) {
+          store.commit('SET_STATUS', JSON.stringify(error));
           if (error.response.status === 401 || error.response.status === 403) {
             userService.logout();
             location.reload();
           }
         }
-        throw error;
-      });
+      }
+      return;
     };
 
     const toggleAll = (checked: boolean) => {
