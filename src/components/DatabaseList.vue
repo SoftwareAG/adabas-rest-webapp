@@ -120,17 +120,37 @@
                           Statistics
                         </button>
                         <ul class="dropdown-menu">
-                          <li><a class="dropdown-item" :to="'/highwater/' + row.status.Dbid">High Water</a></li>
-                          <li><a class="dropdown-item" :to="'/cmdstats/' + row.status.Dbid">Command statistics</a></li>
-                          <li><a class="dropdown-item" :disabled="!isMonitor(row)" :to="'/monitor/' + row.status.Dbid">Monitor statistics</a></li>
-                          <li><a class="dropdown-item" :to="'/bufferpool/' + row.status.Dbid">Buffer Pool</a></li>
-                          <li><a class="dropdown-item" :disabled="!isMonitor(row)" :to="'/bufferflush/' + row.status.Dbid">Buffer Flush</a></li>
-                          <li><a class="dropdown-item" :to="'/checkpoints/' + row.status.Dbid">Checkpoints</a></li>
-                          <li><a class="dropdown-item" :to="'/activity/' + row.status.Dbid">Activity</a></li>
-                          <li><a class="dropdown-item" :to="'/plogstat/' + row.status.Dbid">PLOG</a></li>
-                          <li><a class="dropdown-item" :to="'/threadtable/' + row.status.Dbid">Thread Table</a></li>
-                          <li><a class="dropdown-item" :to="'/adatcp/' + row.status.Dbid">TCP connection</a></li>
-                          <li><a class="dropdown-item" :to="'/cluster/' + row.status.Dbid">Cluster</a></li>
+                          <li><router-link class="dropdown-item" :to="'/highwater/' + row.status.Dbid">High Water</router-link></li>
+                          <li><router-link class="dropdown-item" :to="'/cmdstats/' + row.status.Dbid">Command statistics</router-link></li>
+                          <li>
+                            <router-link
+                              class="dropdown-item"
+                              :to="'/monitor/' + row.status.Dbid"
+                              :class="{ disabled: !isMonitor(row) }"
+                              :tabindex="!isMonitor(row) ? -1 : 0"
+                              @click.prevent="!isMonitor(row) && $event.preventDefault()"
+                            >
+                              Monitor statistics
+                            </router-link>
+                          </li>
+                          <li><router-link class="dropdown-item" :to="'/bufferpool/' + row.status.Dbid">Buffer Pool</router-link></li>
+                          <li>
+                            <router-link
+                              class="dropdown-item"
+                              :to="'/bufferflush/' + row.status.Dbid"
+                              :class="{ disabled: !isMonitor(row) }"
+                              :tabindex="!isMonitor(row) ? -1 : 0"
+                              @click.prevent="!isMonitor(row) && $event.preventDefault()"
+                            >
+                              Buffer Flush
+                            </router-link>
+                          </li>
+                          <li><router-link class="dropdown-item" :to="'/checkpoints/' + row.status.Dbid">Checkpoints</router-link></li>
+                          <li><router-link class="dropdown-item" :to="'/activity/' + row.status.Dbid">Activity</router-link></li>
+                          <li><router-link class="dropdown-item" :to="'/plogstat/' + row.status.Dbid">PLOG</router-link></li>
+                          <li><router-link class="dropdown-item" :to="'/threadtable/' + row.status.Dbid">Thread Table</router-link></li>
+                          <li><router-link class="dropdown-item" :to="'/adatcp/' + row.status.Dbid">TCP connection</router-link></li>
+                          <li><router-link class="dropdown-item" :to="'/cluster/' + row.status.Dbid">Cluster</router-link></li>
                         </ul>
                       </div>
                       <div v-if="row.status.Active" class="dropdown">
