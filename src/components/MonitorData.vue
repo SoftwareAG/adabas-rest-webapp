@@ -72,10 +72,42 @@
 <script lang="ts">
 import { defineComponent, ref, onMounted, onBeforeUnmount, computed } from 'vue';
 import { LineChart, useLineChart } from 'vue-chart-3';
+import { DoughnutChart, useDoughnutChart } from 'vue-chart-3';
 import Sidebar from './Sidebar.vue';
 import StatusBar from '@/components/StatusBar.vue';
 import Url from './Url.vue';
 import { SearchDatabases } from '@/adabas/admin';
+import {
+  Chart as ChartJS,
+  Title,
+  Tooltip,
+  Legend,
+  LineElement,
+  BarElement,
+  PointElement,
+  LinearScale,
+  CategoryScale,
+  DoughnutController,
+  ArcElement,
+  BarController,
+  LineController,
+} from 'chart.js';
+
+ChartJS.register(
+  Title,
+  Tooltip,
+  Legend,
+  LineElement,
+  BarElement,
+  PointElement,
+  LinearScale,
+  CategoryScale,
+  DoughnutController,
+  ArcElement,
+  BarController,
+  LineController
+);
+
 
 export default defineComponent({
   name: 'MonitorData',
@@ -277,15 +309,15 @@ export default defineComponent({
       });
     }
 
-    // const totalPages = computed(() => Math.ceil(comstats.value.length / tableMetadata.value.perPage));
-    // const paginatedItems = computed(() => {
-    //   const start = (tableMetadata.value.currentPage - 1) * tableMetadata.value.perPage;
-    //   const end = start + tableMetadata.value.perPage;
-    //   return comstats.value.slice(start, end);
-    // });
-    // function changePage(page) {
-    //   tableMetadata.value.currentPage = page;
-    // }
+    const totalPages = computed(() => Math.ceil(comstats.value.length / tableMetadata.value.perPage));
+    const paginatedItems = computed(() => {
+      const start = (tableMetadata.value.currentPage - 1) * tableMetadata.value.perPage;
+      const end = start + tableMetadata.value.perPage;
+      return comstats.value.slice(start, end);
+    });
+    function changePage(page) {
+      tableMetadata.value.currentPage = page;
+    }
 
     return {
       tableMetadata,
@@ -293,11 +325,38 @@ export default defineComponent({
       lineChartProps,
       lineChartRef,
       imgData,
-      // totalPages,
-      // paginatedItems,
-      // changePage,
+      totalPages,
+      paginatedItems,
+      changePage,
     };
   },
+});
+
+const doughnutData = computed(() => ({
+  labels: ['Red', 'Blue', 'Yellow'],
+  datasets: [{
+    label: 'My Doughnut',
+    data: [300, 50, 100],
+    backgroundColor: ['red', 'blue', 'yellow'],
+  }],
+}));
+
+const doughnutOptions = computed(() => ({
+  responsive: true,
+  plugins: {
+    legend: {
+      position: 'top',
+    },
+    title: {
+      display: true,
+      text: 'Doughnut Chart Example',
+    },
+  },
+}));
+
+const { doughnutChartProps } = useDoughnutChart({
+  chartData: doughnutData,
+  options: doughnutOptions,
 });
 </script>
 

@@ -158,10 +158,10 @@
                           Queues
                         </button>
                         <ul class="dropdown-menu">
-                          <li><a class="dropdown-item" :to="'/userqueue/' + row.status.Dbid">User queues</a></li>
-                          <li><a class="dropdown-item" :to="'/commandqueue/' + row.status.Dbid">Command queues</a></li>
-                          <li><a class="dropdown-item" :to="'/holdqueue/' + row.status.Dbid">Hold queues</a></li>
-                          <li><a class="dropdown-item" :to="'/ucb/' + row.status.Dbid">UCB</a></li>
+                          <li><router-link class="dropdown-item" :to="'/userqueue/' + row.status.Dbid">User queues</router-link></li>
+                          <li><router-link class="dropdown-item" :to="'/commandqueue/' + row.status.Dbid">Command queues</router-link></li>
+                          <li><router-link class="dropdown-item" :to="'/holdqueue/' + row.status.Dbid">Hold queues</router-link></li>
+                          <li><router-link class="dropdown-item" :to="'/ucb/' + row.status.Dbid">UCB</router-link></li>
                         </ul>
                       </div>
                     </td>
