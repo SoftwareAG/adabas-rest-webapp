@@ -93,7 +93,7 @@
                             <input
                               class="form-check-input"
                               type="checkbox"
-                              v-model="row.Value"
+                              v-model="row.toggle"
                               @change="submit(row)"
                             />
                           </div>
@@ -266,7 +266,7 @@ export default defineComponent({
     const db = ref<any>();
     const type = ref('static');
 
-    const queryParameters = () => {
+    const queryParameters = async() => {
       if (!db.value) {
         db.value = store
           .dispatch('INIT_DATABASES')
@@ -282,10 +282,16 @@ export default defineComponent({
         return;
       }
       const doStaticType = type.value === 'static';
-      db.value.parameters(doStaticType).then((response: any) => {
+      await db.value.parameters(doStaticType).then((response: any) => {
         parameters.value = response;
         parameters.value.forEach((element: any) => {
           element.OrgValue = element.Value;
+          if (['BI', 'ADATCP', 'PLOG'].includes(element.Name)) {
+            if(element.Value == "YES")
+              element.toggle = true;
+            else
+              element.toggle = false;
+          }
         });
         let p = parameters.value.filter((i: any) => i.Name === 'OPTIONS');  
         if(p.length > 0)
@@ -362,8 +368,12 @@ export default defineComponent({
     };
 
     const submit = (item: any) => {
+      if(item.Value == "YES")
+        item.Value="NO";
+      else if(item.Value == "NO")
+        item.Value="YES";
       item.changed = true;
-      //(this.$refs.paraTable as any).refresh();
+      updateParameter();
     };
 
     const updateParameter = async () => {

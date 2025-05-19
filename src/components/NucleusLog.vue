@@ -38,8 +38,9 @@
             </div>
             <div class="col-sm-10">
               <select class="form-select" @change="changeLog()" v-model="selected">
-                <option v-for="option in nucleusOptions" :key="option" :value="option">{{ option }}</option>
+                <option v-for="option in nucleusOptions" :key="option" :value="option.value">{{ option.path }}</option>
               </select>
+              <br>
             </div>
           </div>
           <div class="row">
@@ -82,16 +83,17 @@ export default defineComponent({
     const log = ref('');
     const db = ref(null);
     const selected = ref('adanuc.log');
-    const nucleusOptions = ref(['adanuc.log']);
-    const show = ref(true);
+    const nucleusOptions = ref([{ value: 'adanuc.log', path: 'adanuc.log'}]);
+    const show = ref(false);
     const timer = ref(null);
 
     const loadNucleus = async () => {
       try {
         const response = await db.value.nucleusLog(selected.value);
         log.value = response;
-        show.value = false;
+        show.value = true;
       } catch (error) {
+        //console.log("error.response", JSON.stringify(error.response));
         console.error("Error loading nucleus log:", error);
         store.commit('SET_STATUS', 'Failed to load nucleus log: '+error);
       }
@@ -111,7 +113,13 @@ export default defineComponent({
         await loadNucleus();
         timer.value = setInterval(loadNucleus, 5000);   
         const response = await db.value.nucleusLogList();
-        nucleusOptions.value = response.NucleusLogs;
+        nucleusOptions.value = response.NucleusLogs.map(path => {
+          return {
+            value: path.split('\\').pop(), // filename
+            path: path                      // full path
+          };
+        });
+        console.log("nucleusOptions List = " + JSON.stringify(nucleusOptions.value))
       } catch (error: any) {
         console.error("Error in onMounted:", error.message || error);
       }
