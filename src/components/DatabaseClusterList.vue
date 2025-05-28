@@ -18,7 +18,7 @@
     <Sidebar :url="url" />
     <div class="card border-secondary">
       <div class="card-header bg-secondary text-white">
-        Adabas database cluster
+        Adabas database cluster information for database {{ url }}
       </div>
       <div class="card-body">
         <div class="container-fluid">
@@ -106,7 +106,8 @@ import { userService } from "../user/service";
 import store from "../store/index";
 import StatusBar from '@/components/StatusBar.vue';
 import Url from "./Url.vue";
-import router from "../router/index";
+import { useRoute } from 'vue-router';
+import { SearchDatabases } from '@/adabas/admin';
 
 export default defineComponent({
   components: {
@@ -115,16 +116,15 @@ export default defineComponent({
     Url,
   },
   props: {
-    url: {
-      type: String,
-      required: false,
-    },
     msg: {
       type: String,
       required: true,
     },
   },
   setup(props) {
+    const route = useRoute();
+    const url = ref(route.params.url || '');
+    const db = ref(null);
     const perPage = ref(10);
     const currentPage = ref(1);
     const filter = ref("");
@@ -143,7 +143,7 @@ export default defineComponent({
     const jsonString = ref("<No data received>");
 
     const loadCluster = () => {
-      this.$data.db.cluster().then((response: any) => {
+      db.value.cluster().then((response: any) => {
         cluster.value = response;
         jsonString.value = JSON.stringify(response);
       }).catch((error: any) => {
@@ -162,6 +162,7 @@ export default defineComponent({
     };
 
     onMounted(() => {
+      db.value = SearchDatabases(url.value);
       loadCluster();
       timer.value = setInterval(loadCluster, 5000);
     });
@@ -171,6 +172,7 @@ export default defineComponent({
     });
 
     return {
+      url,
       perPage,
       currentPage,
       filter,
