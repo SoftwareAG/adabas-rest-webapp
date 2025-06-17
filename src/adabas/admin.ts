@@ -218,7 +218,7 @@ export class AdabasAdmin {
         };
         try {
             return axios
-                .put(config.Url() + "/adabas/database/" + this.status.Dbid + "/permission/" + resource+"/"+name,{}, getConfig);
+                .post(config.Url() + "/adabas/database/" + this.status.Dbid + "/permission/" + resource+"/"+name,{}, getConfig);
         }
         catch (error: any) {
             if (error.response) {
@@ -235,7 +235,7 @@ export class AdabasAdmin {
         var def = {
             Definition: [
               {
-                Assignment: 'grant',
+                Assignment: 'user',
                 User: user,
                 Role: role,
               },
@@ -247,7 +247,7 @@ export class AdabasAdmin {
             };
             try {
                 return axios
-                    .put(config.Url() + "/adabas/database/" + this.status.Dbid + "/permission/" ,def, getConfig);
+                    .post(config.Url() + "/adabas/database/" + this.status.Dbid + "/permission/" ,def, getConfig);
             }
             catch (error: any) {
                 if (error.response) {
@@ -267,7 +267,7 @@ export class AdabasAdmin {
         };
         try {
             return axios
-                .put(config.Url() + "/adabas/database/" + this.status.Dbid + "/permission/" ,def, getConfig);
+                .post(config.Url() + "/adabas/database/" + this.status.Dbid + "/permission/" ,def, getConfig);
         }
         catch (error: any) {
             if (error.response) {

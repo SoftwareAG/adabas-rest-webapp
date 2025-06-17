@@ -755,12 +755,19 @@ export default defineComponent({
       item.administrator = !item.administrator;
     };
 
-    const adaptChanges = () => {
+    const adaptChanges = async () => {
       console.log('Apply changes');
       if (c.value) {
-        return c.value.putConfig(config.value).then((result: any) => {
-          console.log('Applying ...');
-        });
+        console.log('Config service instance (c):', JSON.stringify(c.value, null, 2));
+
+        try {
+          const result = await c.value.putConfig(config.value);
+          console.log('Applying ...', result);
+        } catch (error) {
+          console.error('Failed to apply changes:', error);
+        }
+      } else {
+        console.warn('No config service instance available (c is null or undefined)');
       }
     };
 

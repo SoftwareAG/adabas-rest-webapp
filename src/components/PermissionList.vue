@@ -188,6 +188,13 @@
                 </div>
               </div>
             </div>
+            <div v-if="createError" class="alert alert-danger" role="alert">
+              {{ createError }}
+            </div>
+            <div v-else-if="successMsg" class="alert alert-success" role="alert">
+              {{ successMsg }}
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -235,6 +242,9 @@
                 </div>
               </div>
             </div>
+            <div v-if="createError" class="alert alert-danger" role="alert">
+              {{ createError }}
+            </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -271,6 +281,9 @@
                 </div>
               </div>
             </div>
+            <div v-if="createError" class="alert alert-danger" role="alert">
+              {{ createError }}
+            </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -290,6 +303,7 @@ import store from '../store/index';
 import StatusBar from '@/components/StatusBar.vue';
 import Url from './Url.vue';
 import { SearchDatabases } from '@/adabas/admin';
+import router from '../router';
 
 export default defineComponent({
   components: {
@@ -329,8 +343,13 @@ export default defineComponent({
     const newObject = ref('');
     const newOperation = ref('');
     const fnr = ref<number | undefined>(undefined);
+    const returnUrl = ref('');
+    const createError = ref('');
+    const successMsg = ref('');
 
     const loadPermissions = async () => {
+      createError.value = ''; // Clear previous error
+      successMsg.value = ''; // Clear previous msg
       if (!db.value) {
         db.value = SearchDatabases(props.url);
         if (!db.value) return;
@@ -359,25 +378,68 @@ export default defineComponent({
       userrole.value = await db.value.userRoleList();
     };
 
-    const createResource = () => {
-      db.value.createRBACResource(newResource.value, newName.value);
-      if (newResource.value === 'User') {
-        db.value.assignRole(newName.value, newReference.value);
+    const createResource = async () => {
+      createError.value = ''; // Clear previous error 
+      successMsg.value = ''; // Clear previous successMsg
+      if(newResource.value == '')
+      {
+        createError.value = 'Please choose the resources.';
+        return;
       }
-      if (newResource.value === 'Role') {
-        db.value.assignRole(newReference.value, newName.value);
+      if(newName.value == '')
+      {
+        createError.value = 'Please input the name.';
+        return;
+      }
+      if(newReference.value == '')
+      {
+        createError.value = 'Please choose the Assign to.';
+        return;
+      }
+      try {
+        await db.value.createRBACResource(newResource.value, newName.value);
+        if (newResource.value === 'User') {
+          await db.value.assignRole(newName.value, newReference.value);
+        }
+        else if (newResource.value === 'Role') {
+          await db.value.assignRole(newReference.value, newName.value);
+        }
+        successMsg.value = response?.data?.Status?.message|| 'Success create resource';
+        console.log("successMsg = "+successMsg.value);
+
+      } catch (err) {
+        createError.value = err.response?.data?.Error?.message || 'Failed to create resource. Please try again.';
       }
     };
 
-    const assignUser = () => {
-      db.value.assignRole(newName.value, newRole.value);
+    const assignUser = async () => {
+      createError.value = ''; // Clear previous error
+      successMsg.value = ''; // Clear previous successMsg
+      if(newName.value == '')
+      {
+        createError.value = 'Please input the name.';
+        return;
+      }
+      if(newResource.value == '')
+      {
+        createError.value = 'Please choose the resources.';
+        return;
+      }
+      try {
+        await db.value.assignRole(newName.value, newRole.value);
+
+      } catch (err) {
+        createError.value = err.response?.data?.Error?.message || 'Failed to create resource. Please try again.';
+      }
     };
 
-    const grantResource = () => {
+    const grantResource = async() => {
+      successMsg.value = ''; // Clear previous successMsg
+      createError.value = ''; // Clear previous error
       const def = {
         Definition: [
           {
-            Assignment: 'grant',
+            Assignment: 'permission',
             Object: newObject.value,
             Operation: newOperation.value,
             Role: newRole.value,
@@ -388,7 +450,11 @@ export default defineComponent({
         const s = ('000000000' + fnr.value).slice(-8);
         def.Definition[0].Object = 'FILE.' + s;
       }
-      db.value.grantRBAC(def);
+      try {
+        await db.value.grantRBAC(def);
+      } catch (err) {
+        createError.value = err.response?.data?.Error?.message || 'Failed to create resource. Please try again.';
+      }
     };
 
     const reloadResource = () => {
@@ -414,6 +480,8 @@ export default defineComponent({
         store.dispatch('SYNC_ADMIN_DBS');
         return;
       }
+      returnUrl.value = '/permission/'+db.value.status.Dbid;
+      //console.log("returnUrl.value = "+ returnUrl.value);
       loadPermissions();
     });
 
@@ -452,6 +520,8 @@ export default defineComponent({
       assignUser,
       grantResource,
       reloadResource,
+      successMsg,
+      createError, // for error message
     };
   },
 });
