@@ -47,6 +47,86 @@ export class AdabasConfig {
             return x;
         });
     }
+    async AddUser(username: string): Promise<any> {
+        this.status = {};
+        const getConfig = {
+            headers: authHeader("application/json"),
+            useCredentails: true,
+        };
+        try {
+            return axios
+                .post(config.Url() + "/adabas/rest/access/User?user=" + username, {},getConfig);
+        }
+        catch (error: any) {
+            if (error.response) {
+                if (error.response.status == 401 || error.response.status == 403) {
+                    userService.logout();
+                    location.reload();
+                }
+            }
+            throw error;
+        }
+    }
+    async DeleteUser(username: string): Promise<any> {
+        this.status = {};
+        const getConfig = {
+            headers: authHeader("application/json"),
+            useCredentails: true,
+        };
+        try {
+            return axios
+                .delete(config.Url() + "/adabas/rest/access/User?user=" + username, getConfig);
+        }
+        catch (error: any) {
+            if (error.response) {
+                if (error.response.status == 401 || error.response.status == 403) {
+                    userService.logout();
+                    location.reload();
+                }
+            }
+            throw error;
+        }
+    }
+    async AddAdmin(username: string): Promise<any> {
+        this.status = {};
+        const getConfig = {
+            headers: authHeader("application/json"),
+            useCredentails: true,
+        };
+        try {
+            return axios
+                .post(config.Url() + "/adabas/rest/access/Administrator?user=" + username, {},getConfig);
+        }
+        catch (error: any) {
+            if (error.response) {
+                if (error.response.status == 401 || error.response.status == 403) {
+                    userService.logout();
+                    location.reload();
+                }
+            }
+            throw error;
+        }
+    }
+    async DeleteAdmin(username: string): Promise<any> {
+        this.status = {};
+        const getConfig = {
+            headers: authHeader("application/json"),
+            useCredentails: true,
+        };
+        try {
+            return axios
+                .delete(config.Url() + "/adabas/rest/access/Administrator?user=" + username, getConfig);
+        }
+        catch (error: any) {
+            if (error.response) {
+                if (error.response.status == 401 || error.response.status == 403) {
+                    userService.logout();
+                    location.reload();
+                }
+            }
+            throw error;
+        }
+    }
     async readLog(): Promise<any> {
         this.status = {};
         return triggerCall('/adabas/rest/log').then((x: any) => {

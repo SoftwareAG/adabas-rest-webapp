@@ -62,6 +62,35 @@
         </div>
       </div>
     </div>
+    <div class="modal fade" id="modal-add-user" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="title">Add New Adarest User</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p class="my-4">To create new user</p>
+            <div class="card bg-light">
+              <div class="card-body">
+                <div class="mb-3 row">
+                  <label for="nested-url" class="col-sm-3 col-form-label text-sm-end">Username : </label>
+                  <div class="col-sm-9">
+                    <input type="text" class="form-control" v-model="username" :class="{ 'is-invalid': usernameError }"/>
+                    <div class="invalid-feedback">
+                      {{ usernameError }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-danger" @click="handleAddUserOK">OK</button>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="modal fade" id="modal-location" tabindex="-1" aria-labelledby="modalLocationTitle" aria-hidden="true">
       <div class="modal-dialog modal-xl">
         <div class="modal-content">
@@ -167,12 +196,12 @@
                   <div class="row my-1">
                     <div class="col-sm-2">Log location:</div>
                     <div class="col-sm-2">
-                      <select class="form-select" v-model="config.Server.LogLocation.level">
+                      <select disabled class="form-select" v-model="config.Server.LogLocation.level">
                         <option v-for="option in options" :key="option" :value="option">{{ option }}</option>
                       </select>
                     </div>
                     <div class="col-sm-7">
-                      <input type="text" class="form-control" v-model="config.Server.LogLocation.directory" />
+                      <input readonly type="text" class="form-control" v-model="config.Server.LogLocation.directory" />
                     </div>
                   </div>
                   <div class="row my-1">
@@ -219,13 +248,14 @@
                 </div>
               </div>
             </div>
+            <button type="button" class="btn btn-outline-primary" @click="adaptChanges()">Apply</button>
           </div>
           <div class="tab-pane fade" id="suite-installations" role="tabpanel" aria-labelledby="suite-installations-tab">
             <div class="container-fluid">
               <div class="row my-1">
                 <div class="col-sm-2">Adabas Database location:</div>
                 <div class="col-sm-9">
-                  <input type="text" class="form-control" v-model="config.Module.AdabasData" />
+                  <input readonly type="text" class="form-control" v-model="config.Module.AdabasData" />
                 </div>
               </div>
               <div class="row my-1">
@@ -247,7 +277,9 @@
                         <td v-for="field in instFields" :key="field.key">{{ item[field.key] }}</td>
                         <td>
                           <div class="mx-auto text-center">
-                            <i class="bi bi-x-circle" @click="del_installation(item.Location)"></i>
+                            <button type="button" class="btn btn-outline-danger btn-sm" :disabled="item.Active" @click="del_installation(item.Location)">
+                              <i class="bi bi-x-circle"></i> Delete
+                            </button>
                           </div>
                         </td>
                       </tr>
@@ -256,12 +288,13 @@
                 </div>
               </div>
             </div>
+            <button type="button" class="btn btn-outline-primary" @click="adaptChanges()">Apply</button>
           </div>
           <div class="tab-pane fade" id="file-transfer" role="tabpanel" aria-labelledby="file-transfer-tab">
             <div class="container-fluid">
               <div class="row my-1">
                 <div class="col">
-                  <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modal-fileTransfer" @click="showMsgOk('filetransfer')">Add</button>
+                  <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" @click="showMsgFileTransferOk('filetransfer')">Add</button>
                 </div>
               </div>
               <div class="row">
@@ -278,7 +311,9 @@
                         <td v-for="field in fileFields" :key="field.key">{{ item[field.key] }}</td>
                         <td>
                           <div class="mx-auto text-center">
-                            <i class="bi bi-x-circle" @click="del_directories(item.name)"></i>
+                            <button type="button" class="btn btn-outline-danger btn-sm" @click="del_directories(item.name)">
+                              <i class="bi bi-x-circle"></i> Delete
+                            </button>
                           </div>
                         </td>
                       </tr>
@@ -287,6 +322,7 @@
                 </div>
               </div>
             </div>
+            <button type="button" class="btn btn-outline-primary" @click="adaptChanges()">Apply</button>
           </div>
           <div class="tab-pane fade" id="data-access" role="tabpanel" aria-labelledby="data-access-tab">
             <div class="card">
@@ -305,7 +341,9 @@
                       <td v-for="field in mapFields" :key="field.key">{{ item[field.key] }}</td>
                       <td>
                         <div class="mx-auto text-center">
-                          <i class="bi bi-x-circle" @click="del_mapping(item.url, item.file)"></i>
+                          <button type="button" class="btn btn-outline-danger btn-sm" @click="del_mapping(item.url, item.file)">
+                            <i class="bi bi-x-circle"></i> Delete
+                          </button>
                         </div>
                       </td>
                     </tr>
@@ -319,7 +357,7 @@
                 <div class="container-fluid">
                   <div class="row">
                     <div class="col-sm-1 text-end">
-                      <input type="checkbox" class="form-check-input" v-model="config.DatabaseAccess.global" />
+                      <input type="checkbox" class="form-check-input" v-model="config.DatabaseAccess.Global" />
                     </div>
                     <div class="col-sm-10">
                       Provide access to all classic database ids (global)
@@ -344,7 +382,9 @@
                             <td v-for="field in accessFields" :key="field.key">{{ item[field.key] }}</td>
                             <td>
                               <div class="mx-auto text-center">
-                                <i class="bi bi-x-circle" @click="del_access(item.url)"></i>
+                                <button type="button" class="btn btn-outline-danger btn-sm" @click="del_access(item.url)">
+                                  <i class="bi bi-x-circle"></i> Delete
+                                </button>
                               </div>
                             </td>
                           </tr>
@@ -355,6 +395,7 @@
                 </div>
               </div>
             </div>
+            <button type="button" class="btn btn-outline-primary" @click="adaptChanges()">Apply</button>
           </div>
           <div class="tab-pane fade" id="database-metrics" role="tabpanel" aria-labelledby="database-metrics-tab">
             <div class="container-fluid">
@@ -377,7 +418,9 @@
                         <td v-for="field in accessFields" :key="field.key">{{ item[field.key] }}</td>
                         <td>
                           <div class="mx-auto text-center">
-                            <i class="bi bi-x-circle" @click="del_metric(item.url)"></i>
+                            <button type="button" class="btn btn-outline-danger btn-sm" @click="del_metric(item.url)">
+                              <i class="bi bi-x-circle"></i> Delete
+                            </button>
                           </div>
                         </td>
                       </tr>
@@ -386,12 +429,13 @@
                 </div>
               </div>
             </div>
+            <button type="button" class="btn btn-outline-primary" @click="adaptChanges()">Apply</button>
           </div>
           <div class="tab-pane fade" id="user-authorization" role="tabpanel" aria-labelledby="user-authorization-tab">
             <div class="container-fluid">
               <div class="row my-1">
                 <div class="col">
-                  <button type="button" class="btn btn-outline-primary">Add</button>
+                  <button type="button" class="btn btn-outline-primary" @click="showAddUser()">Add</button>
                 </div>
                 <div class="col">
                   Default read:<input type="text" class="form-control" v-model="user.readPermission" />
@@ -401,6 +445,12 @@
                 </div>
               </div>
               <div class="row">
+                <div v-if="AddUserSuccess" class="invalid-feedback">
+                  {{ AddUserSuccess }}
+                </div>
+                <div v-else-if="AddUserError" class="valid-feedback">
+                  {{ AddUserError }}
+                </div>
                 <div class="col">
                   <table class="table table-striped table-bordered table-hover table-sm">
                     <thead>
@@ -413,15 +463,13 @@
                       <tr v-for="item in user.Users" :key="item.name">
                         <td v-for="field in userFields" :key="field.key">
                           <template v-if="field.key === 'administrator'">
-                            <input type="checkbox" class="form-check-input" v-model="item.administrator" @change="toggle(item)" />
+                            <input type="checkbox" class="form-check-input" v-model="item.administrator" @change="toggleAdmin(item)" />
                           </template>
                           <template v-else-if="field.key === 'readPermission'">
-                            <input type="text" class="form-control" v-model="item.readPermission" />
+                            <input readonly type="text" class="form-control" v-model="item.readPermission" />
                           </template>
                           <template v-else-if="field.key === 'writePermission'">
-                            <select class="form-select" v-model="item.writePermission">
-                              <option v-for="option in options" :key="option" :value="option">{{ option }}</option>
-                            </select>
+                            <input readonly type="text" class="form-control" v-model="item.writePermission" />
                           </template>
                           <template v-else>
                             {{ item[field.key] }}
@@ -429,7 +477,9 @@
                         </td>
                         <td>
                           <div class="mx-auto text-center">
-                            <i class="bi bi-x-circle" @click="del_metric(item.url)"></i>
+                            <button type="button" class="btn btn-outline-danger btn-sm" @click="del_user(item.name)">
+                              <i class="bi bi-x-circle"></i> Delete
+                            </button>
                           </div>
                         </td>
                       </tr>
@@ -440,8 +490,8 @@
             </div>
           </div>
         </div>
-        <button type="button" class="btn btn-outline-primary" @click="adaptChanges()">Apply</button>
-        <button type="button" class="btn btn-outline-primary" @click="storeChanges()">Store</button>
+        <!-- <button type="button" class="btn btn-outline-primary" @click="adaptChanges()">Apply</button> -->
+        <!-- <button type="button" class="btn btn-outline-primary" @click="storeChanges()">Store</button> -->
       </div>
     </div>
   </div>
@@ -479,6 +529,10 @@ export default defineComponent({
     const modalTitle = ref('Add Database');
     const modalDescription = ref('Enter Database id');
     const modalLabel = ref('Database');
+    const username = ref('');
+    const usernameError = ref('');
+    const AddUserError = ref('');
+    const AddUserSuccess = ref('');
     interface Installation {
       changed: boolean;
       deleted: boolean;
@@ -542,6 +596,9 @@ export default defineComponent({
     const options = ref(['debug', 'info', 'error']);
 
     onMounted(() => {
+      usernameError.value = ""; // clear error if valid
+      AddUserError.value = ""; // clear error if valid
+      AddUserSuccess.value = ""; // clear error if valid
       const adabasConfig = new AdabasConfig();
       c.value = adabasConfig;
       adabasConfig.read().then((configData: any) => {
@@ -555,11 +612,31 @@ export default defineComponent({
         config.value = configData;
         originConfig.value = JSON.parse(JSON.stringify(configData));
       });
-      adabasConfig.readUser().then((userData: any) => {
+      getUser();
+    });
+
+    const getUser = async() => {
+      c.value.readUser().then((userData: any) => {
         user.value = userData;
         originUser.value = JSON.parse(JSON.stringify(c));
       });
-    });
+    }
+
+    const del_user = async(username: string) => {
+      console.log('Delete User : ' + username);
+      try {
+        const result = await c.value.DeleteUser(username);
+        console.log('Deleting user ...', result);
+
+        //update user list      
+        await getUser();
+        AddUserError.value = ""; // clear error
+        AddUserSuccess.value = "Delete new user ["+username+"] success";
+        console.log(AddUserSuccess.value);
+      } catch (error) {
+        console.error('Failed to add new user:', error);
+      }
+    }; 
 
     const del_mapping = (location: string, file: number) => {
       console.log('Delete mapping : ' + location + ' ' + file);
@@ -635,8 +712,20 @@ export default defineComponent({
       return file.value > 0 && file.value < 64536 ? true : false;
     };
 
-    const showMsgOk = (modalType: string) => {
-      switch (modalType) {
+    const showMsgFileTransferOk = (Type: string) => {
+      modalType.value = Type;
+      const modalDb = new Modal(document.getElementById('modal-fileTransfer'));
+      modalDb.show();
+    };
+
+    const showAddUser = () => {
+      const modalDb = new Modal(document.getElementById('modal-add-user'));
+      modalDb.show();
+    };
+
+    const showMsgOk = (Type: string) => {
+      modalType.value = Type;
+      switch (Type) {
         case 'classic':
           mapFileDisplay.value = false;
           modalTitle.value = 'Classic Database access';
@@ -660,6 +749,40 @@ export default defineComponent({
       const modalDb = new Modal(document.getElementById('modal-db'));
       modalDb.show();
     };
+
+    const handleAddUserOK = async () => {
+      console.log('HandleAddUserOK username = ' + username.value);
+      AddUserError.value = ""; // clear error if valid
+      AddUserSuccess.value = ""; // clear error if valid
+      if (username.value.trim() === "") {
+        usernameError.value = "Username cannot be empty";
+        return;
+      } else {
+        usernameError.value = ""; // clear error if valid
+      }
+
+      const modalEl = document.getElementById('modal-add-user');
+      const modalInstance = Modal.getInstance(modalEl) || new Modal(modalEl);
+      if (user.value.Users.some(u => u.name === username.value)) {
+        AddUserSuccess.value = ""; // clear error
+        AddUserError.value = 'User ['+username.value+'] already exists';
+        modalInstance.hide();
+        return;
+      }
+      try {
+        const result = await c.value.AddUser(username.value);
+        console.log('Adding new user ...', result);
+
+        //update user list      
+        await getUser();
+        AddUserError.value = ""; // clear error
+        AddUserSuccess.value = "Add new user ["+username.value+"] success";
+        console.log(AddUserSuccess.value);
+        modalInstance.hide();
+      } catch (error) {
+        console.error('Failed to add new user:', error);
+      }
+    }
 
     const handleOk = () => {
       console.log('Handle ok show db modal ' + modalType.value);
@@ -751,8 +874,28 @@ export default defineComponent({
       }
     };
 
-    const toggle = (item: any) => {
+    const toggleAdmin = async(item: any) => {
       item.administrator = !item.administrator;
+      console.log("item.administrator = " + item.administrator)
+      if(item.administrator)
+      {
+        console.log("Remove user "+item.name+" from administrator");
+        try {
+          const result = await c.value.DeleteAdmin(item.name);
+          console.log('Remove admin ...', result);
+        } catch (error) {
+          console.error('Failed to Remove user from administrator :', error);
+        }
+      }else{
+        console.log("Add user "+item.name+" as administrator");
+        try {
+          const result = await c.value.AddAdmin(item.name);
+          console.log('Add admin ...', result);
+        } catch (error) {
+          console.error('Failed to add user as administrator:', error);
+        }
+      }
+      getUser();
     };
 
     const adaptChanges = async () => {
@@ -808,16 +951,23 @@ export default defineComponent({
       del_access,
       del_directories,
       del_metric,
+      del_user,
       locationState,
       handleLocationOk,
       dbidState,
       urlState,
       fileState,
       showMsgOk,
+      showAddUser,
       handleOk,
-      toggle,
+      handleAddUserOK,
+      toggleAdmin,
       adaptChanges,
       storeChanges,
+      username,
+      usernameError,
+      AddUserSuccess,
+      AddUserError,
     };
   },
 });
