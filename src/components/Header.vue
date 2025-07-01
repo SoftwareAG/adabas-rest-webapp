@@ -45,7 +45,7 @@
             <a class="nav-link" :class="{ disabled: !isAdministrator }" href="/#/jobs">List of tasks</a>
           </li>
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="configureRestServerDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <a class="nav-link dropdown-toggle" :class="{ disabled: !isAdministrator }" href="#" id="configureRestServerDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
               Configure REST server
             </a>
             <ul class="dropdown-menu" aria-labelledby="configureRestServerDropdown">
