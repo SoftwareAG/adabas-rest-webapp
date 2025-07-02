@@ -79,7 +79,7 @@ export default createStore({
       state.fields.File = fields;
     },
     SET_RECORDS: (state: any, records: any) => {
-      state.records = [records];
+      state.records = records;
     },
     CLEAR_RECORDS: (state: any, records: any) => {
       state.records = [];

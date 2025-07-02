@@ -65,7 +65,6 @@ function sleep(ms: number): Promise<void> {
 
 // call login with username and password
 async function login(username: string, password: string): Promise<Response> {
-    console.log("Login function");
     const v = localStorage.getItem('version');
     if (v) {
         const version = JSON.parse(v).version;

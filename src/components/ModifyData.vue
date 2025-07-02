@@ -149,8 +149,20 @@
                     class="form-control form-control-sm"
                   />
                 </div>
+                <div v-else-if="
+                    row.formatType.trim() == 'D'
+                  ">
+                  <input
+                    @input="changeInput($event, row)"
+                    :value="getData(row.reference)"
+                    class="form-control form-control-sm"
+                  />
+                </div>
                 <div v-else>----------------</div>
               </td>
+              <td>{{ row.formatType }}</td>
+              <td>{{ row.length }}</td>
+              <td></td>
             </tr>
           </tbody>
         </table>
@@ -214,13 +226,14 @@ export default defineComponent({
       return -1;
     }
 
-    function getSelectedItem(myarg: any) {
+    async function getSelectedItem(event: Event) {
+      const myarg = (event.target as HTMLSelectElement).value;
       query.value.search = '';
       query.value.fields = '';
       mapName.value = myarg;
       url.value = config.Url() + '/rest/metadata/map/' + myarg;
 
-      store.dispatch('QUERY_MAP_FIELDS', myarg).then((response) => {
+      await store.dispatch('QUERY_MAP_FIELDS', myarg).then((response) => {
         mapFields.value = [{ name: 'ISN', formatType: 'B', shortName: '' }];
         response.data.Map.fields.forEach((element: any) => {
           mapFields.value.push(element);
@@ -229,14 +242,15 @@ export default defineComponent({
       });
     }
 
-    function changeInput(event: any, item: any) {
+    function changeInput(event: Event, item: any) {
+      const value = (event.target as HTMLInputElement).value;
       const ref = item.reference;
       let r = record.value[curIndex.value];
       if (ref) {
         let s = ref.split('.');
         s.forEach((x: any) => {
           if (s[s.length - 1] == x) {
-            r[x] = event;
+            r[x] = value;
           }
           r = r[x];
         });

@@ -267,7 +267,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="record in records" :key="record.id">
+                <tr v-for="record in paginatedRecords" :key="record.id">
                   <td v-for="field in fields" :key="field">{{ record[field] }}</td>
                 </tr>
               </tbody>
@@ -306,7 +306,7 @@ export default defineComponent({
     const url = ref(config.Url() + '/rest/map/');
     const selected = ref(null);
     const file = ref(null);
-    const storeRecord = ref(store.state.records);
+    const storeRecord = computed(() => store.state.records);
     const status = ref(store.state.status);
     const metadata = ref(store.state.metadata);
     const records = ref([] as any[]);
@@ -342,6 +342,16 @@ export default defineComponent({
           console.log('Error reason(created): ' + JSON.stringify(reason));
         });
       }
+    });
+
+    watch([perPage, records], () => {
+      currentPage.value = 1;
+    });
+
+    const paginatedRecords = computed(() => {
+      const start = (currentPage.value - 1) * perPage.value;
+      const end = start + perPage.value;
+      return records.value.slice(start, end);
     });
 
     const rows = computed(() => {
@@ -474,13 +484,15 @@ export default defineComponent({
       return urlStr;
     }
 
-    function callQuery() {
+    async function callQuery() {
       const urlStr = generateUrl();
       url.value = urlStr;
       fields.value = null;
-      store.dispatch('QUERY_RECORDS', url.value).catch((reason: any) => {
-        console.log('Query error: ' + JSON.stringify(reason));
-      });
+      try {
+        await store.dispatch('QUERY_RECORDS', url.value);
+      } catch (err) {
+        console.log("Query error: " + JSON.stringify(err));
+      }
       jsonString.value = JSON.stringify(records.value);
     }
 
@@ -569,12 +581,18 @@ export default defineComponent({
       });
     });
 
-    watch(storeRecord, (newvalue) => {
-      records.value = newvalue[0].Records;
-      if (fields.value == null) {
-        adaptFields(records.value);
+    watch(storeRecord, (newValue) => {
+      if (newValue?.Records) {
+        records.value = newValue.Records;
+        jsonString.value = JSON.stringify(newValue);
+
+        if (!fields.value) {
+          adaptFields(records.value);
+        }
+      } else {
+        records.value = [];
+        jsonString.value = '';
       }
-      jsonString.value = JSON.stringify(newvalue[0]);
     });
 
     return {
@@ -617,6 +635,7 @@ export default defineComponent({
       adaptFields,
       generateAllFields,
       tagValidator,
+      paginatedRecords,
     };
   },
 });
