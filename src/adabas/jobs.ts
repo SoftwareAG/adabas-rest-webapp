@@ -154,7 +154,7 @@ export async function loadJobs(): Promise<any> {
 // Load all jobs available in REST server. Return array
 // of all jobs.
 export async function loadExecutions(jobName: string, from: Date, to: Date): Promise<any> {
-    const response = await triggerCall("/scheduler/jobs/" + jobName + "/result?end_time=" + to.toJSON() + "&start_time=" + from.toJSON());
+    const response = await triggerCall("/scheduler/job/" + jobName + "/result?end_time=" + to + "&start_time=" + from);
     const executions = ([] as any[]);
     response.JobResults.forEach((element: any) => {
         executions.push(element);

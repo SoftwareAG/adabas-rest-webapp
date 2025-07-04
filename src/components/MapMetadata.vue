@@ -137,7 +137,6 @@ export default defineComponent({
 
     onMounted(() => {
       store.dispatch('INIT_MAPS').then((response) => {
-        console.log('Response: ' + JSON.stringify(response));
       }).catch((reason: any) => {
         console.log('Reason(created): ' + JSON.stringify(reason));
       });

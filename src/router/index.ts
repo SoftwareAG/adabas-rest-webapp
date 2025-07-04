@@ -48,6 +48,7 @@ import DatabasePlog from '@/admin_views/DatabasePlog.vue'
 import Cluster from '@/admin_views/Cluster.vue'
 import DatabaseCluster from '@/admin_views/DatabaseCluster.vue'
 import Jobs from '@/admin_views/Jobs.vue'
+import CreateJob from '@/admin_views/CreateNewJob.vue'
 import Checkpoints from '@/admin_views/Checkpoints.vue'
 import Description from '@/examples/Description.vue'
 import ImageExample from '@/examples/ImageExample.vue'
@@ -215,6 +216,11 @@ const router = createRouter({
     path: '/jobs',
     name: 'Job List',
     component: Jobs
+  },
+  {
+    path: '/createjob',
+    name: 'Create Job',
+    component: CreateJob
   },
   {
     path: '/example_description',

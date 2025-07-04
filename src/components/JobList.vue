@@ -14,7 +14,7 @@
  * limitations under the License.-->
 
 <template>
-  <div class="joblist p-2" overflow-y="auto">
+  <div class="joblist p-2" style="overflow-y: auto">
     <div class="card border-secondary mb-3">
       <div class="card-header">Job administration</div>
       <div class="card-body">
@@ -23,10 +23,19 @@
           be administrate through this Adabas RESTful server. These jobs can
           start long running Adabas utility tasks.
         </p>
-        <CreateJob msg="ABC" />
+        <!-- Create Jobs -->
+        <div class="row mb-3">
+          <div class="col">
+            <a class="btn btn-success" href="/#/createjob">
+              Create RESTful server job
+            </a>
+          </div>
+        </div>
         <Url url="/scheduler/jobs" />
+
+        <!-- Pagination + Page Size -->
         <div class="row">
-          <div class="col-sm-5">
+          <div class="col-sm-6">
             <nav>
               <ul class="pagination">
                 <li class="page-item" v-for="page in totalPages" :key="page">
@@ -41,39 +50,45 @@
             </select>
           </div>
         </div>
+
+        <!-- Job Table -->
         <div class="row">
-          <div class="col-sm-6">
+          <div class="col-sm-5">
             <table class="table table-striped table-bordered table-hover table-sm">
               <thead>
                 <tr>
-                  <th v-for="field in fields" :key="field.key">{{ field.label }}</th>
+                  <th v-for="field in fields" :key="field.key || field">{{ field.label || field }}</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 <tr v-for="job in paginatedJobs" :key="job.status.Job.Name" @click="onJobSelected(job)">
-                  <td v-for="field in fields" :key="field.key">{{ job[field.key] }}</td>
+                  <td v-for="field in fields" :key="field.key || field">
+                    {{ getNestedValue(job, field.key || field) }}
+                  </td>
                   <td>
-                    <button class="btn btn-success btn-sm mr-2" @click="startJob(job)">Start</button>
-                    <button class="btn btn-outline-primary btn-sm mr-2" @click="delJob(job.status.Job.Name)">Delete</button>
-                    <button class="btn btn-outline-primary btn-sm mr-2" @click="viewJob(job.status)">Show</button>
-                    <button class="btn btn-outline-primary btn-sm mr-2" @click="exportJob(job.status.Job.Name)">Export</button>
+                    <button class="btn btn-success btn-sm me-2" @click.stop="startJob(job)">Start</button>
+                    <button class="btn btn-outline-primary btn-sm me-2" @click.stop="delJob(job.status.Job.Name)">Delete</button>
+                    <button class="btn btn-outline-primary btn-sm me-2" @click.stop="viewJob(job.status)">Show</button>
+                    <button class="btn btn-outline-primary btn-sm me-2" @click.stop="exportJob(job.status.Job.Name)">Export</button>
                   </td>
                 </tr>
               </tbody>
             </table>
           </div>
+
+          <!-- Execution Table -->
           <div class="col-sm-6">
-            <div class="row">
-              <div class="col text-left">Start:</div>
-              <div class="col text-left">End:</div>
+            <div class="row mb-2">
+              <div class="col text-start">Start:</div>
+              <div class="col text-start">End:</div>
             </div>
-            <div class="row">
+            <div class="row mb-2">
               <div class="col">
-                <input type="date" v-model="from" class="form-control mb-2" :max="max">
+                <input type="date" v-model="from" class="form-control" :max="maxDateString" />
               </div>
               <div class="col">
-                <input type="date" v-model="to" class="form-control mb-2" :max="max">
+                <input type="date" v-model="to" class="form-control" :max="maxDateString" />
               </div>
             </div>
             <div class="row">
@@ -85,10 +100,13 @@
                 </thead>
                 <tbody>
                   <tr v-for="execution in executions" :key="execution.Id" @click="onExecSelected(execution)">
+                    <td>{{ execution.Id }}</td>
                     <td>{{ convertDateTime(execution.Scheduled) }}</td>
                     <td>{{ convertDateTime(execution.Ended) }}</td>
+                    <td>{{ execution.ExitCode }}</td>
                     <td>
-                      <button class="btn btn-outline-primary btn-sm mr-2" @click="delExecution(execution.Id)">Delete</button>
+                      <button class="btn btn-outline-primary btn-sm me-2" @click.stop="delExecution(execution.Id)">Delete</button>
+                      <button class="btn btn-outline-primary btn-sm me-2" @click="onExecSelected(execution)">Show Log</button>
                     </td>
                   </tr>
                 </tbody>
@@ -96,6 +114,8 @@
             </div>
           </div>
         </div>
+
+        <!-- Log Panel -->
         <div class="row">
           <div class="col">
             <span class="badge bg-secondary">Log Output {{ currentId }}:</span>
@@ -106,6 +126,8 @@
         </div>
       </div>
     </div>
+
+    <!-- Modal -->
     <div class="modal fade" id="modal-definition-job" tabindex="-1" aria-labelledby="modal-definition-job-label" aria-hidden="true">
       <div class="modal-dialog modal-xl">
         <div class="modal-content">
@@ -119,208 +141,150 @@
         </div>
       </div>
     </div>
-        <StatusBar />
+
+    <StatusBar />
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted, onBeforeUnmount } from 'vue';
+import { defineComponent, ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { JobAdmin, loadExecutions, loadJobDefinition } from '../adabas/jobs';
 import { userService } from '../user/service';
 import store from '../store/index';
 import CreateJob from './CreateJob.vue';
 import StatusBar from '@/components/StatusBar.vue';
 import Url from './Url.vue';
+import { Modal } from 'bootstrap';
 
 export default defineComponent({
-  components: {
-    StatusBar,
-    CreateJob,
-    Url,
-  },
-  props: {
-    msg: String,
-  },
+  components: { StatusBar, CreateJob, Url },
   setup() {
     const perPage = ref(10);
     const currentPage = ref(1);
     const perPageOptions = ref([10, 20, 50, 100]);
-    const selectedJob = ref(null);
+    const selectedJob = ref<JobAdmin | null>(null);
     const selectedExecution = ref(null);
+    const jobs = ref<JobAdmin[]>([]);
+    const currentId = ref('');
+    const executions = ref<any[]>([]);
+    const log = ref('');
+    const from = ref(new Date());
+    const to = ref(new Date());
+    const currentJob = ref<any>({});
+    const max = ref(new Date());
+    const timer = ref<number | null>(null);
+
     const fields = ref([
       { key: 'status.Job.Name', label: 'Name' },
       { key: 'status.Job.User', label: 'User' },
       { key: 'status.Job.Utility', label: 'Utility' },
       { key: 'status.Status', label: 'Status' },
       { key: 'status.Job.Description', label: 'Description' },
-      'info',
     ]);
-    const execFields = ref(['Id', 'Scheduled', 'Ended', 'ExitCode', 'log']);
-    const jobs = ref([] as JobAdmin[]);
-    const currentId = ref('');
-    const executions = ref([]);
-    const timer = ref('');
-    const max = ref(new Date());
-    const log = ref('');
-    const from = ref(new Date());
-    const to = ref(new Date());
-    const currentJob = ref({} as any);
+    const execFields = ref(['ID','Scheduled', 'Ended', 'Exit Code', 'Action']);
+
+    const maxDateString = computed(() => {
+      return max.value.toISOString().split('T')[0];
+    });
+
+    const paginatedJobs = computed(() => {
+      const start = (currentPage.value - 1) * perPage.value;
+      const end = start + perPage.value;
+      return jobs.value.slice(start, end);
+    });
+
+    const totalPages = computed(() => Math.ceil(jobs.value.length / perPage.value));
+
+    const getNestedValue = (obj: any, path: string): any => {
+      return path.split('.').reduce((o, k) => (o && o[k] !== undefined ? o[k] : ''), obj);
+    };
 
     const retrieveJobs = () => {
-      store
-        .dispatch('SYNC_ADMIN_JOBS')
-        .then((response: any) => {
-          if (selectedJob.value != null) {
-            const name = selectedJob.value.status.Job.Name;
-            let x = response.find((j: JobAdmin) => j.name() === name);
-            if (!x) {
-              console.log('No name found');
-              return;
-            }
-            selectedJob.value = x;
-          }
-          jobs.value = response;
-        })
-        .catch((error: any) => {
-          console.log('ERROR JOBLIST: ' + JSON.stringify(error));
-          if (error.response) {
-            store.commit('SET_STATUS', JSON.stringify(error.response));
-            if (error.response.status == 401 || error.response.status == 403) {
-              userService.logout();
-              location.reload();
-            }
-          } else {
-            store.commit('SET_STATUS', JSON.stringify(error));
-            userService.logout();
-            location.reload();
-          }
-          throw error;
-        });
-      if (selectedJob.value != null) {
-        loadExecutions(
-          selectedJob.value.status.Job.Name,
-          from.value,
-          to.value
-        ).then((response: any) => {
-          executions.value = [];
-          response.forEach((element: any) => {
-            executions.value.push(element.JobResult);
-            if (
-              selectedExecution.value != null &&
-              selectedExecution.value.Id == element.JobResult.Id
-            ) {
-              selectedExecution.value = element.JobResult;
-            }
-          });
-        });
-      }
-    };
-
-    const onJobSelected = (items: any) => {
-      if (items.length == 0) {
-        return;
-      }
-      log.value = '';
-      selectedJob.value = items[0];
-      loadExecutions(
-        items[0].status.Job.Name,
-        from.value,
-        to.value
-      ).then((response: any) => {
-        executions.value = [];
-        response.forEach((element: any) => {
-          executions.value.push(element.JobResult);
-        });
+      store.dispatch('SYNC_ADMIN_JOBS').then((response: any) => {
+        if (selectedJob.value != null) {
+          const name = selectedJob.value.status.Job.Name;
+          const found = response.find((j: JobAdmin) => j.name() === name);
+          if (found) selectedJob.value = found;
+        }
+        jobs.value = response;
+      }).catch((error: any) => {
+        console.error('ERROR JOBLIST:', error);
+        const errMsg = error.response ? JSON.stringify(error.response) : JSON.stringify(error);
+        store.commit('SET_STATUS', errMsg);
+        userService.logout();
+        location.reload();
       });
-      return;
-    };
 
-    const onExecSelected = (items: any) => {
-      if (items.length == 0) {
-        return;
+      if (selectedJob.value != null) {
+        loadExecutions(selectedJob.value.status.Job.Name, from.value, to.value).then((response: any) => {
+          executions.value = response.map((e: any) => e.JobResult);
+        });
       }
-      currentId.value = items[0].Id;
-      log.value = items[0].Log;
     };
 
-    const startJob = (items: JobAdmin) => {
-      items.start();
+    const onJobSelected = (job: JobAdmin) => {
+      log.value = '';
+      selectedJob.value = job;
+      loadExecutions(job.status.Job.Name, from.value, to.value).then((response: any) => {
+        executions.value = response.map((e: any) => e.JobResult);
+      });
     };
 
+    const onExecSelected = (execution: any) => {
+      currentId.value = execution.Id;
+      log.value = execution.Log;
+    };
+
+    const startJob = (job: JobAdmin) => job.start();
     const delJob = (name: string) => {
-      const jobToDelete = jobs.value.find(
-        (j: JobAdmin) => j.name() === name
-      );
-      console.log('Job to delete: ' + name);
-      jobToDelete.delete();
+      const job = jobs.value.find(j => j.name() === name);
+      log.value = "";
+      currentId.value = "";
+      if (job) job.delete();
     };
-
     const exportJob = (name: string) => {
       loadJobDefinition(name).then((result: any) => {
-        var filename = 'job.json';
+        const blob = new Blob([JSON.stringify(result)], { type: 'application/json' });
         const a = document.createElement('a');
-        const type = filename.split('.').pop();
-        a.href = URL.createObjectURL(
-          new Blob([JSON.stringify(result)], {
-            type: `text/${type === 'txt' ? 'plain' : type}`,
-          })
-        );
-        a.download = filename;
+        a.href = URL.createObjectURL(blob);
+        a.download = 'job.json';
         a.click();
       });
     };
-
     const delExecution = (id: string) => {
-      console.log('Delete id ' + id);
-      selectedJob.value.delete_execution(id);
+      log.value = "";
+      currentId.value = "";
+      if (selectedJob.value) selectedJob.value.delete_execution(id);
     };
-
-    const showLog = (item: any) => {
-      console.log('Show log id ' + JSON.stringify(item));
-      currentId.value = item.ID;
-      log.value = item.Log;
+    const viewJob = (job: any) => {
+      currentJob.value = job;
+      const modal = new Modal(document.getElementById('modal-definition-job')!);
+      modal.show();
     };
+    const convertDateTime = (dt: string) => new Date(dt).toLocaleString();
 
     onMounted(() => {
       to.value = new Date();
       from.value = new Date();
       from.value.setMonth(to.value.getMonth() - 1);
       retrieveJobs();
-      timer.value = setInterval(retrieveJobs, 5000);
+      timer.value = window.setInterval(retrieveJobs, 5000);
     });
-
     onBeforeUnmount(() => {
-      clearInterval(timer.value);
+      if (timer.value) clearInterval(timer.value);
     });
 
     return {
-      perPage,
-      currentPage,
-      perPageOptions,
-      selectedJob,
-      selectedExecution,
-      fields,
-      execFields,
-      jobs,
-      currentId,
-      executions,
-      log,
-      from,
-      to,
-      currentJob,
-      onJobSelected,
-      onExecSelected,
-      startJob,
-      delJob,
-      exportJob,
-      delExecution,
-      showLog,
+      perPage, currentPage, perPageOptions, selectedJob, selectedExecution, fields,
+      execFields, jobs, currentId, executions, log, from, to, currentJob,
+      paginatedJobs, totalPages, getNestedValue, startJob, delJob,
+      exportJob, delExecution, convertDateTime, onJobSelected,
+      onExecSelected, viewJob, maxDateString,
     };
   },
 });
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 .joblist {
   font-size: 14px;
@@ -328,19 +292,5 @@ export default defineComponent({
 .card-header {
   font-weight: bold;
   font-size: 18px;
-}
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
 }
 </style>
