@@ -5,10 +5,9 @@
   "type": "module",
   "scripts": {
     "serve": "NODE_ENV=production vite preview",
-    "build": "vite build",
     "dev": "vite",
-    "preview": "NODE_ENV=development vite preview",
-    "test": "vitest run"
+    "build": "vite build",
+    "preview": "NODE_ENV=development vite preview"
   },
   "dependencies": {
     "@types/bootstrap": "^5.2.10",
