@@ -33,6 +33,12 @@ interface AdabasConfigType {
  * and monitor tasks provided by Adabas REST server.
  */
 export class AdabasConfig {
+    private getAxiosConfig(): any {
+        return {
+            headers: authHeader("application/json"),
+            useCredentails: true,
+        };
+    }
     private status: any;
     async read(): Promise<any> {
         this.status = {};
@@ -49,10 +55,7 @@ export class AdabasConfig {
     }
     async AddUser(username: string): Promise<any> {
         this.status = {};
-        const getConfig = {
-            headers: authHeader("application/json"),
-            useCredentails: true,
-        };
+        const getConfig = this.getAxiosConfig();
         try {
             return axios
                 .post(config.Url() + "/adabas/rest/access/User?user=" + username, {},getConfig);
@@ -69,10 +72,8 @@ export class AdabasConfig {
     }
     async DeleteUser(username: string): Promise<any> {
         this.status = {};
-        const getConfig = {
-            headers: authHeader("application/json"),
-            useCredentails: true,
-        };
+        const getConfig = this.getAxiosConfig();
+
         try {
             return axios
                 .delete(config.Url() + "/adabas/rest/access/User?user=" + username, getConfig);
@@ -89,10 +90,8 @@ export class AdabasConfig {
     }
     async AddAdmin(username: string): Promise<any> {
         this.status = {};
-        const getConfig = {
-            headers: authHeader("application/json"),
-            useCredentails: true,
-        };
+        const getConfig = this.getAxiosConfig();
+
         try {
             return axios
                 .post(config.Url() + "/adabas/rest/access/Administrator?user=" + username, {},getConfig);
@@ -109,10 +108,7 @@ export class AdabasConfig {
     }
     async DeleteAdmin(username: string): Promise<any> {
         this.status = {};
-        const getConfig = {
-            headers: authHeader("application/json"),
-            useCredentails: true,
-        };
+        const getConfig = this.getAxiosConfig();
         try {
             return axios
                 .delete(config.Url() + "/adabas/rest/access/Administrator?user=" + username, getConfig);
@@ -137,10 +133,7 @@ export class AdabasConfig {
         return status
     }
     async deleteInstallation(l: string): Promise<AxiosResponse<any>> {
-        const getConfig = {
-            headers: authHeader("application/json"),
-            useCredentails: true,
-        };
+        const getConfig = this.getAxiosConfig();
         try {
             return axios
                 .delete(config.Url() + "/adabas/config/module/installation?installation=" + l, getConfig);
@@ -156,10 +149,7 @@ export class AdabasConfig {
         }
     }
     async deleteMapping(l: string, f: number): Promise<AxiosResponse<any>> {
-        const getConfig = {
-            headers: authHeader("application/json"),
-            useCredentails: true,
-        };
+        const getConfig = this.getAxiosConfig();
         try {
             return axios
                 .delete(config.Url() + "/adabas/config/mapping&url=" + l + "&file=" + f, getConfig);
@@ -175,10 +165,7 @@ export class AdabasConfig {
         }
     }
     async deleteAccess(l: string): Promise<AxiosResponse<any>> {
-        const getConfig = {
-            headers: authHeader("application/json"),
-            useCredentails: true,
-        };
+        const getConfig = this.getAxiosConfig();
         try {
             return axios
                 .delete(config.Url() + "/adabas/config/classic&url=" + l, getConfig);
@@ -194,10 +181,7 @@ export class AdabasConfig {
         }
     }
     async deleteDirectory(l: string): Promise<AxiosResponse<any>> {
-        const getConfig = {
-            headers: authHeader("application/json"),
-            useCredentails: true,
-        };
+        const getConfig = this.getAxiosConfig();
         try {
             return axios
                 .delete(config.Url() + "/adabas/config/module/directories&url=" + l, getConfig);
@@ -213,10 +197,7 @@ export class AdabasConfig {
         }
     }
     async deleteMetric(l: string): Promise<AxiosResponse<any>> {
-        const getConfig = {
-            headers: authHeader("application/json"),
-            useCredentails: true,
-        };
+        const getConfig = this.getAxiosConfig();
         try {
             return axios
                 .delete(config.Url() + "/adabas/config/metric&url=" + l, getConfig);
@@ -232,10 +213,7 @@ export class AdabasConfig {
         }
     }
     async putConfig(c: any): Promise<AxiosResponse<any>> {
-        const getConfig = {
-            headers: authHeader("application/json"),
-            useCredentails: true,
-        };
+        const getConfig = this.getAxiosConfig();
         try {
             return axios
                 .put(config.Url() + "/adabas/config", c, getConfig);
@@ -251,10 +229,7 @@ export class AdabasConfig {
         }
     }
     async store(): Promise<AxiosResponse<any>> {
-        const getConfig = {
-            headers: authHeader("application/json"),
-            useCredentails: true,
-        };
+        const getConfig = this.getAxiosConfig();
         try {
             return axios
                 .post(config.Url() + "/adabas/config","", getConfig);

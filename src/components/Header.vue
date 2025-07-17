@@ -55,7 +55,7 @@
             </ul>
           </li>
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="examplesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <a class="nav-link dropdown-toggle" :class="{ disabled: true }" href="#" id="examplesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
               Examples
             </a>
             <ul class="dropdown-menu" aria-labelledby="examplesDropdown">

@@ -32,7 +32,7 @@
                   <div class="col-sm-9">
                     <input type="text" class="form-control" v-model="dbid" :class="{'is-invalid': !dbidState()}" id="nested-dbid" aria-describedby="input-live-help input-live-feedback" />
                     <div class="invalid-feedback" id="input-live-feedback">Out of range</div>
-                    <div class="form-text" id="input-live-help">Database id in the range of greater 0 and smaller as 65536</div>
+                    <div class="form-text" id="input-live-help">Database ID must be in the range 1 to 255.</div>
                   </div>
                 </div>
                 <div class="mb-3 row">

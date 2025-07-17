@@ -39,6 +39,9 @@
                   {{ option.text }}
                 </option>
               </select>
+              <div v-if="validationError" class="text-danger mt-1">
+                {{ validationError }}
+              </div>
             </div>
           </div>
           <div class="row my-1" v-else>
@@ -55,6 +58,9 @@
                   {{ option.text }}
                 </option>
               </select>
+              <div v-if="validationDBError" class="text-danger mt-1">
+                {{ validationDBError }}
+              </div>
             </div>
             <div class="col-sm-4">
               <select
@@ -66,6 +72,9 @@
                   {{ option.text }}
                 </option>
               </select>
+              <div v-if="validationDBFileError" class="text-danger mt-1">
+                {{ validationDBFileError }}
+              </div>
             </div>
             <div class="col-sm-2">
               <button
@@ -208,7 +217,7 @@
             </div>
           </div>
           <button
-            class="btn btn-outline-primary ml-2"
+            class="btn btn-primary ml-2"
             @click="callQuery"
           >Query data</button>
         </div>
@@ -316,6 +325,9 @@ export default defineComponent({
     const optionsFiles = ref([{ value: null, text: 'Please select an Adabas File' }]);
     const selectedSortField = ref(null);
     const sortOptions = ref([{ value: null, text: 'Please select Field' }]);
+    const  validationError = ref('');
+    const  validationDBError = ref('');
+    const  validationDBFileError = ref('');
     const fields = ref([] as any[]);
     const query = ref({
       map: '',
@@ -362,6 +374,7 @@ export default defineComponent({
     });
 
     function getSelectedItem(myarg: any) {
+      validationDBError.value = '';
         myarg = (event.target as HTMLSelectElement).value;
       if (props.classicMode == 'true') {
         let s = myarg;
@@ -389,6 +402,7 @@ export default defineComponent({
     }
 
     function getFileItem(myarg: any) {
+      validationDBFileError.value = '';
       var n = selected.value.indexOf('(');
       let s = selected.value.substring(0, n != -1 ? n : selected.value.length);
       url.value = config.Url() + '/rest/db/' + s + '/' + file.value;
@@ -406,12 +420,29 @@ export default defineComponent({
 
     function generateUrl() {
       let urlStr = config.Url();
+      validationDBFileError.value = '';
+      validationDBError.value = '';
       if (props.classicMode == 'true') {
-        var n = query.value.database.url.indexOf('(');
-        let s = query.value.database.url.substring(0, n != -1 ? n : query.value.database.url.length);
-        urlStr += '/rest/db/' + s + '/' + query.value.database.file;
+        const dbUrl = query?.value?.database?.url;
+
+        if (typeof dbUrl === 'string') {
+          const n = dbUrl.indexOf('(');
+          const s = dbUrl.substring(0, n !== -1 ? n : dbUrl.length);
+          urlStr += '/rest/db/' + s + '/' + query.value.database.file;
+        } else {
+          console.warn('Database URL is not available or not a string.');
+          // handle fallback or exit early
+          return;
+        }
       } else {
-        urlStr += '/rest/map/' + query.value.map;
+        const map = query?.value?.map;
+        if (map) {
+          urlStr += '/rest/map/' + map;
+        } else {
+          console.warn('Map name not available.');
+          // handle fallback or exit early
+          return;
+        }
       }
       let first = false;
       if (query.value.fields.length != query.value.validFields.length) {
@@ -485,6 +516,23 @@ export default defineComponent({
     }
 
     async function callQuery() {
+      if(props.classicMode == 'false' && query.value.map == "")
+      {
+        console.log("Select Map empty");
+        validationError.value = 'Please select a map before continuing.';
+        return;
+      }
+      else if (props.classicMode == 'false'){
+        validationError.value = '';
+      }
+      else if (props.classicMode === 'true' && (query?.value?.database?.url === '' || query?.value?.database?.url === null )  ){
+        validationDBError.value = 'Please select a DBID before continuing.';
+        return;
+      }
+      else if (props.classicMode === 'true' && (query?.value?.database?.file === '' || query?.value?.database?.file === null )  ){
+        validationDBFileError.value = 'Please select file number before continuing.';
+        return;
+      }
       const urlStr = generateUrl();
       url.value = urlStr;
       fields.value = null;
@@ -636,6 +684,9 @@ export default defineComponent({
       generateAllFields,
       tagValidator,
       paginatedRecords,
+      validationError,
+      validationDBError,
+      validationDBFileError,
     };
   },
 });

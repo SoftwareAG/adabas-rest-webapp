@@ -32,7 +32,7 @@
           </tr>
           <tr>
             <td class="text-start" colspan="2">
-              Passsword is generated in the installation procedure. Use 'service.sh' to create new users or to set the password afterwards.
+              Password is generated in the installation procedure. Use 'service.sh' to create new users or to set the password afterwards.
             </td>
           </tr>
         </table>
