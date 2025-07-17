@@ -14,88 +14,115 @@
  * limitations under the License.-->
 
 <template>
-  <div class="monitordata p-2">
+  <div class="monitordata p-2" overflow-y="auto">
     <Sidebar :url="url" />
-    <b-card
-      :header="'Adabas Database command statistics for database ' + url"
-      border-variant="secondary"
-      header-border-variant="secondary"
-    >
-      <b-card-body>
-        <b-container fluid>
-          <b-row>
-            <b-col>
+    <div class="card border-secondary mb-3">
+      <div class="card-header">
+        Adabas Database command statistics for database {{ url }}
+      </div>
+      <div class="card-body">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col">
               This page provides the statistics of Adabas database commands per
               second and I/O to be monitored through this Adabas RESTful server.
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
               <Url :url="'/adabas/database/' + url + '/cmdstats'" />
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col sm="4" class="h-100 p-1">
-              <b-pagination
-                v-model="tableMetadata.currentPage"
-                :total-rows="comstats.length"
-                :per-page="tableMetadata.perPage"
-                aria-controls="my-table"
-              ></b-pagination>
-
-              <b-table
-                id="my-table"
-                class="h-100"
-                striped
-                bordered
-                hover
-                small
-                :per-page="tableMetadata.perPage"
-                :current-page="tableMetadata.currentPage"
-                :items="comstats"
-                :sort-by.sync="tableMetadata.sortBy"
-                :sort-desc.sync="tableMetadata.sortDesc"
-                :fields="tableMetadata.fields"
-                sort-icon-left
-                responsive="sm"
-              >
-              </b-table>
-            </b-col>
-            <b-col sm="8">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-4 h-100 p-1">
+              <nav aria-label="Page navigation">
+                <ul class="pagination">
+                  <li class="page-item" v-for="page in totalPages" :key="page">
+                    <a class="page-link" href="#" @click="changePage(page)">{{ page }}</a>
+                  </li>
+                </ul>
+              </nav>
+              <table class="table table-striped table-bordered table-hover table-sm">
+                <thead>
+                  <tr>
+                    <th v-for="field in tableMetadata.fields" :key="field">{{ field }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="item in paginatedItems" :key="item.id">
+                    <td v-for="field in tableMetadata.fields" :key="field">{{ item[field] }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="col-sm-8">
               <div class="small Chart w-100">
                 <LineChart v-bind="lineChartProps" />
                 <img style="width: 300px" v-if="imgData" :src="imgData" />
               </div>
-            </b-col> </b-row></b-container></b-card-body
-    ></b-card>
-    <StatusBar />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+        <StatusBar />
   </div>
 </template>
 
-<script>
-import { Chart } from "chart.js/auto";
-import { LineChart, Utils, useLineChart } from "vue-chart-3";
-import {
-  ref,
-  onMounted,
-  computed,
-  onBeforeUnmount,
-  defineComponent,
-} from "@vue/composition-api";
-import Sidebar from "./Sidebar.vue";
-import StatusBar from "./StatusBar.vue";
-import Url from "./Url.vue";
+<script lang="ts">
+import { defineComponent, ref, onMounted, onBeforeUnmount, computed } from 'vue';
+import { LineChart, useLineChart } from 'vue-chart-3';
+import { DoughnutChart, useDoughnutChart } from 'vue-chart-3';
+import Sidebar from './Sidebar.vue';
+import StatusBar from '@/components/StatusBar.vue';
+import Url from './Url.vue';
 import { SearchDatabases } from '@/adabas/admin';
+import {
+  Chart as ChartJS,
+  Title,
+  Tooltip,
+  Legend,
+  LineElement,
+  BarElement,
+  PointElement,
+  LinearScale,
+  CategoryScale,
+  DoughnutController,
+  ArcElement,
+  BarController,
+  LineController,
+} from 'chart.js';
+
+ChartJS.register(
+  Title,
+  Tooltip,
+  Legend,
+  LineElement,
+  BarElement,
+  PointElement,
+  LinearScale,
+  CategoryScale,
+  DoughnutController,
+  ArcElement,
+  BarController,
+  LineController
+);
+
 
 export default defineComponent({
-  name: "MonitorData",
+  name: 'MonitorData',
   components: {
     LineChart,
     Sidebar,
     StatusBar,
     Url,
   },
-  props: ["url"],
+  props: {
+    url: {
+      type: String,
+      required: true,
+    },
+  },
   setup(props) {
     const data = ref([]);
     const dataIO = ref([]);
@@ -103,38 +130,38 @@ export default defineComponent({
     const workIO = ref([]);
     const legendTop = ref(true);
     const imgData = ref(null);
-    const url = props.url;
-    let last = null;
     const comstats = ref([
       {
         Commands: 0,
-        "ASSO I/O": 0,
-        "DATA I/O": 0,
-        "WORK I/O": 0,
-        "PLOG I/O": 0,
-        "Throw backs": 0,
-        "Buffer flush": 0,
+        'ASSO I/O': 0,
+        'DATA I/O': 0,
+        'WORK I/O': 0,
+        'PLOG I/O': 0,
+        'Throw backs': 0,
+        'Buffer flush': 0,
       },
     ]);
-    let timer = null;
-    let index = 1;
-    const labels = ref(["Interval"]);
-    const tableMetadata = {
+    const labels = ref(['Interval']);
+    const tableMetadata = ref({
       perPage: 20,
       currentPage: 1,
-      sortBy: "CommandCount",
+      sortBy: 'CommandCount',
       sortDesc: true,
       fields: [
-        "Commands",
-        "ASSO I/O",
-        "DATA I/O",
-        "WORK I/O",
-        "PLOG I/O",
-        "Throw backs",
-        "Buffer flush",
+        'Commands',
+        'ASSO I/O',
+        'DATA I/O',
+        'WORK I/O',
+        'PLOG I/O',
+        'Throw backs',
+        'Buffer flush',
       ],
-    };
-    let db = null;
+    });
+    const db = ref(null);
+    let last = null;
+    let timer = null;
+    let index = 1;
+
     const options = computed(() => ({
       responsive: true,
       maintainAspectRatio: false,
@@ -142,22 +169,22 @@ export default defineComponent({
         y: {
           beginAtZero: true,
           stacked: true,
-          position: "left",
+          position: 'left',
         },
         y2: {
           beginAtZero: true,
           stacked: true,
-          position: "right",
+          position: 'right',
         },
       },
       plugins: {
         legend: {
-          position: "top",
+          position: 'top',
           display: false,
         },
         title: {
           display: true,
-          text: "Adabas calls and I/O",
+          text: 'Adabas calls and I/O',
         },
       },
     }));
@@ -165,32 +192,32 @@ export default defineComponent({
       labels: labels.value,
       datasets: [
         {
-          label: "Adabas calls/sec",
+          label: 'Adabas calls/sec',
           data: data.value,
           fill: false,
-          borderColor: "rgb(75, 192, 192)",
+          borderColor: 'rgb(75, 192, 192)',
           tension: 0.4,
-          yAxisID: "y",
+          yAxisID: 'y',
         },
         {
-          label: "DATA I/O sec",
+          label: 'DATA I/O sec',
           data: dataIO.value,
-          borderColor: "rgb(255, 204, 204)",
-          stack: "stack 0",
-          type: "bar",
-          yAxisID: "y2",
+          borderColor: 'rgb(255, 204, 204)',
+          stack: 'stack 0',
+          type: 'bar',
+          yAxisID: 'y2',
         },
         {
-          label: "ASSO I/O sec",
+          label: 'ASSO I/O sec',
           data: assoIO.value,
-          borderColor: "rgb(255, 204, 204)",
+          borderColor: 'rgb(255, 204, 204)',
           //backgroundColor: Utils.transparentize(Utils.CHART_COLORS.red, 0.5),
-          stack: "stack 1",
-          type: "bar",
-          yAxisID: "y2",
+          stack: 'stack 1',
+          type: 'bar',
+          yAxisID: 'y2',
         },
         {
-          label: "WORK I/O sec",
+          label: 'WORK I/O sec',
           data: workIO.value,
            backgroundColor: [
                 'rgba(255, 99, 132, 0.2)',
@@ -209,9 +236,9 @@ export default defineComponent({
                 'rgba(255, 159, 64, 1)'
             ],
            // backgroundColor: Utils.transparentize(Utils.CHART_COLORS.red, 0.5),
-          stack: "stack 3",
-          type: "bar",
-          yAxisID: "y2",
+          stack: 'stack 3',
+          type: 'bar',
+          yAxisID: 'y2',
         },
       ],
     }));
@@ -221,7 +248,7 @@ export default defineComponent({
       options,
     });
     onMounted(() => {
-      db = SearchDatabases(props.url);
+      db.value = SearchDatabases(props.url);
       if (timer == null) {
         timer = setInterval(loadCommandStat, 5000);
       }
@@ -232,11 +259,11 @@ export default defineComponent({
       timer = null;
     });
     function loadCommandStat() {
-      if (!db || db == null) {
-        db = SearchDatabases(props.url);
+      if (!db.value || db.value == null) {
+        db.value = SearchDatabases(props.url);
         return;
       }
-      db.monitor().then((response) => {
+      db.value.monitor().then((response) => {
         if (!response) {
           return;
         }
@@ -246,24 +273,24 @@ export default defineComponent({
         if (last != null) {
           // console.log(response.ApioCnt + " " + last.ApioCnt);
           monitorElement.Commands = response.AcmdCnt - last.AcmdCnt;
-          monitorElement["ASSO I/O"] = response.AaioCnt - last.AaioCnt;
-          monitorElement["DATA I/O"] = response.AdioCnt - last.AdioCnt;
-          monitorElement["WORK I/O"] = response.AwioCnt - last.AwioCnt;
-          monitorElement["PLOG I/O"] = response.ApioCnt - last.ApioCnt;
-          monitorElement["Throw backs"] = response.AthbCnt - last.AthbCnt;
-          monitorElement["Buffer flush"] = response.AbflCnt - last.AbflCnt;
+          monitorElement['ASSO I/O'] = response.AaioCnt - last.AaioCnt;
+          monitorElement['DATA I/O'] = response.AdioCnt - last.AdioCnt;
+          monitorElement['WORK I/O'] = response.AwioCnt - last.AwioCnt;
+          monitorElement['PLOG I/O'] = response.ApioCnt - last.ApioCnt;
+          monitorElement['Throw backs'] = response.AthbCnt - last.AthbCnt;
+          monitorElement['Buffer flush'] = response.AbflCnt - last.AbflCnt;
         } else {
           monitorElement.Commands = 0;
-          monitorElement["ASSO I/O"] = 0;
-          monitorElement["DATA I/O"] = 0;
-          monitorElement["WORK I/O"] = 0;
-          monitorElement["PLOG I/O"] = 0;
-          monitorElement["Throw backs"] = 0;
-          monitorElement["Buffer flush"] = 0;
+          monitorElement['ASSO I/O'] = 0;
+          monitorElement['DATA I/O'] = 0;
+          monitorElement['WORK I/O'] = 0;
+          monitorElement['PLOG I/O'] = 0;
+          monitorElement['Throw backs'] = 0;
+          monitorElement['Buffer flush'] = 0;
         }
-        assoIO.value.push(monitorElement["ASSO I/O"]);
-        dataIO.value.push(monitorElement["DATA I/O"]);
-        workIO.value.push(monitorElement["WORK I/O"]);
+        assoIO.value.push(monitorElement['ASSO I/O']);
+        dataIO.value.push(monitorElement['DATA I/O']);
+        workIO.value.push(monitorElement['WORK I/O']);
         data.value.push(monitorElement.Commands);
         labels.value.push(index);
         index++;
@@ -282,14 +309,54 @@ export default defineComponent({
       });
     }
 
+    const totalPages = computed(() => Math.ceil(comstats.value.length / tableMetadata.value.perPage));
+    const paginatedItems = computed(() => {
+      const start = (tableMetadata.value.currentPage - 1) * tableMetadata.value.perPage;
+      const end = start + tableMetadata.value.perPage;
+      return comstats.value.slice(start, end);
+    });
+    function changePage(page) {
+      tableMetadata.value.currentPage = page;
+    }
+
     return {
       tableMetadata,
       comstats,
       lineChartProps,
       lineChartRef,
       imgData,
+      totalPages,
+      paginatedItems,
+      changePage,
     };
   },
+});
+
+const doughnutData = computed(() => ({
+  labels: ['Red', 'Blue', 'Yellow'],
+  datasets: [{
+    label: 'My Doughnut',
+    data: [300, 50, 100],
+    backgroundColor: ['red', 'blue', 'yellow'],
+  }],
+}));
+
+const doughnutOptions = computed(() => ({
+  responsive: true,
+  plugins: {
+    legend: {
+      position: 'top',
+    },
+    title: {
+      display: true,
+      text: 'Doughnut Chart Example',
+    },
+  },
+}));
+
+const { doughnutChartProps } = useDoughnutChart({
+  chartData: doughnutData,
+  options: doughnutOptions,
 });
 </script>
 

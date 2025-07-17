@@ -14,722 +14,791 @@
  * limitations under the License.-->
 
 <template>
-  <div class="configuration p-2">
+  <div class="configuration p-2" overflow-y="auto">
     <MyHeader></MyHeader>
-    <b-modal
-      @ok="handleOk"
-      id="modal-db"
-      size="xl"
-      variant="outline-danger"
-      :title="modalTitle"
-    >
-      <p class="my-4">{{ modalDescription }}</p>
-      <b-card bg-variant="light">
-        <b-form-group
-          label-cols-sm="3"
-          label="Database ID (dbid):"
-          label-align-sm="right"
-          label-for="nested-dbid"
-        >
-          <b-form-input
-            v-model="dbid"
-            type="text"
-            :state="dbidState()"
-            aria-describedby="input-live-help input-live-feedback"
-            id="nested-dbid"
-            trim
-          ></b-form-input>
-          <b-form-invalid-feedback id="input-live-feedback">
-            Out of range
-          </b-form-invalid-feedback>
-          <b-form-text id="input-live-help"
-            >Database id in the range of greater 0 and smaller as
-            65536</b-form-text
-          >
-          <b-form-input
-            v-model="inputUrl"
-            type="text"
-            :state="urlState()"
-            aria-describedby="input-liveurl-help input-liveurl-feedback"
-            id="nested-url"
-            trim
-          ></b-form-input>
-          <b-form-invalid-feedback id="input-liveurl-feedback">
-            URL not correct
-          </b-form-invalid-feedback>
-          <b-form-text id="input-liveurl-help"
-            >Either empty or it need to be a ADATCP URL</b-form-text
-          >
-        </b-form-group>
-        <b-collapse id="mapFile-collapse">
-          <b-form-group
-            label-cols-sm="3"
-            label="Adabas file (file):"
-            label-align-sm="right"
-            label-for="nested-file"
-          >
-            <b-form-input
-              v-model="file"
-              type="number"
-              :state="fileState()"
-              aria-describedby="input-file-live-help input-file-live-feedback"
-              id="nested-file"
-              trim
-            ></b-form-input>
-            <b-form-invalid-feedback id="input-file-live-feedback">
-              Out of range
-            </b-form-invalid-feedback>
-            <b-form-text id="input-file-live-help"
-              >Database file in the range of greater 0 and smaller as
-              65536</b-form-text
-            >
-          </b-form-group>
-        </b-collapse>
-      </b-card>
-    </b-modal>
-    <b-modal
-      @ok="handleLocationOk"
-      id="modal-location"
-      size="xl"
-      variant="outline-danger"
-      title="Add installation location"
-    >
-      <p class="my-4">
-        Add the Software AG suite installation location containing the Adabas
-        installation.
-      </p>
-      <b-card bg-variant="light">
-        <b-form-group
-          label-cols-sm="3"
-          label="Software AG suite installation path:"
-          label-align-sm="right"
-          label-for="nested-location"
-        >
-          <b-form-input
-            v-model="location"
-            type="text"
-            :state="locationState()"
-            aria-describedby="input-live-help input-live-feedback"
-            id="nested-xlocation"
-            trim
-          ></b-form-input>
-          <b-form-invalid-feedback id="input-live-feedback">
-            Empty
-          </b-form-invalid-feedback>
-          <b-form-text id="input-live-help"
-            >Directory of Software AG installation</b-form-text
-          >
-        </b-form-group>
-      </b-card>
-    </b-modal>
-    <b-modal
-      @ok="handleOk"
-      id="modal-fileTransfer"
-      size="xl"
-      variant="outline-danger"
-      title="Add allowed File transfer location"
-    >
-      <p class="my-4">
-        Add the Software AG file transfer location allowed to upload or download
-        files.
-      </p>
-      <b-card bg-variant="light">
-        <b-form-group
-          label-cols-sm="3"
-          label="File transfer name:"
-          label-align-sm="right"
-          label-for="nested-fileTransfer"
-        >
-          <b-form-input
-            v-model="fileTransferName"
-            type="text"
-            aria-describedby="input-live-help"
-            id="nested-fileTransferName"
-            trim
-          ></b-form-input>
-          <b-form-text id="input-live-help"
-            >Directory to upload or download files</b-form-text
-          >
-        </b-form-group>
-        <b-form-group
-          label-cols-sm="3"
-          label="File transfer location:"
-          label-align-sm="right"
-          label-for="nested-fileTransfer"
-        >
-          <b-form-input
-            v-model="location"
-            type="text"
-            id="nested-fileTransferLocation"
-            trim
-          ></b-form-input>
-        </b-form-group>
-      </b-card>
-    </b-modal>
-    <b-card
-      header="Adabas REST server configuration"
-      border-variant="secondary"
-      header-border-variant="secondary"
-    >
-      <b-card-body>
-        <label> The configuration are applied when the action is set. </label>
-        <b-tabs content-class="mt-3">
-          <b-tab title="Server services" active>
-            <b-card header="Server configuration" header-class="info-header">
-              <b-card-body>
-                <b-container fluid>
-                  <b-row class="my-1">
-                    <b-col sm="11">
-                      The content location contains this web application to
-                      handle a number of configurations. The location may be
-                      changed to disable this web application. This need to be
-                      done manually changing the config.xml file.</b-col
-                    ></b-row
-                  >
-                  <b-row class="my-1">
-                    <b-col sm="2"> Content location:</b-col>
-                    <b-col sm="9">
-                      <b-form-input
-                        readonly
-                        v-model="config.Server.Content"
-                      /> </b-col
-                  ></b-row>
-                  <b-row class="my-1">
-                    <b-col sm="2"> Log location:</b-col>
-                    <b-col sm="2">
-                      <b-form-select
-                        v-model="config.Server.LogLocation.level"
-                        :options="options"
-                      ></b-form-select>
-                    </b-col>
-                    <b-col sm="7">
-                      <b-form-input
-                        v-model="config.Server.LogLocation.directory"
-                      /> </b-col
-                  ></b-row>
-                  <b-row class="my-1"
-                    ><b-col>
-                      <b-table
-                        striped
-                        bordered
-                        hover
-                        small
-                        :items="config.Server.Service"
-                        :fields="serviceFields" /></b-col></b-row
-                ></b-container> </b-card-body
-            ></b-card>
-            <b-card header-class="info-header" header="Job Store" size="sm"
-              ><b-card-body>
-                <b-container>
-                  <b-row>
-                    <b-col sm="2">Job store file location:</b-col>
-                    <b-col sm="9">
-                      <b-form-input v-model="config.JobStore.config" /> </b-col
-                  ></b-row>
-                  <b-row>
-                    <b-col sm="2">Job store database:</b-col>
-                    <b-col sm="9">
-                      <b-form-input
-                        v-model="config.JobStore.Database.url"
-                      /> </b-col
-                  ></b-row>
-                  <b-row>
-                    <b-col sm="2">Job store file:</b-col>
-                    <b-col sm="9">
-                      <b-form-input
-                        v-model="config.JobStore.Database.file"
-                      /> </b-col
-                  ></b-row>
-                </b-container>
-              </b-card-body>
-            </b-card>
-          </b-tab>
-          <b-tab title="Suite installations">
-            <b-container fluid>
-              <b-row class="my-1">
-                <b-col sm="2"> Adabas Database location:</b-col>
-                <b-col sm="9">
-                  <b-form-input v-model="config.Module.AdabasData" /> </b-col
-              ></b-row>
-              <b-row class="my-1"
-                ><b-col>
-                  <b-button v-b-modal.modal-location variant="outline-primary"
-                    >Add</b-button
-                  >
-                </b-col></b-row
-              ><b-row
-                ><b-col>
-                  <b-table
-                    striped
-                    bordered
-                    hover
-                    small
-                    :items="config.Module.Installation"
-                    :fields="instFields"
-                  >
-                    <template v-slot:cell(delete)="row">
-                      <div class="mx-auto text-center">
-                        <b-icon-x-circle
-                          scale="2"
-                          variant="danger"
-                          v-on:click="del_installation(row.item.Location)"
-                        ></b-icon-x-circle>
-                      </div>
-                    </template> </b-table></b-col></b-row
-            ></b-container>
-          </b-tab>
-          <b-tab title="File transfer">
-            <b-container
-              ><b-row
-                ><b-col>
-                  <b-button
-                    v-b-modal.modal-fileTransfer
-                    @click="showMsgOk('filetransfer')"
-                    variant="outline-primary"
-                    >Add</b-button
-                  ></b-col
-                ></b-row
-              ><b-row
-                ><b-col>
-                  <b-table
-                    striped
-                    bordered
-                    hover
-                    small
-                    :items="config.Module.Directories"
-                    :fields="fileFields"
-                  >
-                    <template v-slot:cell(delete)="row">
-                      <div class="mx-auto text-center">
-                        <b-icon-x-circle
-                          scale="2"
-                          variant="danger"
-                          v-on:click="del_directories(row.item.name)"
-                        ></b-icon-x-circle>
-                      </div> </template></b-table></b-col></b-row
-            ></b-container>
-          </b-tab>
-          <b-tab title="Data access">
-            <b-card header-class="info-header" header="Map repositories"
-              ><b-card-body>
-                <b-button
-                  v-b-toggle.mapFile-collapse
-                  v-b-modal.modal-db
-                  @click="showMsgOk('map')"
-                  variant="outline-primary"
-                  >Add</b-button
-                >
-                <b-table
-                  striped
-                  bordered
-                  hover
-                  small
-                  :items="config.Mapping.Database"
-                  :fields="mapFields"
-                >
-                  <template v-slot:cell(delete)="row">
-                    <div class="mx-auto text-center">
-                      <b-icon-x-circle
-                        scale="2"
-                        variant="danger"
-                        v-on:click="del_mapping(row.item.url, row.item.file)"
-                      ></b-icon-x-circle>
-                    </div> </template
-                ></b-table> </b-card-body
-            ></b-card>
-            <b-card header="Classic database access" header-class="info-header"
-              ><b-card-body>
-                <b-container fluid>
-                  <b-row
-                    ><b-col align="right" sm="1">
-                      <b-checkbox
-                        checked="config.DatabaseAccess.global"
-                      /> </b-col
-                    ><b-col align="left" sm="10">
-                      Provide access to all classic database ids (global)
-                    </b-col></b-row
-                  >
-                  <b-row class="my-1"
-                    ><b-col>
-                      <b-button
-                        @click="showMsgOk('classic')"
-                        variant="outline-primary"
-                        >Add</b-button
-                      >
-                    </b-col></b-row
-                  ><b-row
-                    ><b-col>
-                      <b-table
-                        striped
-                        bordered
-                        hover
-                        small
-                        :items="config.DatabaseAccess.Database"
-                        :fields="accessFields"
-                      >
-                        <template v-slot:cell(delete)="row">
+    <div class="modal fade" id="modal-db" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modalTitle">{{ modalTitle }}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p class="my-4">{{ modalDescription }}</p>
+            <div class="card bg-light">
+              <div class="card-body">
+                <div class="mb-3 row">
+                  <label for="nested-dbid" class="col-sm-3 col-form-label text-sm-end">Database ID (dbid):</label>
+                  <div class="col-sm-9">
+                    <input type="text" class="form-control" v-model="dbid" :class="{'is-invalid': !dbidState()}" id="nested-dbid" aria-describedby="input-live-help input-live-feedback" />
+                    <div class="invalid-feedback" id="input-live-feedback">Out of range</div>
+                    <div class="form-text" id="input-live-help">Database ID must be in the range 1 to 255.</div>
+                  </div>
+                </div>
+                <div class="mb-3 row">
+                  <label for="nested-url" class="col-sm-3 col-form-label text-sm-end">URL:</label>
+                  <div class="col-sm-9">
+                    <input type="text" class="form-control" v-model="inputUrl" :class="{'is-invalid': !urlState()}" id="nested-url" aria-describedby="input-liveurl-help input-liveurl-feedback" />
+                    <div class="invalid-feedback" id="input-liveurl-feedback">URL not correct</div>
+                    <div class="form-text" id="input-liveurl-help">Either empty or it need to be a ADATCP URL</div>
+                  </div>
+                </div>
+                <div class="collapse" id="mapFile-collapse">
+                  <div class="mb-3 row">
+                    <label for="nested-file" class="col-sm-3 col-form-label text-sm-end">Adabas file (file):</label>
+                    <div class="col-sm-9">
+                      <input type="number" class="form-control" v-model="file" :class="{'is-invalid': !fileState()}" id="nested-file" aria-describedby="input-file-live-help input-file-live-feedback" />
+                      <div class="invalid-feedback" id="input-file-live-feedback">Out of range</div>
+                      <div class="form-text" id="input-file-live-help">Database file in the range of greater 0 and smaller as 65536</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-danger" @click="handleOk">OK</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade" id="modal-add-user" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="title">Add New Adarest User</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p class="my-4">To create new user</p>
+            <div class="card bg-light">
+              <div class="card-body">
+                <div class="mb-3 row">
+                  <label for="nested-url" class="col-sm-3 col-form-label text-sm-end">Username : </label>
+                  <div class="col-sm-9">
+                    <input type="text" class="form-control" v-model="username" :class="{ 'is-invalid': usernameError }"/>
+                    <div class="invalid-feedback">
+                      {{ usernameError }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-danger" @click="handleAddUserOK">OK</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade" id="modal-location" tabindex="-1" aria-labelledby="modalLocationTitle" aria-hidden="true">
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modalLocationTitle">Add installation location</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p class="my-4">Add the Software AG suite installation location containing the Adabas installation.</p>
+            <div class="card bg-light">
+              <div class="card-body">
+                <div class="mb-3 row">
+                  <label for="nested-xlocation" class="col-sm-3 col-form-label text-sm-end">Software AG suite installation path:</label>
+                  <div class="col-sm-9">
+                    <input type="text" class="form-control" v-model="location" :class="{'is-invalid': !locationState()}" id="nested-xlocation" aria-describedby="input-live-help input-live-feedback" />
+                    <div class="invalid-feedback" id="input-live-feedback">Empty</div>
+                    <div class="form-text" id="input-live-help">Directory of Software AG installation</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-danger" @click="handleLocationOk">OK</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade" id="modal-fileTransfer" tabindex="-1" aria-labelledby="modalFileTransferTitle" aria-hidden="true">
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modalFileTransferTitle">Add allowed File transfer location</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p class="my-4">Add the Software AG file transfer location allowed to upload or download files.</p>
+            <div class="card bg-light">
+              <div class="card-body">
+                <div class="mb-3 row">
+                  <label for="nested-fileTransferName" class="col-sm-3 col-form-label text-sm-end">File transfer name:</label>
+                  <div class="col-sm-9">
+                    <input type="text" class="form-control" v-model="fileTransferName" id="nested-fileTransferName" aria-describedby="input-live-help" />
+                    <div class="form-text" id="input-live-help">Directory to upload or download files</div>
+                  </div>
+                </div>
+                <div class="mb-3 row">
+                  <label for="nested-fileTransferLocation" class="col-sm-3 col-form-label text-sm-end">File transfer location:</label>
+                  <div class="col-sm-9">
+                    <input type="text" class="form-control" v-model="location" id="nested-fileTransferLocation" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-danger" @click="handleOk">OK</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card border-secondary">
+      <div class="card-header border-secondary">Adabas REST server configuration</div>
+      <div class="card-body">
+        <label>The configuration are applied when the action is set.</label>
+        <ul class="nav nav-tabs mt-3" id="myTab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="server-services-tab" data-bs-toggle="tab" data-bs-target="#server-services" type="button" role="tab" aria-controls="server-services" aria-selected="true">Server services</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="suite-installations-tab" data-bs-toggle="tab" data-bs-target="#suite-installations" type="button" role="tab" aria-controls="suite-installations" aria-selected="false">Suite installations</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="file-transfer-tab" data-bs-toggle="tab" data-bs-target="#file-transfer" type="button" role="tab" aria-controls="file-transfer" aria-selected="false">File transfer</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="data-access-tab" data-bs-toggle="tab" data-bs-target="#data-access" type="button" role="tab" aria-controls="data-access" aria-selected="false">Data access</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="database-metrics-tab" data-bs-toggle="tab" data-bs-target="#database-metrics" type="button" role="tab" aria-controls="database-metrics" aria-selected="false">Database metrics tracked</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="user-authorization-tab" data-bs-toggle="tab" data-bs-target="#user-authorization" type="button" role="tab" aria-controls="user-authorization" aria-selected="false">User Authorization</button>
+          </li>
+        </ul>
+        <div class="tab-content mt-3" id="myTabContent">
+          <div class="tab-pane fade show active" id="server-services" role="tabpanel" aria-labelledby="server-services-tab">
+            <div class="card">
+              <div class="card-header info-header">Server configuration</div>
+              <div class="card-body">
+                <div class="container-fluid">
+                  <div class="row my-1">
+                    <div class="col-sm-11">
+                      The content location contains this web application to handle a number of configurations. The location may be changed to disable this web application. This need to be done manually changing the config.xml file.
+                    </div>
+                  </div>
+                  <div class="row my-1">
+                    <div class="col-sm-2">Content location:</div>
+                    <div class="col-sm-9">
+                      <input type="text" class="form-control" readonly v-model="config.Server.Content" />
+                    </div>
+                  </div>
+                  <div class="row my-1">
+                    <div class="col-sm-2">Log location:</div>
+                    <div class="col-sm-2">
+                      <select disabled class="form-select" v-model="config.Server.LogLocation.level">
+                        <option v-for="option in options" :key="option" :value="option">{{ option }}</option>
+                      </select>
+                    </div>
+                    <div class="col-sm-7">
+                      <input readonly type="text" class="form-control" v-model="config.Server.LogLocation.directory" />
+                    </div>
+                  </div>
+                  <div class="row my-1">
+                    <div class="col">
+                      <table class="table table-striped table-bordered table-hover table-sm">
+                        <thead>
+                          <tr>
+                            <th v-for="field in serviceFields" :key="field.key">{{ field.key }}</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr v-for="item in config.Server.Service" :key="item.port">
+                            <td v-for="field in serviceFields" :key="field.key">{{ item[field.key] }}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header info-header">Job Store</div>
+              <div class="card-body">
+                <div class="container">
+                  <div class="row">
+                    <div class="col-sm-2">Job store file location:</div>
+                    <div class="col-sm-9">
+                      <input type="text" class="form-control" v-model="config.JobStore.config" />
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-2">Job store database:</div>
+                    <div class="col-sm-9">
+                      <input type="text" class="form-control" v-model="config.JobStore.Database.url" />
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-2">Job store file:</div>
+                    <div class="col-sm-9">
+                      <input type="number" class="form-control" v-model="config.JobStore.Database.file" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button type="button" class="btn btn-outline-primary" @click="adaptChanges()">Apply</button>
+          </div>
+          <div class="tab-pane fade" id="suite-installations" role="tabpanel" aria-labelledby="suite-installations-tab">
+            <div class="container-fluid">
+              <div class="row my-1">
+                <div class="col-sm-2">Adabas Database location:</div>
+                <div class="col-sm-9">
+                  <input readonly type="text" class="form-control" v-model="config.Module.AdabasData" />
+                </div>
+              </div>
+              <div class="row my-1">
+                <div class="col">
+                  <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modal-location">Add</button>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col">
+                  <table class="table table-striped table-bordered table-hover table-sm">
+                    <thead>
+                      <tr>
+                        <th v-for="field in instFields" :key="field.key">{{ field.name || field.key }}</th>
+                        <th>Delete</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="item in config.Module.Installation" :key="item.Location">
+                        <td v-for="field in instFields" :key="field.key">{{ item[field.key] }}</td>
+                        <td>
                           <div class="mx-auto text-center">
-                            <b-icon-x-circle
-                              scale="2"
-                              variant="danger"
-                              v-on:click="del_access(row.item.url)"
-                            ></b-icon-x-circle>
-                          </div> </template></b-table></b-col></b-row
-                ></b-container> </b-card-body
-            ></b-card>
-          </b-tab>
-          <b-tab title="Database metrics tracked">
-            <b-container fluid>
-              <b-row
-                ><b-col>
-                  <b-button
-                    @click="showMsgOk('metrics')"
-                    variant="outline-primary"
-                    >Add</b-button
-                  ></b-col
-                ></b-row
-              ><b-row
-                ><b-col>
-                  <b-table
-                    striped
-                    bordered
-                    hover
-                    small
-                    :items="config.Metrics.Database"
-                    :fields="accessFields"
-                  >
-                    <template v-slot:cell(delete)="row">
-                      <div class="mx-auto text-center">
-                        <b-icon-x-circle
-                          scale="2"
-                          variant="danger"
-                          v-on:click="del_metric(row.item.url)"
-                        ></b-icon-x-circle>
-                      </div> </template></b-table></b-col></b-row
-            ></b-container>
-          </b-tab>
-          <b-tab title="User Authorization">
-            <b-container
-              ><b-row
-                ><b-col>
-                  <b-button variant="outline-primary">Add</b-button></b-col
-                >
-                <b-col
-                  >Default read:<b-form-input v-model="user.readPermission"
-                /></b-col>
-                <b-col
-                  >Default write:<b-form-input v-model="user.writePermission"
-                /></b-col> </b-row
-              ><b-row
-                ><b-col>
-                  <b-table
-                    striped
-                    bordered
-                    hover
-                    small
-                    :items="user.Users"
-                    :fields="userFields"
-                  >
-                    <template v-slot:cell(administrator)="row">
-                      <b-form-checkbox
-                        switch
-                        v-model="row.item.administrator"
-                        v-on:change="toggle(row.item)"
-                      />
-                    </template>
-                    <template v-slot:cell(readPermission)="row">
-                      <b-form-input v-model="row.item.readPermission" />
-                    </template>
-                    <template v-slot:cell(writePermission)="row">
-                      <b-form-select
-                        v-model="selected"
-                        :options="options"
-                        size="sm"
-                        class="mt-3"
-                      ></b-form-select>
-                    </template>
-                    <template v-slot:cell(delete)="row">
-                      <div class="mx-auto text-center">
-                        <b-icon-x-circle
-                          scale="2"
-                          variant="danger"
-                          v-on:click="del_metric(row.item.url)"
-                        ></b-icon-x-circle>
-                      </div> </template></b-table></b-col></b-row
-            ></b-container>
-          </b-tab> </b-tabs></b-card-body
-      ><b-button @click="adaptChanges()" variant="outline-primary"
-        >Apply</b-button
-      ><b-button @click="storeChanges()" variant="outline-primary"
-        >Store</b-button
-      ></b-card
-    >
+                            <button type="button" class="btn btn-outline-danger btn-sm" :disabled="item.Active" @click="del_installation(item.Location)">
+                              <i class="bi bi-x-circle"></i> Delete
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <button type="button" class="btn btn-outline-primary" @click="adaptChanges()">Apply</button>
+          </div>
+          <div class="tab-pane fade" id="file-transfer" role="tabpanel" aria-labelledby="file-transfer-tab">
+            <div class="container-fluid">
+              <div class="row my-1">
+                <div class="col">
+                  <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" @click="showMsgFileTransferOk('filetransfer')">Add</button>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col">
+                  <table class="table table-striped table-bordered table-hover table-sm">
+                    <thead>
+                      <tr>
+                        <th v-for="field in fileFields" :key="field.key">{{ field.key }}</th>
+                        <th>Delete</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="item in config.Module.Directories" :key="item.name">
+                        <td v-for="field in fileFields" :key="field.key">{{ item[field.key] }}</td>
+                        <td>
+                          <div class="mx-auto text-center">
+                            <button type="button" class="btn btn-outline-danger btn-sm" @click="del_directories(item.name)">
+                              <i class="bi bi-x-circle"></i> Delete
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <button type="button" class="btn btn-outline-primary" @click="adaptChanges()">Apply</button>
+          </div>
+          <div class="tab-pane fade" id="data-access" role="tabpanel" aria-labelledby="data-access-tab">
+            <div class="card">
+              <div class="card-header info-header">Map repositories</div>
+              <div class="card-body">
+                <button type="button" class="btn btn-outline-primary" data-bs-toggle="collapse" data-bs-target="#mapFile-collapse" @click="showMsgOk('map')">Add</button>
+                <table class="table table-striped table-bordered table-hover table-sm">
+                  <thead>
+                    <tr>
+                      <th v-for="field in mapFields" :key="field.key">{{ field.key }}</th>
+                      <th>Delete</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="item in config.Mapping.Database" :key="item.url + item.file">
+                      <td v-for="field in mapFields" :key="field.key">{{ item[field.key] }}</td>
+                      <td>
+                        <div class="mx-auto text-center">
+                          <button type="button" class="btn btn-outline-danger btn-sm" @click="del_mapping(item.url, item.file)">
+                            <i class="bi bi-x-circle"></i> Delete
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header info-header">Classic database access</div>
+              <div class="card-body">
+                <div class="container-fluid">
+                  <div class="row">
+                    <div class="col-sm-1 text-end">
+                      <input type="checkbox" class="form-check-input" v-model="config.DatabaseAccess.Global" />
+                    </div>
+                    <div class="col-sm-10">
+                      Provide access to all classic database ids (global)
+                    </div>
+                  </div>
+                  <div class="row my-1">
+                    <div class="col">
+                      <button type="button" class="btn btn-outline-primary" @click="showMsgOk('classic')">Add</button>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col">
+                      <table class="table table-striped table-bordered table-hover table-sm">
+                        <thead>
+                          <tr>
+                            <th v-for="field in accessFields" :key="field.key">{{ field.key }}</th>
+                            <th>Delete</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr v-for="item in config.DatabaseAccess.Database" :key="item.url">
+                            <td v-for="field in accessFields" :key="field.key">{{ item[field.key] }}</td>
+                            <td>
+                              <div class="mx-auto text-center">
+                                <button type="button" class="btn btn-outline-danger btn-sm" @click="del_access(item.url)">
+                                  <i class="bi bi-x-circle"></i> Delete
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button type="button" class="btn btn-outline-primary" @click="adaptChanges()">Apply</button>
+          </div>
+          <div class="tab-pane fade" id="database-metrics" role="tabpanel" aria-labelledby="database-metrics-tab">
+            <div class="container-fluid">
+              <div class="row my-1">
+                <div class="col">
+                  <button type="button" class="btn btn-outline-primary" @click="showMsgOk('metrics')">Add</button>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col">
+                  <table class="table table-striped table-bordered table-hover table-sm">
+                    <thead>
+                      <tr>
+                        <th v-for="field in accessFields" :key="field.key">{{ field.key }}</th>
+                        <th>Delete</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="item in config.Metrics.Database" :key="item.url">
+                        <td v-for="field in accessFields" :key="field.key">{{ item[field.key] }}</td>
+                        <td>
+                          <div class="mx-auto text-center">
+                            <button type="button" class="btn btn-outline-danger btn-sm" @click="del_metric(item.url)">
+                              <i class="bi bi-x-circle"></i> Delete
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <button type="button" class="btn btn-outline-primary" @click="adaptChanges()">Apply</button>
+          </div>
+          <div class="tab-pane fade" id="user-authorization" role="tabpanel" aria-labelledby="user-authorization-tab">
+            <div class="container-fluid">
+              <div class="row my-1">
+                <div class="col">
+                  <button type="button" class="btn btn-outline-primary" @click="showAddUser()">Add</button>
+                </div>
+                <div class="col">
+                  Default read:<input type="text" class="form-control" v-model="user.readPermission" />
+                </div>
+                <div class="col">
+                  Default write:<input type="text" class="form-control" v-model="user.writePermission" />
+                </div>
+              </div>
+              <div class="row">
+                <div v-if="AddUserSuccess" class="invalid-feedback">
+                  {{ AddUserSuccess }}
+                </div>
+                <div v-else-if="AddUserError" class="valid-feedback">
+                  {{ AddUserError }}
+                </div>
+                <div class="col">
+                  <table class="table table-striped table-bordered table-hover table-sm">
+                    <thead>
+                      <tr>
+                        <th v-for="field in userFields" :key="field.key">{{ field.key }}</th>
+                        <th>Delete</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="item in user.Users" :key="item.name">
+                        <td v-for="field in userFields" :key="field.key">
+                          <template v-if="field.key === 'administrator'">
+                            <input type="checkbox" class="form-check-input" v-model="item.administrator" @change="toggleAdmin(item)" />
+                          </template>
+                          <template v-else-if="field.key === 'readPermission'">
+                            <input readonly type="text" class="form-control" v-model="item.readPermission" />
+                          </template>
+                          <template v-else-if="field.key === 'writePermission'">
+                            <input readonly type="text" class="form-control" v-model="item.writePermission" />
+                          </template>
+                          <template v-else>
+                            {{ item[field.key] }}
+                          </template>
+                        </td>
+                        <td>
+                          <div class="mx-auto text-center">
+                            <button type="button" class="btn btn-outline-danger btn-sm" @click="del_user(item.name)">
+                              <i class="bi bi-x-circle"></i> Delete
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- <button type="button" class="btn btn-outline-primary" @click="adaptChanges()">Apply</button> -->
+        <!-- <button type="button" class="btn btn-outline-primary" @click="storeChanges()">Store</button> -->
+      </div>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { defineComponent, ref, onMounted } from "vue";
 import MyHeader from '@/components/Header.vue';
+import 'bootstrap/dist/css/bootstrap.css';
+import 'bootstrap/dist/js/bootstrap.bundle';
 import { AdabasConfig } from '../adabas/config';
-import { BIconXCircle } from 'bootstrap-vue';
+import { Modal } from 'bootstrap';
+// import { BIconXCircle } from 'bootstrap-vue-next/dist/icons';
 
-@Component({
+export default defineComponent({
   components: {
-    BIconXCircle,
+    // BIconXCircle,
     MyHeader,
   },
-})
-export default class Configuration extends Vue {
-  @Prop() private msg!: string;
-  data() {
-    return {
-      c: null,
-      fileTransferName: '',
-      location: '',
-      dbid: '0' as string,
-      inputUrl: '',
-      file: 100 as number,
-      mapFileDisplay: false,
-      modalType: '',
-      modalTitle: 'Add Database',
-      modalDescription: 'Enter Database id',
-      modalLabel: 'Database',
-      config: {
-        DatabaseAccess: {
-          Database: [],
-          Global: false,
-        },
-        Mapping: {
-          Database: [],
-        },
-        Metrics: { Database: [] },
-        Module: {
-          AdabasData: '',
-          Directories: [],
-          Installation: [],
-        },
-        JobStore: {
-          config: '',
-          Database: {
-            url: '',
-            file: 0,
-          },
-        },
-        Server: {
-          Content: './static',
-          LogLocation: { directory: 'logs/server.log', level: 'info' },
-          Service: [],
+  props: {
+    msg: {
+      type: String,
+      required: true,
+    },
+  },
+  setup() {
+    const c = ref<AdabasConfig | null>(null);
+    const fileTransferName = ref('');
+    const location = ref('');
+    const dbid = ref<number>(0);
+    const inputUrl = ref('');
+    const file = ref(100);
+    const mapFileDisplay = ref(false);
+    const modalType = ref('');
+    const modalTitle = ref('Add Database');
+    const modalDescription = ref('Enter Database id');
+    const modalLabel = ref('Database');
+    const username = ref('');
+    const usernameError = ref('');
+    const AddUserError = ref('');
+    const AddUserSuccess = ref('');
+    interface Installation {
+      changed: boolean;
+      deleted: boolean;
+      Location: string;
+    }
+
+    const config = ref({
+      DatabaseAccess: {
+        Database: [] as Array<{ url: string; changed: boolean; deleted: boolean }>,
+        Global: false,
+      },
+      Mapping: {
+        Database: [],
+        Installation: [] as Installation[],
+      },
+      Metrics: { Database: [] },
+      Module: {
+        AdabasData: '',
+        Directories: [],
+        Installation: [] as Installation[],
+      },
+      JobStore: {
+        config: '',
+        Database: {
+          url: '',
+          file: 0,
         },
       },
-      originConfig: null,
-      user: {
-        readPermission: '',
-        writePermission: '',
-        Users: [],
+      Server: {
+        Content: './static',
+        LogLocation: { directory: 'logs/server.log', level: 'info' },
+        Service: [],
       },
-      originUser: null,
-      instFields: [
-        { key: 'Location', name: 'Installation' },
-        { key: 'Active' },
-        { key: 'StructureLevel', name: 'Structure level' },
-        { key: 'Version', name: 'Adabas Version' },
-        'Delete',
-      ],
-      serviceFields: [{ key: 'port' }, { key: 'type' }],
-      accessFields: [{ key: 'url' }, 'Delete'],
-      mapFields: [{ key: 'url' }, { key: 'file' }, 'Delete'],
-      fileFields: [{ key: 'name' }, { key: 'location' }, 'Delete'],
-      userFields: [
-        { key: 'name' },
-        { key: 'administrator' },
-        { key: 'readPermission' },
-        { key: 'writePermission' },
-        'Delete',
-      ],
-      options: ['debug', 'info', 'error'],
+    });
+    
+    const originConfig = ref(null);
+    const user = ref({
+      readPermission: '',
+      writePermission: '',
+      Users: [],
+    });
+    const originUser = ref(null);
+    const instFields = ref([
+      { key: 'Location', name: 'Installation' },
+      { key: 'Active' },
+      { key: 'StructureLevel', name: 'Structure level' },
+      { key: 'Version', name: 'Adabas Version' },
+      'Delete',
+    ]);
+    const serviceFields = ref([{ key: 'port' }, { key: 'type' }]);
+    const accessFields = ref([{ key: 'url' }, 'Delete']);
+    const mapFields = ref([{ key: 'url' }, { key: 'file' }, 'Delete']);
+    const fileFields = ref([{ key: 'name' }, { key: 'location' }, 'Delete']);
+    const userFields = ref([
+      { key: 'name' },
+      { key: 'administrator' },
+      { key: 'readPermission' },
+      { key: 'writePermission' },
+      'Delete',
+    ]);
+    const options = ref(['debug', 'info', 'error']);
+
+    onMounted(() => {
+      usernameError.value = ""; // clear error if valid
+      AddUserError.value = ""; // clear error if valid
+      AddUserSuccess.value = ""; // clear error if valid
+      const adabasConfig = new AdabasConfig();
+      c.value = adabasConfig;
+      adabasConfig.read().then((configData: any) => {
+        if (!configData.JobStore) {
+          configData.JobStore = { config: '', Database: { url: '', file: 0 } };
+        } else {
+          if (!configData.JobStore.Database) {
+            configData.JobStore.Database = { url: '', file: 0 };
+          }
+        }
+        config.value = configData;
+        originConfig.value = JSON.parse(JSON.stringify(configData));
+      });
+      getUser();
+    });
+
+    const getUser = async() => {
+      c.value.readUser().then((userData: any) => {
+        user.value = userData;
+        originUser.value = JSON.parse(JSON.stringify(c));
+      });
+    }
+
+    const del_user = async(username: string) => {
+      console.log('Delete User : ' + username);
+      try {
+        const result = await c.value.DeleteUser(username);
+        console.log('Deleting user ...', result);
+
+        //update user list      
+        await getUser();
+        AddUserError.value = ""; // clear error
+        AddUserSuccess.value = "Delete new user ["+username+"] success";
+        console.log(AddUserSuccess.value);
+      } catch (error) {
+        console.error('Failed to add new user:', error);
+      }
+    }; 
+
+    const del_mapping = (location: string, file: number) => {
+      console.log('Delete mapping : ' + location + ' ' + file);
+      config.value.Mapping.Database.forEach((element: any) => {
+        if (element.url === location && element.file === file) {
+          element.Deleted = true;
+        }
+      });
+    }; 
+
+    const del_installation = (location: string) => {
+      console.log('Delete installation : ' + location);
+      config.value.Module.Installation.forEach((element: any) => {
+        if (element.Location === location) {
+          console.log('Remove -> ' + location);
+          element.Deleted = true;
+        }
+      });
+    }; 
+
+    const del_access = (location: string) => {
+      console.log('Delete access : ' + location);
+      config.value.DatabaseAccess.Database.forEach((element: any) => {
+        if (element.url === location) {
+          element.Deleted = true;
+        }
+      });
     };
-  }
-  created(): void {
-    this.$data.c = new AdabasConfig();
-    this.$data.c.read().then((c: any) => {
-      if (!c.JobStore) {
-        c.JobStore = { config: '', Database: { url: '', file: 0 } };
+
+    const del_directories = (location: string) => {
+      console.log('Delete directories : ' + location);
+      config.value.Module.Directories.forEach((element: any) => {
+        if (element.location === location) {
+          element.Deleted = true;
+        }
+      });
+    };
+
+    const del_metric = (url: string) => {
+      console.log('Delete metrics : ' + location);
+      config.value.Metrics.Database.forEach((element: any) => {
+        if (element.url === url) {
+          element.Deleted = true;
+        }
+      });
+    };
+
+    const locationState = () => {
+      return location.value === '' ? false : true;
+    };
+
+
+
+    const handleLocationOk = () => {
+      console.log('handle location state check of ' + location.value);
+      modalType.value = 'installation';
+      handleOk();
+    };
+
+    const dbidState = () => {
+      const dbidNumber = Number(dbid.value);
+      return dbidNumber > 0 && dbidNumber < 65536 ? true : false;
+    };
+
+    const urlState = () => {
+      if (inputUrl.value == '') {
+        return true;
+      }
+      return /^adatcp[s]?:\/\/[\w\.]*:\d*$/.test(inputUrl.value);
+    };
+
+    const fileState = () => {
+      return file.value > 0 && file.value < 64536 ? true : false;
+    };
+
+    const showMsgFileTransferOk = (Type: string) => {
+      modalType.value = Type;
+      const modalDb = new Modal(document.getElementById('modal-fileTransfer'));
+      modalDb.show();
+    };
+
+    const showAddUser = () => {
+      const modalDb = new Modal(document.getElementById('modal-add-user'));
+      modalDb.show();
+    };
+
+    const showMsgOk = (Type: string) => {
+      modalType.value = Type;
+      switch (Type) {
+        case 'classic':
+          mapFileDisplay.value = false;
+          modalTitle.value = 'Classic Database access';
+          modalDescription.value =
+            'Enter the classic database which should be able to access directly using classical database parameters like database id, file number and short name.';
+          break;
+        case 'metrics':
+          mapFileDisplay.value = false;
+          modalTitle.value = 'Enable Database metrics';
+          modalDescription.value =
+            'Enter the Adabas database which should be tracked for metrics requests.';
+          break;
+        case 'map':
+          mapFileDisplay.value = true;
+          modalTitle.value = 'Add Database repository';
+          modalDescription.value =
+            'Enter the Adabas database and Adabas file number of the Adabas Map repository which should be search in for Adabas Maps.';
+          break;
+      }
+
+      const modalDb = new Modal(document.getElementById('modal-db'));
+      modalDb.show();
+    };
+
+    const handleAddUserOK = async () => {
+      console.log('HandleAddUserOK username = ' + username.value);
+      AddUserError.value = ""; // clear error if valid
+      AddUserSuccess.value = ""; // clear error if valid
+      if (username.value.trim() === "") {
+        usernameError.value = "Username cannot be empty";
+        return;
       } else {
-        if (!c.JobStore.Database) {
-          c.JobStore.Database = { url: '', file: 0 };
-        }
+        usernameError.value = ""; // clear error if valid
       }
-      this.$data.config = c;
-      this.$data.originConfig = JSON.parse(JSON.stringify(c));
-    });
-    this.$data.c.readUser().then((c: any) => {
-      this.$data.user = c;
-      this.$data.originUser = JSON.parse(JSON.stringify(c));
-    });
-  }
-  del_mapping(location: string, file: number): void {
-    console.log('Delete mapping : ' + location + ' ' + file);
-    this.$data.config.Mapping.Database.forEach((element: any) => {
-      if (element.url === location && element.file === file) {
-        element.Deleted = true;
+
+      const modalEl = document.getElementById('modal-add-user');
+      const modalInstance = Modal.getInstance(modalEl) || new Modal(modalEl);
+      if (user.value.Users.some(u => u.name === username.value)) {
+        AddUserSuccess.value = ""; // clear error
+        AddUserError.value = 'User ['+username.value+'] already exists';
+        modalInstance.hide();
+        return;
       }
-    });
-    // this.$data.c.deleteMapping(location, file);
-  }
-  del_installation(location: string): void {
-    console.log('Delete installation : ' + location);
-    this.$data.config.Module.Installation.forEach((element: any) => {
-      if (element.Location === location) {
-        console.log('Remove -> ' + location);
-        element.Deleted = true;
+      try {
+        const result = await c.value.AddUser(username.value);
+        console.log('Adding new user ...', result);
+
+        //update user list      
+        await getUser();
+        AddUserError.value = ""; // clear error
+        AddUserSuccess.value = "Add new user ["+username.value+"] success";
+        console.log(AddUserSuccess.value);
+        modalInstance.hide();
+      } catch (error) {
+        console.error('Failed to add new user:', error);
       }
-    });
-    // this.$data.c.deleteInstallation(location);
-  }
-  del_access(location: string): void {
-    console.log('Delete access : ' + location);
-    this.$data.config.DatabaseAccess.Database.forEach((element: any) => {
-      if (element.url === location) {
-        element.Deleted = true;
-      }
-    });
-    //   this.$data.c.deleteAccess(location);
-  }
-  del_directories(location: string): void {
-    console.log('Delete directories : ' + location);
-    this.$data.config.Module.FileAccess.Directories.forEach((element: any) => {
-      if (element.location === location) {
-        element.Deleted = true;
-      }
-    });
-    // this.$data.c.deleteDirectory(location);
-  }
-  del_metric(url: string): void {
-    console.log('Delete metrics : ' + location);
-    this.$data.config.Metrics.Database.forEach((element: any) => {
-      if (element.url === url) {
-        element.Deleted = true;
-      }
-    });
-    // var dbAccess = this.$data.config.Metrics.Database.filter(function(db: any) {
-    //   return db.url !== location;
-    // });
-    // this.$data.config.Metrics.Database = dbAccess;
-    // this.$data.c.deleteMetric(location);
-  }
-  locationState() {
-    return this.$data.location === '' ? false : true;
-  }
-  handleLocationOk() {
-    console.log('handle location state check of ' + this.$data.location);
-    this.$data.modalType = 'installation';
-    this.handleOk();
-  }
-  dbidState() {
-    return this.$data.dbid > 0 && this.$data.dbid < 64536 ? true : false;
-  }
-  urlState() {
-    if (this.$data.inputUrl == '') {
-      return true;
     }
-    return /^adatcp[s]?:\/\/[\w\.]*:\d*$/.test(this.$data.inputUrl);
-  }
-  fileState() {
-    return this.$data.file > 0 && this.$data.file < 64536 ? true : false;
-  }
-  showMsgOk(modalType: string) {
-    this.$data.modalType = modalType;
-    switch (this.$data.modalType) {
-      case 'classic':
-        this.$data.mapFileDisplay = false;
-        this.$data.modalTitle = 'Classic Database access';
-        this.$data.modalDescription =
-          'Enter the classic database which should be able to access directly using classical database parameters like database id, file number and short name.';
-        break;
-      case 'metrics':
-        this.$data.mapFileDisplay = false;
-        this.$data.modalTitle = 'Enable Database metrics';
-        this.$data.modalDescription =
-          'Enter the Adabas database which should be tracked for metrics requests.';
-        break;
-      case 'map':
-        this.$data.mapFileDisplay = true;
-        this.$data.modalTitle = 'Add Database repository';
-        this.$data.modalDescription =
-          'Enter the Adabas database and Adabas file number of the Adabas Map repository which should be search in for Adabas Maps.';
-        break;
-      default:
-    }
-    this.$bvModal.show('modal-db');
-  }
-  handleOk() {
-    console.log('Handle ok show db modal ' + this.$data.modalType);
-    switch (this.$data.modalType) {
-      case 'installation':
-        this.$data.config.Module.Installation.push({
-          changed: true,
-          deleted: false,
-          Location: this.$data.location,
-        });
-        break;
-      case 'classic':
-        if (this.$data.dbid > 0) {
-          notFound = this.$data.config.DatabaseAccess.Database.every(
-            (element: any) => {
-              if (element.url == this.$data.dbid + '') {
-                return false;
-              }
-              return true;
-            }
-          );
-          if (!notFound) {
-            return;
-          }
-          this.$data.config.DatabaseAccess.Database.push({
-            url: this.$data.dbid + '',
+
+    const handleOk = () => {
+      console.log('Handle ok show db modal ' + modalType.value);
+      switch (modalType.value) {
+        case 'installation':
+          config.value.Module.Installation.push({
             changed: true,
             deleted: false,
+            Location: location.value,
           });
-        }
-        break;
-      case 'filetransfer':
-        this.$data.config.Module.FileAccess.Directories.push({
-          location: this.$data.location,
-          name: this.$data.fileTransferName,
-          changed: true,
-          deleted: false,
-        });
-        break;
-      case 'map':
-        if (this.$data.dbid > 0) {
-          var notFound = this.$data.config.Mapping.Database.every(
-            (element: any) => {
-              if (
-                element.url == this.$data.dbid + '' &&
-                element.file == this.$data.file
-              ) {
-                return false;
-              }
-              return true;
-            }
-          );
-          if (!notFound) {
-            return;
-          }
-          this.$data.config.Mapping.Database.push({
-            url: this.$data.dbid + '',
-            file: Number(this.$data.file),
-            changed: true,
-            deleted: false,
-          });
-        }
-        break;
-      case 'metrics':
-        if (this.$data.dbid > 0) {
-          if (this.$data.config.Metrics.Database != null) {
-            notFound = this.$data.config.Metrics.Database.every(
+          break;
+        case 'classic':
+          if (dbid.value > 0) {
+            let notFound = config.value.DatabaseAccess.Database.every(
               (element: any) => {
-                if (element.url == this.$data.dbid + '') {
+                if (element.url == dbid.value + '') {
                   return false;
                 }
                 return true;
@@ -738,35 +807,170 @@ export default class Configuration extends Vue {
             if (!notFound) {
               return;
             }
-          } else {
-            this.$data.config.Metrics.Database = [];
+            config.value.DatabaseAccess.Database.push({
+              url: dbid.value + '',
+              changed: true,
+              deleted: false,
+            });
           }
-          this.$data.config.Metrics.Database.push({
-            url: this.$data.dbid + '',
+          break;
+        case 'filetransfer':
+          config.value.Module.FileAccess.Directories.push({
+            location: location.value,
+            name: fileTransferName.value,
             changed: true,
+            deleted: false,
           });
+          break;
+        case 'map':
+          if (dbid.value > 0) {
+            let notFound = config.value.Mapping.Database.every(
+              (element: any) => {
+                if (
+                  element.url == dbid.value + '' &&
+                  element.file == file.value
+                ) {
+                  return false;
+                }
+                return true;
+              }
+            );
+            if (!notFound) {
+              return;
+            }
+            config.value.Mapping.Database.push({
+              url: dbid.value + '',
+              file: Number(file.value),
+              changed: true,
+              deleted: false,
+            });
+          }
+          break;
+        case 'metrics':
+          if (dbid.value > 0) {
+            if (config.value.Metrics.Database != null) {
+              let notFound = config.value.Metrics.Database.every(
+                (element: any) => {
+                  if (element.url == dbid.value + '') {
+                    return false;
+                  }
+                  return true;
+                }
+              );
+              if (!notFound) {
+                return;
+              }
+            } else {
+              config.value.Metrics.Database = [];
+            }
+            config.value.Metrics.Database.push({
+              url: dbid.value + '',
+              changed: true,
+            });
+          }
+          break;
+        default:
+          console.log('Unknown modal type');
+      }
+    };
+
+    const toggleAdmin = async(item: any) => {
+      item.administrator = !item.administrator;
+      console.log("item.administrator = " + item.administrator)
+      if(item.administrator)
+      {
+        console.log("Remove user "+item.name+" from administrator");
+        try {
+          const result = await c.value.DeleteAdmin(item.name);
+          console.log('Remove admin ...', result);
+        } catch (error) {
+          console.error('Failed to Remove user from administrator :', error);
         }
-        break;
-      default:
-        console.log('Unknown modal type');
-    }
-  }
-  toggle(item: any) {
-    item.administrator = !item.administrator;
-  }
-  adaptChanges() {
-    console.log('Apply changes');
-    return this.$data.c.putConfig(this.$data.config).then((result: any) => {
-      console.log('Applying ...');
-    });
-  }
-  storeChanges() {
-    console.log('Store changes');
-    return this.$data.c.store().then((result: any) => {
-      console.log('Storing ...');
-    });
-  }
-}
+      }else{
+        console.log("Add user "+item.name+" as administrator");
+        try {
+          const result = await c.value.AddAdmin(item.name);
+          console.log('Add admin ...', result);
+        } catch (error) {
+          console.error('Failed to add user as administrator:', error);
+        }
+      }
+      getUser();
+    };
+
+    const adaptChanges = async () => {
+      console.log('Apply changes');
+      if (c.value) {
+        console.log('Config service instance (c):', JSON.stringify(c.value, null, 2));
+
+        try {
+          const result = await c.value.putConfig(config.value);
+          console.log('Applying ...', result);
+        } catch (error) {
+          console.error('Failed to apply changes:', error);
+        }
+      } else {
+        console.warn('No config service instance available (c is null or undefined)');
+      }
+    };
+
+    const storeChanges = () => {
+      console.log('Store changes');
+      if (c.value) {
+        return c.value.store().then((result: any) => {
+          console.log('Storing ...');
+        });
+      }
+    };
+
+    return {
+      c,
+      fileTransferName,
+      location,
+      dbid,
+      inputUrl,
+      file,
+      mapFileDisplay,
+      modalType,
+      modalTitle,
+      modalDescription,
+      modalLabel,
+      config,
+      originConfig,
+      user,
+      originUser,
+      instFields,
+      serviceFields,
+      accessFields,
+      mapFields,
+      fileFields,
+      userFields,
+      options,
+      del_mapping,
+      del_installation,
+      del_access,
+      del_directories,
+      del_metric,
+      del_user,
+      locationState,
+      handleLocationOk,
+      dbidState,
+      urlState,
+      fileState,
+      showMsgOk,
+      showAddUser,
+      handleOk,
+      handleAddUserOK,
+      toggleAdmin,
+      adaptChanges,
+      storeChanges,
+      username,
+      usernameError,
+      AddUserSuccess,
+      AddUserError,
+    };
+  },
+});
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

@@ -14,93 +14,132 @@
  * limitations under the License.-->
 
 <template>
-  <div class="nucleuslog p-2">
+  <div class="nucleuslog p-2" overflow-y="auto">
     <Sidebar :url="url" />
-    <b-card
-      :header="'Adabas Databases Nucleus log of database ' + url"
-      border-variant="secondary"
-      header-border-variant="secondary"
-    >
-      <b-card-body>
-        <b-container fluid>
-          <b-row
-            ><b-col>
+    <div class="card border-secondary">
+      <div class="card-header border-secondary">
+        Adabas Databases Nucleus log of database {{ url }}
+      </div>
+      <div class="card-body">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col">
               This page provides the Adabas database nucleus log output.
-            </b-col></b-row
-          >
-          <b-row
-            ><b-col> <Url url="/adabas/database" /> </b-col
-          ></b-row>
-          <b-row
-            ><b-col sm="2">
-           Select:
-            </b-col><b-col sm="10">
-              <b-form-select v-on:change="changeLog()" v-model="selected" :options="nucleusOptions"></b-form-select>
-            </b-col></b-row>
-          <b-row
-            ><b-col>
-   <b-overlay :show="show" rounded="sm">
-               <b-alert show variant="secondary"
-                ><pre>{{ log }}</pre></b-alert
-              >
-   </b-overlay>
-            </b-col></b-row
-          ></b-container
-        ></b-card-body
-      ></b-card
-    >
-    <StatusBar />
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <Url url="/adabas/database" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-2">
+              Select:
+            </div>
+            <div class="col-sm-10">
+              <select class="form-select" @change="changeLog()" v-model="selected">
+                <option v-for="option in nucleusOptions" :key="option" :value="option.value">{{ option.path }}</option>
+              </select>
+              <br>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <div v-if="show" class="overlay rounded-sm">
+                <div class="alert alert-secondary">
+                  <pre>{{ log }}</pre>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+        <StatusBar />
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { defineComponent, ref, onMounted, onBeforeUnmount } from 'vue';
 import Sidebar from './Sidebar.vue';
-import StatusBar from './StatusBar.vue';
+import StatusBar from '@/components/StatusBar.vue';
 import Url from './Url.vue';
 import store from '../store/index';
 import { SearchDatabases } from '@/adabas/admin';
 
-@Component({
+export default defineComponent({
   components: {
     Sidebar,
     StatusBar,
     Url,
   },
-})
-export default class DatabaseList extends Vue {
-  @Prop(String) readonly url: string | undefined;
-  data() {
-    return {
-      log: '' as string,
-      db: null,
-      selected: 'adanuc.log',
-      nucleusOptions: ["adanuc.log"] as string[],
-      show: true,
+  props: {
+    url: {
+      type: String,
+      required: true,
+    },
+  },
+  setup(props) {
+    const log = ref('');
+    const db = ref(null);
+    const selected = ref('adanuc.log');
+    const nucleusOptions = ref([{ value: 'adanuc.log', path: 'adanuc.log'}]);
+    const show = ref(false);
+    const timer = ref(null);
+
+    const loadNucleus = async () => {
+      try {
+        const response = await db.value.nucleusLog(selected.value);
+        log.value = response;
+        show.value = true;
+      } catch (error) {
+        //console.log("error.response", JSON.stringify(error.response));
+        console.error("Error loading nucleus log:", error);
+        store.commit('SET_STATUS', 'Failed to load nucleus log: '+error);
+      }
     };
-  }
-  created() {
-    this.$data.db = SearchDatabases(this.url);
-    this.$data.timer = setInterval(this.loadNucleus, 5000);
-    this.loadNucleus();
-    this.$data.db.nucleusLogList().then((response: any) => {
-      this.$data.nucleusOptions = response.NucleusLogs;
+
+    const changeLog = () => {
+      show.value = false;
+      loadNucleus();
+    };
+
+    onMounted(async () => {
+      try {
+        db.value = SearchDatabases(props.url);
+        if (!db.value) {
+          throw new Error("Database not found for URL: " + props.url);
+        }   
+        await loadNucleus();
+        timer.value = setInterval(loadNucleus, 5000);   
+        const response = await db.value.nucleusLogList();
+        nucleusOptions.value = response.NucleusLogs.map(path => {
+          return {
+            value: path.split('\\').pop(), // filename
+            path: path                      // full path
+          };
+        });
+        console.log("nucleusOptions List = " + JSON.stringify(nucleusOptions.value))
+      } catch (error: any) {
+        console.error("Error in onMounted:", error.message || error);
+      }
     });
-  }
-  loadNucleus() {
-    this.$data.db.nucleusLog(this.$data.selected).then((response: any) => {
-      this.$data.log = response;
-      this.$data.show = false;
+
+    onBeforeUnmount(() => {
+      clearInterval(timer.value);
     });
-  }
-  beforeDestroy() {
-    clearInterval(this.$data.timer);
-  }
-  changeLog() {
-    this.$data.show = false;
-    this.loadNucleus();
-  }
-}
+
+    return {
+      log,
+      db,
+      selected,
+      nucleusOptions,
+      show,
+      loadNucleus,
+      changeLog,
+    };
+  },
+});
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

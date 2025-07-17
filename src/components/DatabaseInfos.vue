@@ -14,179 +14,198 @@
  * limitations under the License.-->
 
 <template>
-  <div class="databaseinfos p-2">
+  <div class="databaseinfos p-2" overflow-y="auto">
     <Sidebar :url="url" />
-    <b-card
-      :header="'Adabas Database information for database ' + url"
-      border-variant="secondary"
-      header-border-variant="secondary"
-    >
-      <b-card-body>
+    <div class="card border-secondary">
+      <div class="card-header bg-secondary text-white">
+        Adabas Database information for database {{ url }}
+      </div>
+      <div class="card-body">
         <Url url="/adabas/database" />
-        <b-button variant="outline-primary" v-on:click="infoRenameDatabase()"
-          >Rename database</b-button
-        >
-        <b-modal
-          id="modal-rename"
-          size="lg"
-          title="Rename Adabas database"
-          @ok="renameDatabase"
-          no-stacking
-        >
-          <p>Rename Adabas database {{ infos['Name'] }}</p>
-          <b-form-input v-model="newName"></b-form-input>
-        </b-modal>
-        <b-table
-          class="w-100 p-3"
-          striped
-          bordered
-          hover
-          small
-          :items="infos"
-          :fields="fields"
-        >
-          <template v-slot:cell(Name)="data">
-           <div class="toCapitalFirst">{{ data.value }}</div>
-          </template>
-        </b-table>
-      </b-card-body>
-    </b-card>
+        <button class="btn btn-outline-primary" @click="infoRenameDatabase">
+          Rename database
+        </button>
+        <div class="modal fade" id="modal-rename" tabindex="-1" aria-labelledby="modal-rename-label" aria-hidden="true">
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="modal-rename-label">Rename Adabas database</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <p>Rename Adabas database {{ infos['Name'] }}</p>
+                <input type="text" class="form-control" v-model="newName" />
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" @click="renameDatabase">Save changes</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <table class="table table-striped table-bordered table-hover w-100 p-3">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="info in infos" :key="info.Name">
+              <td>{{ info.Name }}</td>
+              <td>{{ info.Value }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
     <StatusBar />
     <ErrorModal />
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Provide, Vue } from 'vue-property-decorator';
+import { defineComponent, ref, onMounted, provide } from 'vue';
 import Sidebar from './Sidebar.vue';
-import StatusBar from './StatusBar.vue';
+import StatusBar from '@/components/StatusBar.vue';
 import store from '../store/index';
 import Url from './Url.vue';
 import ErrorModal from '@/components/ErrorModal.vue';
 import { SearchDatabases } from '@/adabas/admin';
 
-@Component({
+export default defineComponent({
+  name: 'DatabaseInfos',
   components: {
     Sidebar,
-    StatusBar,
+   StatusBar,
     Url,
     ErrorModal,
   },
-})
-export default class DatabaseInfos extends Vue {
-  @Prop(String) readonly url: string | undefined;
-  @Provide() type = 'static';
-  data() {
-    return {
-      db: null,
-      newName: '',
-      infos: [],
-      fields: ['Name', 'Value'],
-      information: {
-        ACRABNLength: 4,
-        ASSO1BlockSize: 8192,
-        AlphaEncoding: 4,
-        Architecture: '',
-        CheckpointFile: 1,
-        CurrentPLOGNumber: 1,
-        Date: '1975-05-18T21:07:10.000+02:00',
-        Dbid: 0,
-        ETDataFile: 3,
-        ExtentRABNASSOArray: [11, 0, 0, 0],
-        ExtentRABNDATAArray: [15, 0, 0, 0, 0, 0, 0, 0],
-        ExtentRABNDSSTArray: [13, 0, 0, 0],
-        Flags: '',
-        MaxFileNumber: 320,
-        MaxFileNumberLoaded: 48,
-        Name: '',
-        SecurityFile: 2,
-        StructureLevel: 'Adabas v6.7 (21)',
-        TimeStampLog: '2020-05-18T21:07:25.000+02:00',
-        TimeStampReplication: '1970-01-01T01:00:00.000+01:00',
-        WORKExtents: [
-          {
-            BlockSize: 4096,
-            DeviceType: 'Filesystem',
-            Id: 'W',
-            Number: 1,
-            RABNfirst: 1,
-            RABNlast: 5120,
-            RABNunused: 1,
-          },
-        ],
-        WORKPart1Size: 5110,
-        WideEncoding: 4091,
-      },
-    };
-  }
-  created() {
-    this.$data.db = SearchDatabases(this.url);
-    this.queryInformation();
-  }
-  queryInformation(): void {
-    this.$data.db.information().then((response: any) => {
-      this.$data.infos = [];
-      [
-        'Dbid',
-        'Name',
-        'StructureLevel',
-        'Architecture',
-        'Date',
-        'Flags',
-        'PLOGCount',
-        'PLOGExtent',
-        'CurrentPLOGNumber',
-        'CurrentCLOGNumber',
-        'MaxFileNumberLoaded',
-        'TimeStampReplication',
-        'TimeStampLog',
-        'MaxFileNumber',
-        'SecurityFile',
-        'CheckpointFile',
-        'ETDataFile',
-        'Encrypted',
-        'EncryptAlgorithm',
-        'EncryptKMSTarget',
-        'RBACSecurity',
-        'RBACSystemFile',
-      ].forEach((element: string) => {
-        this.$data.infos.push({
-          Name: element,
-          Value: response.Gcb[element],
-        });
-      });
-      this.$data.information = response;
+  props: {
+    url: {
+      type: String,
+      required: true,
+    },
+  },
+  setup(props) {
+    provide('type', 'static');
+    const db = ref(null);
+    const newName = ref('');
+    const infos = ref([]);
+    const fields = ref(['Name', 'Value']);
+    const information = ref({
+      ACRABNLength: 4,
+      ASSO1BlockSize: 8192,
+      AlphaEncoding: 4,
+      Architecture: '',
+      CheckpointFile: 1,
+      CurrentPLOGNumber: 1,
+      Date: '1975-05-18T21:07:10.000+02:00',
+      Dbid: 0,
+      ETDataFile: 3,
+      ExtentRABNASSOArray: [11, 0, 0, 0],
+      ExtentRABNDATAArray: [15, 0, 0, 0, 0, 0, 0, 0],
+      ExtentRABNDSSTArray: [13, 0, 0, 0],
+      Flags: '',
+      MaxFileNumber: 320,
+      MaxFileNumberLoaded: 48,
+      Name: '',
+      SecurityFile: 2,
+      StructureLevel: 'Adabas v6.7 (21)',
+      TimeStampLog: '2020-05-18T21:07:25.000+02:00',
+      TimeStampReplication: '1970-01-01T01:00:00.000+01:00',
+      WORKExtents: [
+        {
+          BlockSize: 4096,
+          DeviceType: 'Filesystem',
+          Id: 'W',
+          Number: 1,
+          RABNfirst: 1,
+          RABNlast: 5120,
+          RABNunused: 1,
+        },
+      ],
+      WORKPart1Size: 5110,
+      WideEncoding: 4091,
     });
-  }
-  getTypeItem(newtype: any): void {
-    console.log('Get type item ' + newtype);
-    this.queryInformation();
-  }
-  infoRenameDatabase(): void {
-    this.$root.$emit('bv::show::modal', 'modal-rename', '#btnShow');
-  }
-  renameDatabase(): void {
-    if (this.$data.newName !== '') {
-      this.$data.db
-        .renameDatabase(this.$data.newName)
-        .then(() => {
-          this.queryInformation();
-        })
-        .catch((error: any) => {
-          let errorText = 'unknown error to rename database';
-          if (error.response !== undefined) {
-            errorText =
-              error.response.data.Error.code +
-              ': ' +
-              error.response.data.Error.message;
-          }
-          this.$root.$emit('error-message', errorText);
-          this.$root.$emit('bv::show::modal', 'modal-error', '#btnShow');
+
+    const queryInformation = () => {
+      db.value.information().then((response: any) => {
+        infos.value = [];
+        [
+          'Dbid',
+          'Name',
+          'StructureLevel',
+          'Architecture',
+          'Date',
+          'Flags',
+          'PLOGCount',
+          'PLOGExtent',
+          'CurrentPLOGNumber',
+          'CurrentCLOGNumber',
+          'MaxFileNumberLoaded',
+          'TimeStampReplication',
+          'TimeStampLog',
+          'MaxFileNumber',
+          'SecurityFile',
+          'CheckpointFile',
+          'ETDataFile',
+          'Encrypted',
+          'EncryptAlgorithm',
+          'EncryptKMSTarget',
+          'RBACSecurity',
+          'RBACSystemFile',
+        ].forEach((element: string) => {
+          infos.value.push({
+            Name: element,
+            Value: response.Gcb[element],
+          });
         });
-    }
-    this.$data.newName = '';
-  }
-}
+        information.value = response;
+      });
+    };
+
+    const infoRenameDatabase = () => {
+      this.$root.$emit('bv::show::modal', 'modal-rename', '#btnShow');
+    };
+
+    const renameDatabase = () => {
+      if (newName.value !== '') {
+        db.value
+          .renameDatabase(newName.value)
+          .then(() => {
+            queryInformation();
+          })
+          .catch((error: any) => {
+            let errorText = 'unknown error to rename database';
+            if (error.response !== undefined) {
+              errorText =
+                error.response.data.Error.code +
+                ': ' +
+                error.response.data.Error.message;
+            }
+            this.$root.$emit('error-message', errorText);
+            this.$root.$emit('bv::show::modal', 'modal-error', '#btnShow');
+          });
+      }
+      newName.value = '';
+    };
+
+    onMounted(() => {
+      db.value = SearchDatabases(props.url);
+      queryInformation();
+    });
+
+    return {
+      newName,
+      infos,
+      fields,
+      information,
+      infoRenameDatabase,
+      renameDatabase,
+    };
+  },
+});
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

@@ -5,8 +5,7 @@
 </template>
 
 <script lang="ts">
-//import { Chart } from "chart.js/auto";
-import { defineComponent, ref } from "@vue/composition-api";
+import { defineComponent, ref } from "vue";
 import { DoughnutChart, ExtractComponentData } from "vue-chart-3";
 import store from "../store/index";
 import { eventBus } from "../main";
@@ -16,7 +15,7 @@ Chart.register(DoughnutController, ArcElement, Tooltip);
 export default defineComponent({
   name: "myDoughnutChart3",
   components: { DoughnutChart },
-  setup(props) {
+  setup() {
     const doughtnutRef = ref<ExtractComponentData<typeof DoughnutChart>>();
     const data = ref([10, 10, 40, 10, 0, 0]);
     const label = ref(["A1", "E1", "L1", "S1", "ET", "CL"]);

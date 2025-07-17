@@ -14,14 +14,11 @@
  * limitations under the License.-->
 
 <template>
-  <div class="description p-2">
+  <div class="description p-2" overflow-y="auto">
     <MyHeader></MyHeader>
-    <b-card
-      header="Adabas example description"
-      border-variant="secondary"
-      header-border-variant="secondary"
-    >
-      <b-card-body>
+    <div class="card border-secondary mb-3">
+      <div class="card-header bg-secondary text-white">Adabas example description</div>
+      <div class="card-body">
         <p>
           The example database data are a prerequisite for using the REST server example pages.
           All Adabas files are delivered in an Adabas backup file. The
@@ -45,28 +42,34 @@
                     <tr><td>LOBEXAMPLE</td><td>Adabas Large object image example Map.</td></tr>
                     </tbody>
                 </table>
-            </p></b-card-body></b-card>
+            </p>
+      </div>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import MyHeader from "@/components/Header.vue";
-import "bootstrap/dist/css/bootstrap.css";
+import { defineComponent, ref } from 'vue';
+import MyHeader from '@/components/Header.vue';
+import 'bootstrap/dist/css/bootstrap.css';
 
-@Component({
+export default defineComponent({
   components: {
     MyHeader,
   },
-})
-export default class Description extends Vue {
-  @Prop() private msg!: string;
-  data() {
+  props: {
+    msg: {
+      type: String,
+      required: true,
+    },
+  },
+  setup() {
+    const mappingConfigExample = ref('<Mapping>\n <Directory url="file:xtsurl.cfg" />\n <Database dbid="111(adatcp://localhost:64111)" file="4" />\n</Mapping>');
     return {
-      mappingConfigExample:'<Mapping>\n <Directory url="file:xtsurl.cfg" />\n <Database dbid="111(adatcp://localhost:64111)" file="4" />\n</Mapping>'
+      mappingConfigExample,
     };
-  }
-}
+  },
+});
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

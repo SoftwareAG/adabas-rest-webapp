@@ -14,95 +14,112 @@
  * limitations under the License.-->
 
 <template>
-  <div class="ucblist p-2">
+  <div class="ucblist p-2" overflow-y="auto">
     <Sidebar :url="url" />
-    <b-card
-      :header="'Adabas Database UCB list for database ' + url"
-      border-variant="secondary"
-      header-border-variant="secondary"
-    >
-      <b-card-body>
-        <b-container fluid>
-          <b-row
-            ><b-col>
+    <div class="card border-secondary">
+      <div class="card-header border-secondary">
+        Adabas Database UCB list for database {{ url }}
+      </div>
+      <div class="card-body">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col">
               This page provides the list of Adabas database utility control
               block active in the database.
-            </b-col>
-          </b-row>
-          <b-row
-            ><b-col>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
               <Url />
-            </b-col>
-          </b-row>
-          <b-row
-            ><b-col>
-              <b-table
-                striped
-                bordered
-                hover
-                small
-                :items="ucb"
-                :fields="fields"
-              >
-                <template v-slot:cell(files)="row">
-                  {{ listUcbFiles(row.item.Count, row.item.ucbFiles) }}
-                </template>
-              </b-table>
-            </b-col>
-          </b-row></b-container
-        ></b-card-body
-      ></b-card
-    >
-    <StatusBar />
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <table class="table table-striped table-bordered table-hover table-sm">
+                <thead>
+                  <tr>
+                    <th v-for="field in fields" :key="field">{{ field }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="item in ucb" :key="item.Id">
+                    <td>{{ item.Count }}</td>
+                    <td>{{ item.DBMode }}</td>
+                    <td>{{ item.Date }}</td>
+                    <td>{{ item.Id }}</td>
+                    <td>{{ item.Sequence }}</td>
+                    <td>{{ listUcbFiles(item.Count, item.ucbFiles) }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+        <StatusBar />
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { defineComponent, ref, onMounted, onBeforeUnmount } from 'vue';
 import Sidebar from './Sidebar.vue';
-import StatusBar from './StatusBar.vue';
+import StatusBar from '@/components/StatusBar.vue';
 import Url from './Url.vue';
-import store from '../store/index';
 import { SearchDatabases } from '@/adabas/admin';
 
-@Component({
+export default defineComponent({
   components: {
     Sidebar,
     StatusBar,
     Url,
   },
-})
-export default class UCBList extends Vue {
-  @Prop(String) readonly url: string | undefined;
-  data() {
-    return {
-      fields: ['Count', 'DBMode', 'Date', 'Id', 'Sequence', 'files'],
-      ucb: [],
-      timer: '',
-      db: null,
+  props: {
+    url: {
+      type: String,
+      required: false,
+    },
+  },
+  setup(props) {
+    const fields = ref(['Count', 'DBMode', 'Date', 'Id', 'Sequence', 'files']);
+    const ucb = ref([]);
+    const timer = ref('');
+    const db = ref(null);
+
+    const loadUCBList = () => {
+      db.value.ucb().then((response: any) => {
+        ucb.value = response;
+      });
     };
-  }
-  created() {
-    this.$data.db = SearchDatabases(this.url);
-    this.$data.timer = setInterval(this.loadUCBList, 5000);
-    this.loadUCBList();
-  }
-  loadUCBList() {
-    this.$data.db.ucb().then((response: any) => {
-      this.$data.ucb = response;
+
+    const listUcbFiles = (count: number, ucbFiles: any) => {
+      if (count === -1) {
+        return ['*'];
+      }
+      let f = [] as string[];
+      ucbFiles.forEach((element: any) => {
+        f.push(element.UcbFile);
+      });
+      return f;
+    };
+
+    onMounted(() => {
+      db.value = SearchDatabases(props.url);
+      timer.value = setInterval(loadUCBList, 5000);
+      loadUCBList();
     });
-  }
-  listUcbFiles(count: number, ucbFiles: any) {
-    if (count === -1) {
-      return ['*'];
-    }
-    let f = [] as string[];
-    ucbFiles.forEach((element: any) => {
-      f.push(element.UcbFile);
+
+    onBeforeUnmount(() => {
+      clearInterval(timer.value);
     });
-    return f;
-  }
-}
+
+    return {
+      fields,
+      ucb,
+      listUcbFiles,
+    };
+  },
+});
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

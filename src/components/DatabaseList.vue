@@ -14,507 +14,359 @@
  * limitations under the License.-->
 
 <template>
-  <div class="databaselist p-2">
-    <b-card
-      header="List of local Adabas Databases available for administration"
-      border-variant="secondary"
-      header-border-variant="secondary"
-    >
-      <b-card-body>
-        <b-container fluid>
-          <b-row>
-            <b-col>
-              This page provides access to the list of Adabas database to be
-              administrate through this Adabas RESTful server.
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col><Url url="/adabas/database" /> </b-col>
-          </b-row>
-          <b-row>
-            <b-col> <CreateDatabase /> </b-col>
-          </b-row>
-          <b-row
-            ><b-col sm="10">
-              <b-pagination
-                v-model="currentPage"
-                :total-rows="databases.length"
-                :per-page="perPage"
-                aria-controls="my-table"
-              ></b-pagination>
-            </b-col>
-            <b-col sm="2">
-              <b-form-select
-                v-model="perPage"
-                :options="perPageOptions"
-                size="sm"
-                class="mt-3"
-              ></b-form-select> </b-col
-          ></b-row>
-          <b-row>
-            <b-col>
-              <b-form-group
-                label="Filter"
-                label-cols-sm="3"
-                label-align-sm="right"
-                label-size="sm"
-                label-for="filterInput"
-                class="mb-0"
-              >
-                <b-input-group size="sm">
-                  <b-form-input
-                    v-model="filter"
-                    type="search"
-                    id="filterInput"
-                    placeholder="Type to Search"
-                  ></b-form-input>
-                  <b-input-group-append>
-                    <b-button :disabled="!filter" @click="filter = ''"
-                      >Clear</b-button
-                    >
-                  </b-input-group-append>
-                </b-input-group>
-              </b-form-group>
-            </b-col></b-row
-          >
-          <b-row>
-            <b-col>
-              <b-table
-                id="my-table"
-                class="w-100 p-3"
-                striped
-                bordered
-                hover
-                :per-page="perPage"
-                :current-page="currentPage"
-                small
-                :filter="filter"
-                :filterIncludedFields="filterOn"
-                selectable
-                responsive="true"
-                select-mode="single"
-                no-select-on-click
-                @row-selected="onRowSelected"
-                :items="databases"
-                :fields="fields"
-              >
-                <template v-slot:[`cell(status.Name)`]="row">
-                  <router-link :to="'/information/' + row.item.status.Dbid">{{
-                    row.item.status.Name
-                  }}</router-link>
-                </template>
-                <template v-slot:[`cell(status.Active)`]="row">
-                  <div v-if="row.item.online()">Online</div>
-                  <div v-else>Offline</div>
-                </template>
-                <template v-slot:cell(action)="row">
-                  <div v-if="row.item.status.Active">
-                    <b-dropdown
-                      size="sm"
-                      variant="outline-danger"
-                      class="mr-2 w-100"
-                      text="Stop"
-                    >
-                      <b-dropdown-item
-                        size="sm"
-                        variant="danger"
-                        v-on:click="stopDatabase(row.item, 'shutdown')"
-                        class="mr-2"
-                      >
-                        Shutdown
-                      </b-dropdown-item>
-                      <b-dropdown-item
-                        size="sm"
-                        variant="danger"
-                        v-on:click="stopDatabase(row.item, 'cancel')"
-                        class="mr-2"
-                      >
-                        Cancel
-                      </b-dropdown-item>
-                      <b-dropdown-item
-                        size="sm"
-                        variant="danger"
-                        v-on:click="stopDatabase(row.item, 'abort')"
-                        class="mr-2"
-                      >
-                        Abort
-                      </b-dropdown-item>
-                    </b-dropdown>
-                  </div>
-                  <div v-else>
-                    <b-button
-                      size="sm"
-                      variant="outline-success"
-                      v-on:click="startDatabase(row.item)"
-                      class="mr-2 w-100"
-                      >Start</b-button
-                    >
-                  </div>
-                </template>
-                <template v-slot:cell(show_details)="row">
-                  <b-button
-                    size="sm"
-                    variant="outline-primary"
-                    :to="'/parameters/' + row.item.status.Dbid"
-                    class="mr-2"
-                  >
-                    Parameters
-                  </b-button>
-                  <b-button
-                    size="sm"
-                    :to="'/containers/' + row.item.status.Dbid"
-                    class="mr-2"
-                    variant="outline-primary"
-                  >
-                    Containers
-                  </b-button>
-                  <b-button
-                    size="sm"
-                    variant="outline-primary"
-                    :to="'/nuclog/' + row.item.status.Dbid"
-                    class="mr-2"
-                  >
-                    Nucleus Log
-                  </b-button>
-                  <b-button
-                    size="sm"
-                    variant="outline-primary"
-                    :to="'/files/' + row.item.status.Dbid"
-                    class="mr-2"
-                  >
-                    Files
-                  </b-button>
-                  <b-button
-                    v-if="row.item.status.Active"
-                    size="sm"
-                    variant="outline-primary"
-                    :to="'/permission/' + row.item.status.Dbid"
-                    class="mr-2"
-                  >
-                    Permissions
-                  </b-button>
-                  <div v-if="row.item.status.Active">
-                    <b-dropdown
-                      size="sm"
-                      variant="outline-primary"
-                      class="mr-2"
-                      right
-                      text="Statistics"
-                    >
-                      <b-dropdown-item
-                        size="sm"
-                        :to="'/highwater/' + row.item.status.Dbid"
-                        class="mr-2"
-                      >
-                        High Water
-                      </b-dropdown-item>
-                      <b-dropdown-item
-                        size="sm"
-                        :to="'/cmdstats/' + row.item.status.Dbid"
-                        class="mr-2"
-                      >
-                        Command statistics
-                      </b-dropdown-item>
-                      <b-dropdown-item
-                        :disabled="!isMonitor(row.item)"
-                        size="sm"
-                        :to="'/monitor/' + row.item.status.Dbid"
-                        class="mr-2"
-                      >
-                        Monitor statistics
-                      </b-dropdown-item>
-                      <b-dropdown-item
-                        size="sm"
-                        :to="'/bufferpool/' + row.item.status.Dbid"
-                        class="mr-2"
-                      >
-                        Buffer Pool
-                      </b-dropdown-item>
-                      <b-dropdown-item
-                        :disabled="!isMonitor(row.item)"
-                        size="sm"
-                        :to="'/bufferflush/' + row.item.status.Dbid"
-                        class="mr-2"
-                      >
-                        Buffer Flush
-                      </b-dropdown-item>
-                      <b-dropdown-item
-                        size="sm"
-                        :to="'/checkpoints/' + row.item.status.Dbid"
-                        class="mr-2"
-                      >
-                        Checkpoints
-                      </b-dropdown-item>
-                      <b-dropdown-item
-                        size="sm"
-                        :to="'/activity/' + row.item.status.Dbid"
-                        class="mr-2"
-                      >
-                        Activity
-                      </b-dropdown-item>
-                      <b-dropdown-item
-                        size="sm"
-                        :to="'/plogstat/' + row.item.status.Dbid"
-                        class="mr-2"
-                      >
-                        PLOG
-                      </b-dropdown-item>
-                      <b-dropdown-item
-                        size="sm"
-                        :to="'/threadtable/' + row.item.status.Dbid"
-                        class="mr-2"
-                      >
-                        Thread Table
-                      </b-dropdown-item>
-                      <b-dropdown-item
-                        size="sm"
-                        :to="'/adatcp/' + row.item.status.Dbid"
-                        class="mr-2"
-                      >
-                        TCP connection
-                      </b-dropdown-item>
-                      <b-dropdown-item
-                        size="sm"
-                        :to="'/cluster/' + row.item.status.Dbid"
-                        class="mr-2"
-                      >
-                        Cluster
-                      </b-dropdown-item>
-                    </b-dropdown>
-                    <b-dropdown
-                      size="sm"
-                      variant="outline-primary"
-                      class="mr-2"
-                      right
-                      text="Queues"
-                    >
-                      <b-dropdown-item
-                        size="sm"
-                        :to="'/userqueue/' + row.item.status.Dbid"
-                        class="mr-2"
-                      >
-                        User queues
-                      </b-dropdown-item>
-                      <b-dropdown-item
-                        size="sm"
-                        :to="'/commandqueue/' + row.item.status.Dbid"
-                        class="mr-2"
-                      >
-                        Command queues
-                      </b-dropdown-item>
-                      <b-dropdown-item
-                        size="sm"
-                        :to="'/holdqueue/' + row.item.status.Dbid"
-                        class="mr-2"
-                      >
-                        Hold queues
-                      </b-dropdown-item>
-                      <b-dropdown-item
-                        size="sm"
-                        :to="'/ucb/' + row.item.status.Dbid"
-                        class="mr-2"
-                      >
-                        UCB
-                      </b-dropdown-item>
-                    </b-dropdown>
-                  </div>
-                </template>
-                <template v-slot:cell(delete)="row">
-                  <div
-                    class="mx-auto text-center"
-                    v-if="!row.item.status.Active"
-                  >
-                    <b-icon-x-circle
-                      scale="2"
-                      variant="danger"
-                      v-on:click="del_database(row.item)"
-                    ></b-icon-x-circle>
-                  </div>
-                </template> </b-table></b-col
-          ></b-row>
-        </b-container>
-      </b-card-body>
-    </b-card>
+  <div class="databaselist p-2" overflow-y="auto">
+    <div class="card border-secondary">
+      <div class="card-header border-secondary">
+        List of local Adabas Databases available for administration
+      </div>
+
+      <div class="card-body">
+        <div class="container-fluid">
+
+          <!-- Intro -->
+          <div class="row mb-2">
+            <div class="col">
+              This page provides access to the list of Adabas databases to be administered through this Adabas RESTful server.
+            </div>
+          </div>
+
+          <!-- API Endpoint -->
+          <div class="row mb-2">
+            <div class="col">
+              <Url url="/adabas/database" />
+            </div>
+          </div>
+
+          <!-- Create Database -->
+          <div class="row mb-3">
+            <div class="col">
+              <CreateDatabase />
+            </div>
+          </div>
+
+          <!-- Pagination and Per Page -->
+          <div class="row mb-3 align-items-center">
+            <div class="col-sm-10">
+              <nav aria-label="Page navigation">
+                <ul class="pagination">
+                  <li class="page-item" v-for="page in totalPages" :key="page">
+                    <a class="page-link" @click="currentPage = page">{{ page }}</a>
+                  </li>
+                </ul>
+              </nav>
+            </div>
+            <div class="col-sm-2">
+              <select v-model="perPage" class="form-select form-select-sm mt-2">
+                <option v-for="option in perPageOptions" :key="option" :value="option">{{ option }}</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Filter Input -->
+          <div class="row mb-3 align-items-center">
+            <label for="filterInput" class="col-sm-2 col-form-label col-form-label-sm text-end">
+              Filter
+            </label>
+            <div class="col-sm-6">
+              <div class="input-group input-group-sm">
+                <input
+                  v-model="filter"
+                  type="search"
+                  id="filterInput"
+                  class="form-control"
+                  placeholder="Type to Search"
+                />
+                <button class="btn btn-outline-secondary" :disabled="!filter" @click="filter = ''">
+                  Clear
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Database Table -->
+          <div class="row">
+            <div class="col">
+              <table class="table table-striped table-bordered table-hover table-sm p-3">
+                <thead>
+                  <tr>
+                    <th v-for="field in fields" :key="field.key">{{ field.label }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="row in databases" :key="row.status.Dbid">
+                    <td>{{ row.status.Dbid }}</td>
+                    <td>
+                      <router-link :to="'/information/' + row.status.Dbid">{{ row.status.Name }}</router-link>
+                    </td>
+                    <td>{{ row.status.StructureLevel }}</td>
+                    <td>{{ row.status.Version }}</td>
+                    <td>{{ row.status.Location }}</td>
+                    <td>
+                      <span v-if="row.online()">Online</span>
+                      <span v-else>Offline</span>
+                    </td>
+
+                    <!-- Start/Stop Buttons -->
+                    <td>
+                      <div v-if="row.status.Active">
+                        <div class="dropdown">
+                          <button class="btn btn-outline-danger btn-sm dropdown-toggle w-100" type="button" data-bs-toggle="dropdown">
+                            Stop
+                          </button>
+                          <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" @click="stopDatabase(row, 'shutdown')">Shutdown</a></li>
+                            <li><a class="dropdown-item" @click="stopDatabase(row, 'cancel')">Cancel</a></li>
+                            <li><a class="dropdown-item" @click="stopDatabase(row, 'abort')">Abort</a></li>
+                          </ul>
+                        </div>
+                      </div>
+                      <div v-else>
+                        <button class="btn btn-outline-success btn-sm w-100" @click="startDatabase(row)">Start</button>
+                      </div>
+                    </td>
+
+                    <!-- Show Details -->
+                    <td>
+                      <router-link :to="'/parameters/' + row.status.Dbid" class="btn btn-outline-primary btn-sm">Parameters</router-link>
+                      <router-link :to="'/containers/' + row.status.Dbid" class="btn btn-outline-primary btn-sm">Containers</router-link>
+                      <router-link :to="'/nuclog/' + row.status.Dbid" class="btn btn-outline-primary btn-sm">Nucleus Log</router-link>
+                      <router-link :to="'/files/' + row.status.Dbid" class="btn btn-outline-primary btn-sm">Files</router-link>
+                      <router-link :to="'/permission/' + row.status.Dbid" v-if="row.status.Active" class="btn btn-outline-primary btn-sm">Permissions</router-link>
+
+                      <!-- Statistics Dropdown -->
+                      <div v-if="row.status.Active" class="dropdown d-inline-block me-1">
+                        <button class="btn btn-outline-primary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                          Statistics
+                        </button>
+                        <ul class="dropdown-menu">
+                          <li><router-link class="dropdown-item" :to="'/highwater/' + row.status.Dbid">High Water</router-link></li>
+                          <li><router-link class="dropdown-item" :to="'/cmdstats/' + row.status.Dbid">Command Stats</router-link></li>
+                          <li>
+                            <router-link
+                              class="dropdown-item"
+                              :to="'/monitor/' + row.status.Dbid"
+                              :class="{ disabled: !isMonitor(row) }"
+                              :tabindex="!isMonitor(row) ? -1 : 0"
+                              @click.prevent="!isMonitor(row) && $event.preventDefault()"
+                            >
+                              Monitor Stats
+                            </router-link>
+                          </li>
+                          <li><router-link class="dropdown-item" :to="'/bufferpool/' + row.status.Dbid">Buffer Pool</router-link></li>
+                          <li>
+                            <router-link
+                              class="dropdown-item"
+                              :to="'/bufferflush/' + row.status.Dbid"
+                              :class="{ disabled: !isMonitor(row) }"
+                              :tabindex="!isMonitor(row) ? -1 : 0"
+                              @click.prevent="!isMonitor(row) && $event.preventDefault()"
+                            >
+                              Buffer Flush
+                            </router-link>
+                          </li>
+                          <li><router-link class="dropdown-item" :to="'/checkpoints/' + row.status.Dbid">Checkpoints</router-link></li>
+                          <li><router-link class="dropdown-item" :to="'/activity/' + row.status.Dbid">Activity</router-link></li>
+                          <li><router-link class="dropdown-item" :to="'/plogstat/' + row.status.Dbid">PLOG</router-link></li>
+                          <li><router-link class="dropdown-item" :to="'/threadtable/' + row.status.Dbid">Thread Table</router-link></li>
+                          <li><router-link class="dropdown-item" :to="'/adatcp/' + row.status.Dbid">TCP Connection</router-link></li>
+                          <li><router-link class="dropdown-item" :to="'/cluster/' + row.status.Dbid">Cluster</router-link></li>
+                        </ul>
+                      </div>
+
+                      <!-- Queues Dropdown -->
+                      <div v-if="row.status.Active" class="dropdown d-inline-block">
+                        <button class="btn btn-outline-primary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                          Queues
+                        </button>
+                        <ul class="dropdown-menu">
+                          <li><router-link class="dropdown-item" :to="'/userqueue/' + row.status.Dbid">User Queues</router-link></li>
+                          <li><router-link class="dropdown-item" :to="'/commandqueue/' + row.status.Dbid">Command Queues</router-link></li>
+                          <li><router-link class="dropdown-item" :to="'/holdqueue/' + row.status.Dbid">Hold Queues</router-link></li>
+                          <li><router-link class="dropdown-item" :to="'/ucb/' + row.status.Dbid">UCB</router-link></li>
+                        </ul>
+                      </div>
+                    </td>
+                    <!-- Delete -->
+                    <td>
+                      <div class="text-center" v-if="!row.status.Active">
+                        <button class="btn btn-outline-danger btn-sm w-100" @click="del_database(row)">Delete</button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer Status Bar -->
     <StatusBar />
   </div>
 </template>
 
+
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { defineComponent, ref, onMounted, onBeforeUnmount } from 'vue';
 import { AdabasAdmin } from '../adabas/admin';
 import { userService } from '../user/service';
 import CreateDatabase from './CreateDatabase.vue';
-import { BIconXCircle } from 'bootstrap-vue';
+// import { BIconXCircle } from 'bootstrap-vue-next/es/icons';
 import store from '../store/index';
-import StatusBar from './StatusBar.vue';
+import StatusBar from '@/components/StatusBar.vue';
 import Url from './Url.vue';
 import router from '../router/index';
 
-@Component({
+export default defineComponent({
+  name: 'DatabaseList',
   components: {
     CreateDatabase,
-    BIconXCircle,
-    StatusBar,
+    // BIconXCircle,
+   StatusBar,
     Url,
   },
-})
-export default class DatabaseList extends Vue {
-  @Prop() private msg!: string;
-  data() {
-    return {
-      perPage: 10,
-      currentPage: 1,
-      perPageOptions: [10, 20, 50, 100],
-      filter: '',
-      filterOn: [],
-      fields: [
-        { label: 'Dbid', key: 'status.Dbid' },
-        { label: 'Name', key: 'status.Name' },
-        { label: 'Strukture Level', key: 'status.StructureLevel' },
-        { label: 'Version', key: 'status.Version' },
-        { label: 'Location', key: 'status.Location' },
-        { label: 'Active', key: 'status.Active' },
-        'action',
-        'show_details',
-        'Delete',
-      ],
-      databases: [] as AdabasAdmin[],
-      timer: '',
-      jsonString: '<No data received>',
-    };
-  }
-  created() {
-    this.loadDatabases();
-    this.$data.timer = setInterval(this.loadDatabases, 5000);
-  }
-  /*
-   * submit the request to get the list of Adabas databases.
-   * The list contains database which are able to be administrated.
-   */
-  loadDatabases(): void {
-    store
-      .dispatch('SYNC_ADMIN_DBS')
-      .then((response: any) => {
-        this.$data.databases = response;
-        this.$data.jsonString = JSON.stringify(response);
-        store.commit('SET_STATUS', 'Database list received...');
-      })
-      .catch((error: any) => {
-        console.log('ERROR DBLIST: ' + JSON.stringify(error));
-        if (error.response) {
-          store.commit('SET_STATUS', JSON.stringify(error.response));
-          if (error.response.status == 401 || error.response.status == 403) {
-            userService.logout();
-            location.reload();
-          }
+  setup() {
+    const perPage = ref(10);
+    const currentPage = ref(1);
+    const perPageOptions = ref([10, 20, 50, 100]);
+    const filter = ref('');
+    const filterOn = ref([]);
+    const fields = ref([
+      { label: 'Dbid', key: 'status.Dbid' },
+      { label: 'Name', key: 'status.Name' },
+      { label: 'Strukture Level', key: 'status.StructureLevel' },
+      { label: 'Version', key: 'status.Version' },
+      { label: 'Location', key: 'status.Location' },
+      { label: 'Active', key: 'status.Active' },
+      { label: 'Action', key: 'action' },
+      { label: 'Show Details', key: 'show_details' },
+      { label: 'Delete', key: 'delete' }
+    ]);
+    const databases = ref([] as AdabasAdmin[]);
+    const timer = ref('');
+    const jsonString = ref('<No data received>');
+    const loadDatabases = async () => {
+      try {
+        const response = await store.dispatch('SYNC_ADMIN_DBS');
+
+        if (response) {
+          databases.value = response;
+          jsonString.value = JSON.stringify(response);
+          store.commit('SET_STATUS', 'Database list received.');
         } else {
-          store.commit('SET_STATUS', JSON.stringify(error));
+        }
+      } catch (error: any) {
+
+        const errorMessage = error.response
+          ? JSON.stringify(error.response)
+          : JSON.stringify(error);
+
+        store.commit('SET_STATUS', errorMessage);
+
+        // Handle authentication errors
+        if (error.response?.status === 401 || error.response?.status === 403) {
           userService.logout();
           location.reload();
         }
+      }
+    };
+
+    const startDatabase = (dbid: AdabasAdmin) => {
+      operation(dbid, 'start');
+    };
+
+    const stopDatabase = (dbid: AdabasAdmin, stopType: string) => {
+      operation(dbid, stopType);
+    };
+
+    const operation = (dbid: AdabasAdmin, operation: string) => {
+      router.push('/nuclog/' + dbid.dbid());
+      dbid
+        .callOperation(operation)
+        .then((response: any) => {
+          store.commit(
+            'SET_STATUS',
+            "Calling operation '" + operation + "' initiated..."
+          );
+          console.log('Route to ' + dbid.dbid());
+        })
+        .catch((error: any) => {
+          console.log("error stop database = " + JSON.stringify(error.response));
+          store.commit(
+            'SET_STATUS',
+            'Error calling' + operation + ':' + JSON.stringify(error)
+          );
+        });
+    };
+
+    const del_database = async (dbid: AdabasAdmin) => {
+      const confirmed = window.confirm(
+        `Please confirm that you want to delete the Adabas database ${dbid.dbid()} (${dbid.name()}).`
+      );
+
+      if (!confirmed) return;
+
+      try {
+        const response = await dbid.delete();
+        console.log('Delete response:', response);
+        store.commit('SET_STATUS', 'Database delete initiated...');
+      } catch (error: any) {
+        console.error('Delete error:', error);
+
+        const errorMsg = error?.response
+          ? JSON.stringify(error.response)
+          : JSON.stringify(error);
+
+        store.commit('SET_STATUS', errorMsg);
         throw error;
-      });
-  }
-  /*
-   * Start the selected database
-   */
-  startDatabase(dbid: AdabasAdmin): void {
-    this.operation(dbid, 'start');
-  }
-  /*
-   * Stop the selected database by giving the corresponding
-   * stop operation. Possible values are 'shutdown','cancel'
-   * and 'abort'.
-   */
-  stopDatabase(dbid: AdabasAdmin, stopType: string): void {
-    this.operation(dbid, stopType);
-  }
-  /*
-   * General entry point to call operations to the database.
-   */
+      }
+    };
 
-  operation(dbid: AdabasAdmin, operation: string): void {
-    router.push('/nuclog/' + dbid.dbid());
-    dbid
-      .callOperation(operation)
-      .then((response: any) => {
-        store.commit(
-          'SET_STATUS',
-          "Calling operation '" + operation + "' initiated..."
-        );
-        console.log('Route to ' + dbid.dbid());
-      })
-      .catch((error: any) => {
-        // router.push('/nuclog/' + dbid.dbid());
-        store.commit(
-          'SET_STATUS',
-          'Error calling' + operation + ':' + JSON.stringify(error)
-        );
-      });
-  }
-  /*
-   * Delete the selected Adabas database
-   */
-  del_database(dbid: AdabasAdmin): void {
-    console.log('Delete database : ' + dbid);
-    this.$bvModal
-      .msgBoxConfirm(
-        'Please confirm that you want to delete the Adabas database ' +
-          dbid.dbid() +
-          '(' +
-          dbid.name() +
-          ')' +
-          '.',
-        {
-          title: 'Please Confirm',
-          size: 'sm',
-          buttonSize: 'sm',
-          okVariant: 'danger',
-          okTitle: 'YES',
-          cancelTitle: 'NO',
-          footerClass: 'p-2',
-          hideHeaderClose: false,
-          centered: true,
-        }
-      )
-      .then((value) => {
-        if (value) {
-          dbid
-            .delete()
-            .then((response: any) => {
-              console.log('Delete response: ' + JSON.stringify(response));
-              store.commit('SET_STATUS', 'Database delete initiated...');
-            })
-            .catch((error: any) => {
-              console.log('Error: ' + JSON.stringify(error));
-              if (error.response) {
-                store.commit('SET_STATUS', JSON.stringify(error.response));
-              } else {
-                store.commit('SET_STATUS', JSON.stringify(error));
-              }
-              throw error;
-            });
-        }
-      });
-  }
-  onRowSelected(items: any): void {
-    if (items.length == 0) {
+
+
+    const onRowSelected = (items: any) => {
+      if (items.length == 0) {
+        return;
+      }
+      this.$router.push({ path: '/information/' + items[0].status.Dbid });
       return;
-    }
-    this.$router.push({ path: '/information/' + items[0].status.Dbid });
-    return;
-  }
-  isMonitor(item: any): boolean {
-    if (item.status.StructureLevel > 21) {
-      return true;
-    }
-    return false;
-  }
+    };
 
-  beforeDestroy(): void {
-    clearInterval(this.$data.timer);
-  }
-}
+    const isMonitor = (item: any) => {
+      if (item.status.StructureLevel > 21) {
+        return true;
+      }
+      return false;
+    };
+
+    onMounted(() => {
+      loadDatabases();
+      timer.value = setInterval(loadDatabases, 5000);
+    });
+
+    onBeforeUnmount(() => {
+      clearInterval(timer.value);
+    });
+
+    return {
+      perPage,
+      currentPage,
+      perPageOptions,
+      filter,
+      filterOn,
+      fields,
+      databases,
+      jsonString,
+      startDatabase,
+      stopDatabase,
+      del_database,
+      onRowSelected,
+      isMonitor,
+    };
+  },
+});
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

@@ -23,13 +23,12 @@ import App from '../App.vue'
 export function Url() {
    if (process.env.NODE_ENV === 'development') {
          // return 'https://localhost:61091'; // GO
-         return 'http://localhost:8130'; // GO
+         return 'http://localhost:8190'; // GO
       // return 'http://localhost:8091'; // Java
    }
-   let ref = window.location.origin+window.location.pathname;
-   console.log('Ref before:' + ref + ':');
+   // let ref = window.location.origin+window.location.pathname;
+   let ref = window.location.origin;
    ref =  ref.replace(/\/+$/g,'')
-   console.log('Ref after:' + ref + ':');
    return ref;
 }
 

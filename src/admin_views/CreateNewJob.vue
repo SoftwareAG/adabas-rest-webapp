@@ -14,46 +14,21 @@
  * limitations under the License.-->
 
 <template>
-  <div class="descriptorexample p-2" overflow-y="auto">
-    <GenericExample
-      URL="/rest/map/EMPLOYEES-NAT-DDM?descriptor=true&sorted_by=DEPARTMENT"
-      title="Descriptor example"
-      text="This example does an descriptor read with a result of field quantity for each descriptor value. In this case the descriptor is a Superdescriptor 'DEPARTMENT(S1)'"
-    />
+  <div class="jobs">
+    <MyHeader></MyHeader>
+    <CreateJob />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import GenericExample from '@/components/GenericExample.vue';
+import MyHeader from '@/components/Header.vue';
+import CreateJob from '@/components/CreateJob.vue';
 
 export default defineComponent({
   components: {
-    GenericExample,
-  },
-  props: {
-    msg: {
-      type: String,
-      required: true,
-    },
+    MyHeader,
+    CreateJob,
   },
 });
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped lang="scss">
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
-</style>

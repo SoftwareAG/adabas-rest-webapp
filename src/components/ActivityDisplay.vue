@@ -14,154 +14,157 @@
  * limitations under the License.-->
 
 <template>
-  <div class="activitydisplay p-2">
+  <div class="activitydisplay p-2" overflow-y="auto">
     <Sidebar :url="url" />
-    <b-card
-      :header="'Adabas Database activity on database ' + url"
-      border-variant="secondary"
-      header-border-variant="secondary"
-    >
-      <b-card-body>
-        <b-container fluid>
-          <b-row
-            ><b-col>
+    <div class="card border-secondary mb-3">
+      <div class="card-header border-secondary">
+        Adabas Database activity on database {{ url }}
+      </div>
+      <div class="card-body">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col">
               This page provides the activity of Adabas database to be
               monitored through this Adabas RESTful server.
-            </b-col>
-          </b-row>
-          <b-row
-            ><b-col>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
               <Url url="/adabas/database" />
-            </b-col>
-          </b-row>
-          <b-row
-            ><b-col
-              ><div class="font-weight-bold">
-                I/O statistics
-              </div>
-              <b-table
-                striped
-                bordered
-                hover
-                small
-                :items="searchArray(ioFields)"
-                :fields="fields"
-              >
-                <template v-slot:cell(Name)="row">
-                  {{ row.item.Name.replace(/([A-Z])/g, ' $1').trim() }}
-                </template>
-              </b-table> </b-col
-            ><b-col
-              ><div class="font-weight-bold">
-                Throwbacks
-              </div>
-              <b-table
-                striped
-                bordered
-                hover
-                small
-                :items="search('Thb')"
-                :fields="fields"
-              >
-                <template v-slot:cell(Name)="row">
-                  {{
-                    row.item.Name.substring(3)
-                      .replace(/([A-Z])/g, ' $1')
-                      .trim()
-                  }}
-                </template>
-              </b-table>
-            </b-col>
-          </b-row>
-          <b-row
-            ><b-col>
-              <div class="font-weight-bold">
-                Pool Hit Rate
-              </div>
-              <b-table
-                striped
-                bordered
-                hover
-                small
-                :items="searchArray(statFields)"
-                :fields="fields"
-              >
-                <template v-slot:cell(Name)="row">
-                  {{ row.item.Name.replace(/([A-Z])/g, ' $1').trim() }}
-                </template>
-              </b-table> </b-col
-            ><b-col
-              ><div class="font-weight-bold">
-                Interrupts
-              </div>
-              <b-table
-                striped
-                bordered
-                hover
-                small
-                :items="searchArray(wpFields)"
-                :fields="fields"
-              >
-                <template v-slot:cell(Name)="row">
-                  {{
-                    row.item.Name.substring(2)
-                      .replace(/([A-Z])/g, ' $1')
-                      .trim()
-                  }}
-                </template>
-              </b-table>
-            </b-col>
-          </b-row>
-        </b-container></b-card-body
-      ></b-card
-    >
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <div class="fw-bold">I/O statistics</div>
+              <table class="table table-striped table-bordered table-hover table-sm">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Value</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="row in searchArray(ioFields)" :key="row.Name">
+                    <td>{{ row.Name.replace(/([A-Z])/g, ' $1').trim() }}</td>
+                    <td>{{ row.Value }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="col">
+              <div class="fw-bold">Throwbacks</div>
+              <table class="table table-striped table-bordered table-hover table-sm">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Value</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="row in search('Thb')" :key="row.Name">
+                    <td>{{ row.Name.substring(3).replace(/([A-Z])/g, ' $1').trim() }}</td>
+                    <td>{{ row.Value }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <div class="fw-bold">Pool Hit Rate</div>
+              <table class="table table-striped table-bordered table-hover table-sm">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Value</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="row in searchArray(statFields)" :key="row.Name">
+                    <td>{{ row.Name.replace(/([A-Z])/g, ' $1').trim() }}</td>
+                    <td>{{ row.Value }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="col">
+              <div class="fw-bold">Interrupts</div>
+              <table class="table table-striped table-bordered table-hover table-sm">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Value</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="row in searchArray(wpFields)" :key="row.Name">
+                    <td>{{ row.Name.substring(2).replace(/([A-Z])/g, ' $1').trim() }}</td>
+                    <td>{{ row.Value }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <StatusBar />
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { defineComponent, ref, onMounted } from 'vue';
 import Sidebar from './Sidebar.vue';
-import store from '../store/index';
-import StatusBar from './StatusBar.vue';
+import StatusBar from '@/components/StatusBar.vue';
 import Url from './Url.vue';
 import { SearchDatabases } from '@/adabas/admin';
 
-@Component({
+export default defineComponent({
+  name: 'ActivityDisplay',
   components: {
-    StatusBar,
+   StatusBar,
     Sidebar,
     Url,
   },
-})
-export default class ActivityDisplay extends Vue {
-  @Prop(String) readonly url: string | undefined;
-  data() {
-    return {
-      fields: ['Name', 'Value'],
-      activity: [],
-      ioFields: ['BPHitRate', 'WorkReads', 'WorkWrites', 'PlogWrites'],
-      statFields: ['BufferPoolIO', 'FPHitRate'],
-      wpFields: ['WPSpaceWaitCurrent', 'WpSpaceWaitTotal'],
+  props: {
+    url: {
+      type: String,
+      required: true,
+    },
+  },
+  setup(props) {
+    const fields = ref(['Name', 'Value']);
+    const activity = ref([]);
+    const ioFields = ref(['BPHitRate', 'WorkReads', 'WorkWrites', 'PlogWrites']);
+    const statFields = ref(['BufferPoolIO', 'FPHitRate']);
+    const wpFields = ref(['WPSpaceWaitCurrent', 'WpSpaceWaitTotal']);
+
+    const searchArray = (s: any[]) => {
+      return activity.value.filter((row: any) => s.indexOf(row.Name) > -1);
     };
-  }
-  created() {
-    const db = SearchDatabases(this.url);
-    db.activityStats().then((response: any) => {
-      this.$data.activity = response;
+
+    const search = (s: string) => {
+      return activity.value.filter((row: any) => row.Name.startsWith(s));
+    };
+
+    onMounted(() => {
+      const db = SearchDatabases(props.url);
+      db.activityStats().then((response: any) => {
+        activity.value = response;
+      });
     });
-  }
-  searchArray(s: any[]): any {
-    return this.$data.activity.filter((row: any) => {
-      return s.indexOf(row.Name) > -1;
-    });
-  }
-  search(s: string): any {
-    return this.$data.activity.filter((row: any) => {
-      return row.Name.startsWith(s);
-    });
-  }
-}
+
+    return {
+      fields,
+      activity,
+      ioFields,
+      statFields,
+      wpFields,
+      searchArray,
+      search,
+    };
+  },
+});
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

@@ -21,15 +21,14 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { defineComponent } from 'vue';
 import MyHeader from '@/components/Header.vue';
 import HelloWorld from '@/components/HelloWorld.vue';
 
-@Component({
+export default defineComponent({
   components: {
     MyHeader,
     HelloWorld,
   },
-})
-export default class Home extends Vue {}
+});
 </script>

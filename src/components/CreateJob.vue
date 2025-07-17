@@ -14,306 +14,298 @@
  * limitations under the License.-->
 
 <template>
-  <div class="createjob">
-    <b-button variant="success" v-b-modal.modal-createjob
-      >Create RESTful server job</b-button
-    >
-
-    <b-modal
-      @ok="insertJobInServer"
-      id="modal-createjob"
-      size="xl"
-      title="Create job"
-    >
-      <p class="my-4">Please provide job parameters</p>
-      <b-card bg-variant="light">
-        <form ref="jobForm" @submit.stop.prevent="handleSubmit">
-          <b-form-group
-            label-cols-lg="3"
-            label="Job information"
-            label-size="lg"
-            label-class="font-weight-bold pt-0"
-            class="mb-0"
-          >
-            <b-form-group
-              label-cols-sm="3"
-              label="Job name:"
-              label-align-sm="right"
-              label-for="nested-jobname"
-              invalid-feedback="Name is required"
-            >
-              <b-form-input
-                v-model="newJob.Job.Name"
-                id="nested-jobname"
-                required
-              ></b-form-input>
-            </b-form-group>
-            <b-form-group
-              label-cols-sm="3"
-              label="Job Utility:"
-              label-align-sm="right"
-              label-for="nested-utility"
-            >
-              <b-form-select
-                v-model="newJob.Job.Utility"
-                :options="utilities"
-                id="nested-utility"
-                size="sm"
-                class="mt-3"
-              ></b-form-select>
-            </b-form-group>
-            <b-form-group
-              label-cols-sm="3"
-              label="Job User:"
-              label-align-sm="right"
-              label-for="nested-user"
-            >
-              <b-form-input
-                v-model="newJob.Job.User"
-                id="nested-user"
-                disabled="true"
-              ></b-form-input>
-            </b-form-group>
-            <b-form-group
-              label-cols-sm="3"
-              label="Job Description:"
-              label-align-sm="right"
-              label-for="nested-description"
-            >
-              <b-form-input
-                v-model="newJob.Job.Description"
-                id="nested-description"
-              ></b-form-input>
-            </b-form-group>
-            <b-form-group
-              label-cols-sm="3"
-              label="Job Parameters:"
-              label-align-sm="right"
-              label-for="nested-parameters"
-            >
-              <b-table :items="newJob.Job.Parameters" :fields="paraFields">
-                <template v-slot:head(action)>
-                  <b-button
-                    v-on:click="prepareParameter"
-                    v-b-modal.modal-parameter
-                    >Add</b-button
-                  >
-                </template>
-                <template v-slot:cell(action)="row">
-                  <b-button v-on:click="removeParameter(row.index)"
-                    >Remove</b-button
-                  >
-                  <b-button
-                    v-on:click="editParameter(row.index)"
-                    v-b-modal.modal-parameter
-                    >Edit</b-button
-                  >
-                </template>
-              </b-table>
-              <b-modal
-                id="modal-parameter"
-                ref="modal"
-                :title="operation + ' ' + editable"
-                @show="resetModal"
-                @hidden="resetModal"
-                @ok="handleOk"
-              >
-                <form ref="form">
-                  <b-form-group
-                    :state="nameState"
-                    :label="description"
-                    label-for="name-input"
-                    invalid-feedback="Name is required"
-                  >
-                    <b-form-input
-                      id="name-input"
-                      v-model="parameter"
-                      :state="nameState"
-                      required
-                    ></b-form-input>
-                  </b-form-group>
+  <div class="joblist p-2" style="overflow-y: auto">
+    <div class="card border-secondary mb-3">
+      <div class="card-header">Create New Job</div>
+      <div class="card-body">
+        <p>
+        </p>
+        <div class="row mb-2">
+          <div class="col">
+            <a class="btn btn-success" href="/#/jobs">
+              Back
+            </a>
+          </div>
+        </div>
+       <!-- Create Job Modal -->
+        <div id="modal-createjob" tabindex="-1" aria-labelledby="modal-createjob-label">
+          <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title fw-bold" id="modal-createjob-label">Create RESTful Server Job</h5>
+              </div>
+        
+              <div class="modal-body">
+                <p class="mb-4 text-muted">Please provide job parameters below. All fields marked with <span class="text-danger">*</span> are required.</p>
+        
+                <form ref="jobForm" @submit.prevent="handleSubmit">
+                  <!-- Job Info Section -->
+                  <div class="mb-4">
+                    <h6 class="text-primary fw-semibold mb-3">Job Information</h6>
+                    <div class="row g-3">
+                      <div class="col-md-6">
+                        <label class="form-label">Job Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" v-model="newJob.Job.Name" required />
+                      </div>
+                      <div class="col-md-6">
+                        <label class="form-label">Job Utility <span class="text-danger">*</span></label>
+                        <select class="form-select" v-model="newJob.Job.Utility" required>
+                          <option v-for="utility in utilities" :key="utility" :value="utility">{{ utility }}</option>
+                        </select>
+                      </div>
+                      <div class="col-md-6">
+                        <label class="form-label">Job User</label>
+                        <input type="text" class="form-control" v-model="newJob.Job.User" disabled />
+                      </div>
+                      <div class="col-md-6">
+                        <label class="form-label">Description</label>
+                        <input type="text" class="form-control" v-model="newJob.Job.Description" />
+                      </div>
+                    </div>
+                  </div>
+        
+                  <!-- Parameters Section -->
+                  <div class="mb-4">
+                    <h6 class="text-primary fw-semibold mb-3">Job Parameters</h6>
+                    <table class="table table-bordered table-sm align-middle">
+                      <thead class="table-light">
+                        <tr>
+                          <th>Parameter</th>
+                          <th style="width: 140px;">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr v-for="(parameter, index) in newJob.Job.Parameters" :key="index">
+                          <td>{{ parameter.Parameter }}</td>
+                          <td>
+                            <div class="d-flex gap-2">
+                              <button type="button" class="btn btn-danger btn-sm" @click="removeParameter(index)">Remove</button>
+                              <button type="button" class="btn btn-primary btn-sm" @click="editParameter(index)" data-bs-toggle="modal" data-bs-target="#modal-parameter">Edit</button>
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <button type="button" class="btn btn-success btn-sm" @click="prepareParameter" data-bs-toggle="modal" data-bs-target="#modal-parameter">Add Parameter</button>
+                  </div>
+        
+                  <!-- Environment Section -->
+                  <div class="mb-4">
+                    <h6 class="text-primary fw-semibold mb-3">Job Environment</h6>
+                    <table class="table table-bordered table-sm align-middle">
+                      <thead class="table-light">
+                        <tr>
+                          <th>Environment</th>
+                          <th style="width: 140px;">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr v-for="(env, index) in newJob.Job.Environments" :key="index">
+                          <td>{{ env.Parameter }}</td>
+                          <td>
+                            <div class="d-flex gap-2">
+                              <button type="button" class="btn btn-danger btn-sm" @click="removeEnvironment(index)">Remove</button>
+                              <button type="button" class="btn btn-primary btn-sm" @click="editEnvironment(index)" data-bs-toggle="modal" data-bs-target="#modal-parameter">Edit</button>
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <button type="button" class="btn btn-success btn-sm" @click="prepareEnvironment" data-bs-toggle="modal" data-bs-target="#modal-parameter">Add Environment</button>
+                  </div>
                 </form>
-              </b-modal>
-            </b-form-group>
-            <b-form-group
-              label-cols-sm="3"
-              label="Job Environment:"
-              label-align-sm="right"
-              label-for="nested-environment"
-            >
-              <b-table
-                :items="newJob.Job.Environments"
-                :fields="envFields"
-                responsive="sm"
-              >
-                <template v-slot:head(action)>
-                  <b-button
-                    v-on:click="prepareEnvironment"
-                    v-b-modal.modal-parameter
-                    >Add</b-button
-                  >
-                </template>
-              </b-table>
-            </b-form-group>
-          </b-form-group>
-        </form>
-      </b-card>
-    </b-modal>
+              </div>
+        
+              <div class="modal-footer">
+                <a class="btn btn-outline-secondary" href="/#/jobs">Cancel</a>
+                <button type="button" class="btn btn-primary" @click="handleSubmit">Save Job</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Modal -->
+    <!-- Parameter Modal -->
+    <div class="modal fade" id="modal-parameter" tabindex="-1" aria-labelledby="modal-parameter-label" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-sm"> <!-- Centered & smaller modal -->
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modal-parameter-label">
+              {{ operation }} {{ editable }}
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="parameterInput" class="form-label">
+                Enter {{ editable }}
+              </label>
+              <input
+                type="text"
+                id="parameterInput"
+                class="form-control"
+                v-model="parameter"
+                required
+                placeholder="e.g., db=24 or DISP=CQ"
+              />
+            </div>
+          </div>
+
+          <div class="modal-footer d-flex justify-content-between">
+            <button type="button" class="btn btn-outline-secondary w-25" data-bs-dismiss="modal">
+              Close
+            </button>
+            <button type="button" class="btn btn-primary w-25" data-bs-dismiss="modal" @click="handleOk">
+              Save
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <StatusBar />
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import { userService } from "../user/service";
-import { insertJob } from "../adabas/jobs";
+import { defineComponent, ref, onMounted } from 'vue';
+import { insertJob } from '../adabas/jobs';
+import { userService } from '../user/service';
+import { Modal } from 'bootstrap';
+import StatusBar from '@/components/StatusBar.vue';
+import { useRouter } from "vue-router";
 
-@Component
-export default class CreateJob extends Vue {
-  @Prop() private msg!: string;
-  data() {
-    return {
-      newJob: {
-        Job: {
-          User: "",
-          Name: "",
-          Description: "Job Description",
-          Utility: "ADAOPR",
-          Scripts: "",
-          Parameters: [{ Parameter: "db=24" }, { Parameter: "disp=cq" }],
-          Environments: [],
-          CronScheduler: "(null)",
-        },
+export default defineComponent({
+  components: { StatusBar},
+  setup() {
+    const router = useRouter();
+    const newJob = ref({
+      Job: {
+        User: '',
+        Name: '',
+        Description: 'Job Description',
+        Utility: 'ADAOPR',
+        Scripts: '',
+        Parameters: [{ Parameter: 'db=24' }, { Parameter: 'disp=cq' }],
+        Environments: [],
+        CronScheduler: '(null)',
       },
-      newSavedJob: null,
-      editable: "Parameter",
-      operation: "Add",
-      description: "xxx",
-      parameterDescription: "The parameter for the Adabas utility",
-      environmentDescription:
-        "The environment defined with {VAR}={VALUE} for the Adabas utility",
-      parameter: "",
-      parameterEditIndex: -1,
-      nameState: null,
-      submittedNames: [],
-      paraFields: ["Parameter", "action"],
-      envFields: ["Parameter", "action"],
-      utilities: [
-        "ADABCK",
-        "ADACMP",
-        "ADADBM",
-        "ADADCU",
-        "ADAFDU",
-        "ADAFIN",
-        "ADAFRM",
-        "ADAMUP",
-        "ADAOPR",
-        "ADAORD",
-        "ADAREP",
-        "ADAULD",
-      ],
-    };
-  }
-  created() {
-    this.$data.newJob.Job.User = userService.getUsername();
-    this.$data.newSavedJob = this.$data.newJob;
-    this.$root.$on("editJob", (data: any) => {
-      this.$data.newJob = data;
     });
 
-  }
-  removeParameter(parameter: number): void {
-    this.$data.newJob.Job.Parameters.splice(parameter, 1);
-  }
-  editParameter(parameter: number): void {
-    console.log("Edit " + parameter);
-    this.$data.parameterEditIndex = parameter;
-    this.$data.parameter = this.$data.newJob.Job.Parameters[
-      parameter
-    ].Parameter;
-    this.$data.editable = "Parameter";
-    this.$data.operation = "Edit";
-    this.$data.description = this.$data.parameterDescription;
-  }
-  prepareParameter(): void {
-    this.$data.editable = "Parameter";
-    this.$data.operation = "Add";
-    this.$data.description = this.$data.parameterDescription;
-  }
-  prepareEnvironment(): void {
-    this.$data.editable = "Environment";
-    this.$data.operation = "Add";
-    this.$data.description = this.$data.environmentDescription;
-  }
-  handleOk(bvModalEvt: any): void {
-    if (this.$data.operation === "Edit") {
-      if (this.$data.editable === "Environment") {
-        this.$data.newJob.Job.Environments[
-          this.$data.parameterEditIndex
-        ].Parameter = this.$data.parameter;
-      } else {
-        this.$data.newJob.Job.Parameters[
-          this.$data.parameterEditIndex
-        ].Parameter = this.$data.parameter;
-      }
-    } else {
-      if (this.$data.editable === "Environment") {
-        console.log("Add environment " + this.$data.parameter);
-        this.$data.newJob.Job.Environments.push({
-          Parameter: this.$data.parameter,
-        });
-      } else {
-        this.$data.newJob.Job.Parameters.push({
-          Parameter: this.$data.parameter,
-        });
-      }
-    }
-  }
-  checkFormValidity(): boolean {
-    //const valid = this.$refs.jobForm.checkValidity()
-    const valid = (this.$refs.jobForm as Vue & {
-      checkValidity: () => boolean;
-    }).checkValidity();
-    return valid;
-  }
-  insertJobInServer(bvModalEvt: any): void {
-    // Prevent modal from closing
-    bvModalEvt.preventDefault();
-    // Trigger submit handler
-    this.handleSubmit();
-  }
-  handleSubmit(): void {
-    // Exit when the form isn't valid
-    if (!this.checkFormValidity()) {
-      return;
-    }
-    console.log("Insert job");
-    insertJob(this.$data.newJob);
-    // Hide the modal manually
-    this.$nextTick(() => {
-      this.$bvModal.hide("modal-createjob");
+    const utilities = ref([
+      'ADABCK', 'ADACMP', 'ADADBM', 'ADADCU', 'ADAFDU', 'ADAFIN',
+      'ADAFRM', 'ADAMUP', 'ADAOPR', 'ADAORD', 'ADAREP', 'ADAULD'
+    ]);
+
+    const parameter = ref('');
+    const editable = ref('Parameter');
+    const operation = ref('Add');
+    const parameterEditIndex = ref(-1);
+
+    onMounted(() => {
+      newJob.value.Job.User = userService.getUsername();
     });
-  }
-  resetModal(): void {
-    this.$data.name = "";
-    this.$data.nameState = null;
-  }
-}
+
+    const removeParameter = (index: number) => {
+      newJob.value.Job.Parameters.splice(index, 1);
+    };
+
+    const editParameter = (index: number) => {
+      operation.value = 'Edit';
+      editable.value = 'Parameter';
+      parameter.value = newJob.value.Job.Parameters[index].Parameter;
+      parameterEditIndex.value = index;
+    };
+
+    const prepareParameter = () => {
+      operation.value = 'Add';
+      editable.value = 'Parameter';
+      parameter.value = '';
+      parameterEditIndex.value = -1;
+    };
+
+    const handleOk = () => {
+      const index = parameterEditIndex.value;
+      const value = parameter.value;
+    
+      if (editable.value === 'Parameter') {
+        if (index >= 0) {
+          newJob.value.Job.Parameters[index].Parameter = value;
+        } else {
+          newJob.value.Job.Parameters.push({ Parameter: value });
+        }
+      } else if (editable.value === 'Environment') {
+        if (index >= 0) {
+          newJob.value.Job.Environments[index].Parameter = value;
+        } else {
+          newJob.value.Job.Environments.push({ Parameter: value });
+        }
+      }
+    
+      // Clear index and value after save
+      parameterEditIndex.value = -1;
+      parameter.value = '';
+    };
+
+
+
+    const removeEnvironment = (index: number) => {
+      newJob.value.Job.Environments.splice(index, 1);
+    };
+
+    const editEnvironment = (index: number) => {
+      operation.value = 'Edit';
+      editable.value = 'Environment';
+      parameter.value = newJob.value.Job.Environments[index].Parameter;
+      parameterEditIndex.value = index;
+    };
+
+    const prepareEnvironment = () => {
+      operation.value = 'Add';
+      editable.value = 'Environment';
+      parameter.value = '';
+      parameterEditIndex.value = -1;
+    };
+
+    const handleSubmit = () => {
+      insertJob(newJob.value);
+      router.push({ path: "/jobs"});
+    };
+
+    return {
+      newJob,
+      utilities,
+      parameter,
+      editable,
+      operation,
+      parameterEditIndex,
+      removeParameter,
+      editParameter,
+      prepareParameter,
+      handleOk,
+      removeEnvironment,
+      editEnvironment,
+      prepareEnvironment,
+      handleSubmit,
+      StatusBar,
+    };
+  },
+});
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-h3 {
-  margin: 40px 0 0;
+.createjob {
+  padding: 1rem;
 }
-ul {
-  list-style-type: none;
-  padding: 0;
+
+.modal-content {
+  overflow-x: hidden;
 }
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
+
+.modal-body {
+  overflow-x: hidden;
+  padding-right: 1rem;
+  padding-left: 1rem;
 }
 </style>

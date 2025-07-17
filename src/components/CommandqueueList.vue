@@ -14,97 +14,108 @@
  * limitations under the License.-->
 
 <template>
-  <div class="commandqueuelist p-2">
+  <div class="commandqueuelist p-2" overflow-y="auto">
     <Sidebar :url="url" />
-    <b-card
-      :header="'Adabas Database command queue for database ' + url"
-      border-variant="secondary"
-      header-border-variant="secondary"
-    >
-      <b-card-body>
-        <b-container fluid>
-          <b-row
-            ><b-col>
+    <div class="card border-secondary">
+      <div class="card-header border-secondary">
+        Adabas Database command queue for database {{ url }}
+      </div>
+      <div class="card-body">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col">
               This page provides the list of Adabas database command queue entries to be
               monitored through this Adabas RESTful server.
-            </b-col>
-          </b-row>
-          <b-row
-            ><b-col>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
               <Url url="/adabas/database" />
-            </b-col>
-          </b-row>
-          <b-row
-            ><b-col>
-              <b-table
-                striped
-                bordered
-                hover
-                small
-                :items="commandqueues"
-                :fields="fields"
-              >
-              </b-table>
-            </b-col> </b-row></b-container></b-card-body
-    ></b-card>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <table class="table table-striped table-bordered table-hover table-sm">
+                <thead>
+                  <tr>
+                    <th v-for="field in fields" :key="field">{{ field }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="item in commandqueues" :key="item.CommId">
+                    <td v-for="field in fields" :key="field">{{ item[field] }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <StatusBar />
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
-import Sidebar from './Sidebar.vue';
-import StatusBar from './StatusBar.vue';
-import store from '../store/index';
-import Url from './Url.vue';
-import { SearchDatabases } from '@/adabas/admin';
+import { ref, onMounted, onBeforeUnmount, defineComponent } from "vue";
+import Sidebar from "./Sidebar.vue";
+import StatusBar from '@/components/StatusBar.vue';
+import Url from "./Url.vue";
+import { SearchDatabases } from "@/adabas/admin";
 
-@Component({
+export default defineComponent({
+  name: "CommandqueueList",
   components: {
     Sidebar,
-    StatusBar,
+   StatusBar,
     Url,
   },
-})
-export default class CommandqueueList extends Vue {
-  @Prop(String) readonly url: string | undefined;
-  data() {
-    return {
-      fields: [
-        'APU',
-        'CommId',
-        'CommandUser',
-        'CommandCode',
-        'EtFlags',
-        'File',
-        'Flags',
-        'User.Id',
-        'User.Node',
-        'User.Terminal',
-        'User.Timestamp',
-      ],
-      commandqueues: [],
-      timer: '',
-      db: null,
-    };
-  }
-  created() {
-    this.$data.db = SearchDatabases(this.url);
-    this.$data.timer = setInterval(this.loadCommandQueue, 5000);
-    this.loadCommandQueue();
-  }
-  loadCommandQueue() {
-    this.$data.db.commandQueue().then((response: any) => {
-      this.$data.commandqueues = response;
-     this.$data.commandqueues.forEach(function(part:any, index:number, theArray:any) {
-        theArray[index].User.Timestamp = new Date(theArray[index].User.Timestamp).toUTCString();
+  props: {
+    url: String,
+  },
+  setup(props) {
+    const fields = ref([
+      "APU",
+      "CommId",
+      "CommandUser",
+      "CommandCode",
+      "EtFlags",
+      "File",
+      "Flags",
+      "User.Id",
+      "User.Node",
+      "User.Terminal",
+      "User.Timestamp",
+    ]);
+    const commandqueues = ref([]);
+    const timer = ref(null);
+    const db = ref(null);
+
+    const loadCommandQueue = () => {
+      db.value.commandQueue().then((response: any) => {
+        commandqueues.value = response;
+        commandqueues.value.forEach(function (part: any, index: number, theArray: any) {
+          theArray[index].User.Timestamp = new Date(theArray[index].User.Timestamp).toUTCString();
+        });
       });
-     });
-  }
-  beforeDestroy() {
-    clearInterval(this.$data.timer);
-  }
-}
+    };
+
+    onMounted(() => {
+      db.value = SearchDatabases(props.url);
+      timer.value = setInterval(loadCommandQueue, 5000);
+      loadCommandQueue();
+    });
+
+    onBeforeUnmount(() => {
+      clearInterval(timer.value);
+    });
+
+    return {
+      fields,
+      commandqueues,
+    };
+  },
+});
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

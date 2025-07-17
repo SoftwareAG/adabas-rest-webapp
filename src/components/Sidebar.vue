@@ -14,128 +14,143 @@
  * limitations under the License.-->
 
 <template>
-  <div class="sidebar p-2">
-    <b-sidebar id="sidebar-1" title="Sidebar" shadow>
-      Database {{ url }} is {{ state() }}
-      <b-nav class="px-3 py-2" pills vertical>
-        <b-nav-text>Information<br /></b-nav-text>
-        <b-nav-item :to="'/information/' + url">Information</b-nav-item>
-        <b-nav-item :to="'/parameters/' + url">Parameters</b-nav-item>
-        <b-nav-item :to="'/nuclog/' + url">Nucleus Log</b-nav-item>
-        <b-nav-item :to="'/containers/' + url">Containers</b-nav-item>
-        <b-nav-item :to="'/files/' + url">Files</b-nav-item>
-        <b-nav-item :disabled="!active()" :to="'/permission/' + url">Permissions</b-nav-item>
-        <b-nav-text>Statistics</b-nav-text>
-        <b-nav-item :disabled="!active()" :to="'/highwater/' + url"
-          >High Watermark</b-nav-item
-        >
-        <b-nav-item :disabled="!active() && !isMonitor()" :to="'/monitor/' + url"
-          >Monitor</b-nav-item
-        >
-        <b-nav-item :disabled="!active()" :to="'/cmdstats/' + url"
-          >Command statistics</b-nav-item
-        >
-        <b-nav-item :disabled="!active()" :to="'/bufferpool/' + url"
-          >Buffer Pool statistics</b-nav-item
-        >
-        <b-nav-item :disabled="!active()" :to="'/plogstat/' + url"
-          >PLOG statistics</b-nav-item
-        >
-        <b-nav-item :disabled="!active() && !isMonitor()" :to="'/bufferflush/' + url"
-          >Buffer Flush statistics</b-nav-item
-        >
-        <b-nav-item :disabled="!active()" :to="'/threadtable/' + url"
-          >Thread table</b-nav-item
-        >
-        <b-nav-item :disabled="!active()" :to="'/adatcp/' + url"
-          >TCP connections</b-nav-item
-        >
-        <b-nav-item :disabled="!active()" :to="'/activity/' + url"
-          >Activity</b-nav-item
-        >
-        <b-nav-item :disabled="!active()" :to="'/checkpoints/' + url"
-          >Checkpoints</b-nav-item
-        >
-        <b-nav-item :disabled="!active()" :to="'/cluster/' + url"
-          >Cluster</b-nav-item
-        >
-        <b-nav-text>Queues</b-nav-text>
-        <b-nav-item :disabled="!active()" :to="'/userqueue/' + url"
-          >User queue</b-nav-item
-        >
-        <b-nav-item :disabled="!active()" :to="'/commandqueue/' + url"
-          >Command queue</b-nav-item
-        >
-        <b-nav-item :disabled="!active()" :to="'/holdqueue/' + url"
-          >Hold queue</b-nav-item
-        >
-        <b-nav-item :disabled="!active()" :to="'/ucb/' + url"
-          >UCB entries</b-nav-item
-        >
-      </b-nav>
-    </b-sidebar>
-    <b-button
-      small
-      variant="primary"
-      size="sm"
-      class="mr-2"
-      v-b-toggle.sidebar-1
-    >
-      <b-icon-chevron-double-left
-        variant="light"
-      ></b-icon-chevron-double-left>
-      Menu</b-button
-    >
-    <b-button small variant="primary" size="sm" class="mr-2" :to="'/databases'"
-      >Database List</b-button
-    >
+  <div class="sidebar p-2" overflow-y="auto">
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="sidebar-1">
+      <div class="offcanvas-header">
+        <h5 class="offcanvas-title">Sidebar</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+      </div>
+      <div class="offcanvas-body">
+        Database {{ url }} is {{ state() }}
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <span class="nav-link">Information</span>
+          </li>
+          <li class="nav-item">
+            <router-link class="nav-link" :to="'/information/' + url">Information</router-link>
+          </li>
+          <li class="nav-item">
+            <router-link class="nav-link" :to="'/parameters/' + url">Parameters</router-link>
+          </li>
+          <li class="nav-item">
+            <router-link class="nav-link" :to="'/nuclog/' + url">Nucleus Log</router-link>
+          </li>
+          <li class="nav-item">
+            <router-link class="nav-link" :to="'/containers/' + url">Containers</router-link>
+          </li>
+          <li class="nav-item">
+            <router-link class="nav-link" :to="'/files/' + url">Files</router-link>
+          </li>
+          <li class="nav-item">
+            <router-link class="nav-link" :class="{ disabled: !active() }" :to="'/permission/' + url">Permissions</router-link>
+          </li>
+          <li class="nav-item">
+            <span class="nav-link">Statistics</span>
+          </li>
+          <li class="nav-item">
+            <router-link class="nav-link" :class="{ disabled: !active() }" :to="'/highwater/' + url">High Watermark</router-link>
+          </li>
+          <li class="nav-item">
+            <router-link class="nav-link" :class="{ disabled: !active() && !isMonitor() }" :to="'/monitor/' + url">Monitor</router-link>
+          </li>
+          <li class="nav-item">
+            <router-link class="nav-link" :class="{ disabled: !active() }" :to="'/cmdstats/' + url">Command statistics</router-link>
+          </li>
+          <li class="nav-item">
+            <router-link class="nav-link" :class="{ disabled: !active() }" :to="'/bufferpool/' + url">Buffer Pool statistics</router-link>
+          </li>
+          <li class="nav-item">
+            <router-link class="nav-link" :class="{ disabled: !active() }" :to="'/plogstat/' + url">PLOG statistics</router-link>
+          </li>
+          <li class="nav-item">
+            <router-link class="nav-link" :class="{ disabled: !active() && !isMonitor() }" :to="'/bufferflush/' + url">Buffer Flush statistics</router-link>
+          </li>
+          <li class="nav-item">
+            <router-link class="nav-link" :class="{ disabled: !active() }" :to="'/threadtable/' + url">Thread table</router-link>
+          </li>
+          <li class="nav-item">
+            <router-link class="nav-link" :class="{ disabled: !active() }" :to="'/adatcp/' + url">TCP connections</router-link>
+          </li>
+          <li class="nav-item">
+            <router-link class="nav-link" :class="{ disabled: !active() }" :to="'/activity/' + url">Activity</router-link>
+          </li>
+          <li class="nav-item">
+            <router-link class="nav-link" :class="{ disabled: !active() }" :to="'/checkpoints/' + url">Checkpoints</router-link>
+          </li>
+          <li class="nav-item">
+            <router-link class="nav-link" :class="{ disabled: !active() }" :to="'/cluster/' + url">Cluster</router-link>
+          </li>
+          <li class="nav-item">
+            <span class="nav-link">Queues</span>
+          </li>
+          <li class="nav-item">
+            <router-link class="nav-link" :class="{ disabled: !active() }" :to="'/userqueue/' + url">User queue</router-link>
+          </li>
+          <li class="nav-item">
+            <router-link class="nav-link" :class="{ disabled: !active() }" :to="'/commandqueue/' + url">Command queue</router-link>
+          </li>
+          <li class="nav-item">
+            <router-link class="nav-link" :class="{ disabled: !active() }" :to="'/holdqueue/' + url">Hold queue</router-link>
+          </li>
+          <li class="nav-item">
+            <router-link class="nav-link" :class="{ disabled: !active() }" :to="'/ucb/' + url">UCB entries</router-link>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <button class="btn btn-primary btn-sm mr-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebar-1" aria-controls="sidebar-1">
+      <i class="bi bi-chevron-double-left"></i> Menu
+    </button>
+    <router-link class="btn btn-primary btn-sm mr-2" :to="'/databases'">Database List</router-link>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import store from "../store/index";
-import { BIconChevronDoubleLeft } from "bootstrap-vue";
+import { defineComponent, ref } from 'vue';
+// import { BIconChevronDoubleLeft } from "bootstrap-vue-next";
 import { SearchDatabases } from '@/adabas/admin';
 
-@Component({
+export default defineComponent({
   components: {
-    BIconChevronDoubleLeft,
+    // BIconChevronDoubleLeft,
   },
-})
-export default class Sidebar extends Vue {
-  @Prop(String) readonly url: string | undefined;
-  data() {
-    return {
-      db: null,
+  props: {
+    url: {
+      type: String,
+      required: false,
+    },
+  },
+  setup(props) {
+    const db = ref(null);
+
+    const active = () => {
+      if (!db.value?.status) {
+        return false;
+      }
+      return db.value.status.Active;
     };
-  }
-  created() {
-    this.$data.db = SearchDatabases(this.url);
-  }
-  active() {
-    //    console.log("Active sidebar db: "+JSON.stringify(this.$data.db));
-    if (!this.$data.db.status) {
-      return false;
-    }
-    return this.$data.db.status.Active;
-  }
-  state() {
-    if ((!this.$data.db)||(!this.$data.db.status)) {
-      return "Unknown";
-    }
-    if (this.$data.db.status.Active) {
-      return "Online";
-    }
-    return "Offline";
-  }
-  isMonitor(): boolean {
-    if (this.$data.db.status.StructureLevel>21) {
-      return true;
-    }
-    return false;
-  }
-}
+
+    const state = () => {
+      if (!db.value || !db.value.status) {
+        return "Unknown";
+      }
+      return db.value.status.Active ? "Online" : "Offline";
+    };
+
+    const isMonitor = () => {
+      return db.value?.status.StructureLevel > 21;
+    };
+
+    db.value = SearchDatabases(props.url);
+
+    return {
+      db,
+      active,
+      state,
+      isMonitor,
+    };
+  },
+});
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

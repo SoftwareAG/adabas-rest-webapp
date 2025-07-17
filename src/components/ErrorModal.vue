@@ -14,35 +14,47 @@
  * limitations under the License.-->
 
 <template>
-  <div class="errormodal p-2">
-    <b-modal
-      id="modal-error"
-      header-bg-variant="danger"
-      title="Error..."
-      ok-only
-    >
-      <div class="d-block">Problem: {{ error }}</div>
-    </b-modal>
+  <div class="errormodal p-2" overflow-y="auto">
+    <div class="modal fade" id="modal-error" tabindex="-1" aria-labelledby="modal-error-label" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header bg-danger text-white">
+            <h5 class="modal-title" id="modal-error-label">Error...</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            Problem: {{ error }}
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { defineComponent, ref, onMounted } from 'vue';
 
-@Component
-export default class ErrorModal extends Vue {
-  @Prop() private msg!: string;
-  data() {
-    return {
-      error: 'xx',
-    };
-  }
-  created() {
-    this.$root.$on('error-message', (data: any) => {
-      this.$data.error = data;
+export default defineComponent({
+  props: {
+    msg: String,
+  },
+  setup() {
+    const error = ref('xx');
+
+    onMounted(() => {
+      this.$root.$on('error-message', (data: any) => {
+        error.value = data;
+      });
     });
-  }
-}
+
+    return {
+      error,
+    };
+  },
+});
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

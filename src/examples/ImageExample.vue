@@ -14,14 +14,11 @@
  * limitations under the License.-->
 
 <template>
-  <div class="imageexample p-2">
+  <div class="imageexample p-2" overflow-y="auto">
     <MyHeader></MyHeader>
-    <b-card
-      header="Adabas Large objects data example"
-      border-variant="secondary"
-      header-border-variant="secondary"
-    >
-      <b-card-body>
+    <div class="card border-secondary mb-3">
+      <div class="card-header">Adabas Large objects data example</div>
+      <div class="card-body">
         <p>
           This application shows the direct access to picture data stored in an
           Adabas large object field. Each image and corresponding thumbnail is
@@ -38,42 +35,52 @@
           the Adabas RESTful server installation.
         </p>
         <Url :url="xURL"/>
-        <b-modal centered size="xl" id="modal-definition" title="Image" ok-only
-          ><b-img fluid :src="currentPic"
-        /></b-modal>
-        <b-pagination
-          v-model="currentPage"
-          :total-rows="image.length"
-          :per-page="perPage"
-          aria-controls="my-table"
-        ></b-pagination>
-        <b-table
-          ref="table"
-          class="w-100 p-3"
-          striped
-          bordered
-          hover
-          small
-          :per-page="perPage"
-          :current-page="currentPage"
-          :items="image"
-          :fields="fields"
-        >
-          <template v-slot:cell(image)="row">
-            <b-button
-              v-b-modal.modal-definition
-              v-on:click="loadImage(row.item.ISN)"
-            >
-              <b-img-lazy :src="loadThumbnail(row.item.ISN)" alt="Thumbnail" />
-            </b-button>
-          </template> </b-table></b-card-body
-    ></b-card>
-    <StatusBar />
+        <div class="modal fade" id="modal-definition" tabindex="-1" aria-labelledby="modal-definition-label" aria-hidden="true">
+          <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="modal-definition-label">Image</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <img :src="currentPic" class="img-fluid" />
+              </div>
+            </div>
+          </div>
+        </div>
+        <nav aria-label="Page navigation">
+          <ul class="pagination">
+            <li class="page-item" v-for="page in totalPages" :key="page" :class="{ active: currentPage === page }">
+              <a class="page-link" href="#" @click.prevent="currentPage = page">{{ page }}</a>
+            </li>
+          </ul>
+        </nav>
+        <table class="table table-striped table-bordered table-hover table-sm w-100 p-3">
+          <thead>
+            <tr>
+              <th v-for="field in fields" :key="field.key">{{ field.label }}</th>
+              <th>Image</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="row in paginatedData" :key="row.ISN">
+              <td v-for="field in fields" :key="field.key">{{ row[field.key] }}</td>
+              <td>
+                <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#modal-definition" @click="loadImage(row.ISN)">
+                  <img :src="loadThumbnail(row.ISN)" alt="Thumbnail" class="img-thumbnail" />
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+        <StatusBar />
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { defineComponent, ref, onMounted, computed } from 'vue';
 import { authHeader } from '../user/auth-header';
 import { config } from '../store/config';
 import { userService } from '../user/service';
@@ -83,130 +90,147 @@ import StatusBar from '@/components/StatusBar.vue';
 import Url from '@/components/Url.vue';
 import axios, { ResponseType } from 'axios';
 
-@Component({
+export default defineComponent({
   components: {
     MyHeader,
     Url,
     StatusBar,
   },
-})
-export default class ImageExample extends Vue {
-  @Prop() private msg!: string;
-  data() {
-    return {
-      perPage: 10,
-      currentPage: 1,
-      currentPic: '',
-      fields: [
-        { label: 'ISN', key: 'ISN' },
-        { label: 'Filename', key: 'Location.Filename' },
-        { label: 'Size', key: 'Type.Size' },
-        { label: 'Camera Model', key: 'EXIFinformation.Model' },
-        { label: 'Date', key: 'EXIFinformation.DateOriginal' },
-        'image',
-        { label: 'DateEXIF', key: 'EXIFinformation.DateEXIF' },
-        { label: 'Orientation', key: 'EXIFinformation.Orientation' },
-        { label: 'Height', key: 'EXIFinformation.Height' },
-        { label: 'Width', key: 'EXIFinformation.Width' },
-        { label: 'ExposureTime', key: 'EXIFinformation.ExposureTime' },
-      ],
-      image: [],
-      xURL:
-        '/rest/map/LOBEXAMPLE?fields=Filename,Size,@Thumbnail,@Picture,Model,DateOriginal,EXIFinformation&limit=0',
-    };
-  }
-  created() {
-    const getConfig = {
-      headers: authHeader('application/json'),
-      useCredentails: true,
-    };
-    store.commit('SET_URL', {
-      url: config.Url() + this.$data.xURL,
-      method: 'get',
-    });
-    return axios
-      .get(config.Url() + this.$data.xURL, getConfig)
-      .then((response: any) => {
-        store.commit('SET_STATUS', 'OK');
-        store.commit('SET_RESPONSE', JSON.stringify(response));
-        this.$data.image = response.data.Records;
-      })
-      .catch((error: any) => {
-        console.log('ERROR: ' + JSON.stringify(error));
-        if (error.response) {
-          store.commit('SET_STATUS', JSON.stringify(error.response));
-          if (error.response.status == 401 || error.response.status == 403) {
-            userService.logout();
-            location.reload();
-          }
-        } else {
-          store.commit('SET_STATUS', JSON.stringify(error));
-        }
-        throw error;
+  setup() {
+    const perPage = ref(10);
+    const currentPage = ref(1);
+    const currentPic = ref('');
+    const fields = ref([
+      { label: 'ISN', key: 'ISN' },
+      { label: 'Filename', key: 'Location.Filename' },
+      { label: 'Size', key: 'Type.Size' },
+      { label: 'Camera Model', key: 'EXIFinformation.Model' },
+      { label: 'Date', key: 'EXIFinformation.DateOriginal' },
+      'image',
+      { label: 'DateEXIF', key: 'EXIFinformation.DateEXIF' },
+      { label: 'Orientation', key: 'EXIFinformation.Orientation' },
+      { label: 'Height', key: 'EXIFinformation.Height' },
+      { label: 'Width', key: 'EXIFinformation.Width' },
+      { label: 'ExposureTime', key: 'EXIFinformation.ExposureTime' },
+    ]);
+    const image = ref([]);
+    const xURL = ref(
+      '/rest/map/LOBEXAMPLE?fields=Filename,Size,@Thumbnail,@Picture,Model,DateOriginal,EXIFinformation&limit=0'
+    );
+
+    onMounted(() => {
+      const getConfig = {
+        headers: authHeader('application/json'),
+        useCredentails: true,
+      };
+      store.commit('SET_URL', {
+        url: config.Url() + xURL.value,
+        method: 'get',
       });
-  }
-  loadThumbnail(isn: any): string {
-    let imageFilter = this.$data.image.filter((i: any) => i.ISN == isn);
-    if (imageFilter.length === 0) {
-      return '';
-    }
-    let image = imageFilter[0];
-    if (!image.pic) {
-      // console.log("Load image " + index);
+      axios
+        .get(config.Url() + xURL.value, getConfig)
+        .then((response: any) => {
+          store.commit('SET_STATUS', 'OK');
+          store.commit('SET_RESPONSE', JSON.stringify(response));
+          image.value = response.data.Records;
+        })
+        .catch((error: any) => {
+          console.log('ERROR: ' + JSON.stringify(error));
+          if (error.response) {
+            store.commit('SET_STATUS', JSON.stringify(error.response));
+            if (error.response.status == 401 || error.response.status == 403) {
+              userService.logout();
+              location.reload();
+            }
+          } else {
+            store.commit('SET_STATUS', JSON.stringify(error));
+          }
+          throw error;
+        });
+    });
+
+    const loadThumbnail = (isn: any): string => {
+      let imageFilter = image.value.filter((i: any) => i.ISN == isn);
+      if (imageFilter.length === 0) {
+        return '';
+      }
+      let imageItem = imageFilter[0];
+      if (!imageItem.pic) {
+        const getConfig = {
+          headers: authHeader(''),
+          useCredentails: true,
+          responseType: 'arraybuffer' as ResponseType,
+        };
+        axios
+          .get(config.Url() + imageItem.Data['@Thumbnail'], getConfig)
+          .then((response: any) => {
+            const bytes = new Uint8Array(response.data);
+            const binary = bytes.reduce(
+              (data, b) => (data += String.fromCharCode(b)),
+              ''
+            );
+            const res = 'data:image/jpeg;base64,' + btoa(binary);
+            imageItem['pic'] = res;
+            currentPic.value = res;
+            return res;
+          })
+          .catch((error: any) => {
+            console.log('ERROR: ' + JSON.stringify(error));
+          });
+        return '';
+      }
+      return imageItem['pic'];
+    };
+
+    const loadImage = (isn: any) => {
+      let imageFilter = image.value.filter((i: any) => i.ISN == isn);
+      if (imageFilter.length === 0) {
+        return '';
+      }
+      let imageItem = imageFilter[0];
       const getConfig = {
         headers: authHeader(''),
         useCredentails: true,
         responseType: 'arraybuffer' as ResponseType,
       };
-      axios
-        .get(config.Url() + image.Data['@Thumbnail'], getConfig)
+      return axios
+        .get(config.Url() + imageItem.Data['@Picture'], getConfig)
         .then((response: any) => {
           const bytes = new Uint8Array(response.data);
           const binary = bytes.reduce(
             (data, b) => (data += String.fromCharCode(b)),
-            '',
+            ''
           );
           const res = 'data:image/jpeg;base64,' + btoa(binary);
-          image['pic'] = res;
-          this.$data.currentPic = res;
-          (this.$refs.table as any).refresh();
+          currentPic.value = res;
           return res;
         })
         .catch((error: any) => {
           console.log('ERROR: ' + JSON.stringify(error));
         });
-      return '';
-    }
-    return image['pic'];
-  }
-  loadImage(isn: any) {
-    let imageFilter = this.$data.image.filter((i: any) => i.ISN == isn);
-    if (imageFilter.length === 0) {
-      return '';
-    }
-    let image = imageFilter[0];
-    const getConfig = {
-      headers: authHeader(''),
-      useCredentails: true,
-      responseType: 'arraybuffer' as ResponseType,
     };
-    return axios
-      .get(config.Url() + image.Data['@Picture'], getConfig)
-      .then((response: any) => {
-        const bytes = new Uint8Array(response.data);
-        const binary = bytes.reduce(
-          (data, b) => (data += String.fromCharCode(b)),
-          '',
-        );
-        const res = 'data:image/jpeg;base64,' + btoa(binary);
-        this.$data.currentPic = res;
-        return res;
-      })
-      .catch((error: any) => {
-        console.log('ERROR: ' + JSON.stringify(error));
-      });
-  }
-}
+
+    // const totalPages = computed(() => Math.ceil(image.value.length / perPage.value));
+    // const paginatedData = computed(() => {
+    //   const start = (currentPage.value - 1) * perPage.value;
+    //   const end = start + perPage.value;
+    //   return image.value.slice(start, end);
+    // });
+
+    return {
+      perPage,
+      currentPage,
+      currentPic,
+      fields,
+      image,
+      xURL,
+      loadThumbnail,
+      loadImage,
+      // totalPages,
+      // paginatedData,
+    };
+  },
+});
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

@@ -21,17 +21,21 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { defineComponent, PropType } from 'vue';
 import MyHeader from '@/components/Header.vue';
 import CheckpointList from '@/components/CheckpointList.vue';
 
-@Component({
+export default defineComponent({
+  name: 'Checkpoints',
   components: {
     MyHeader,
     CheckpointList,
   },
-})
-export default class Checkpoint extends Vue {
-        @Prop(String) readonly url: string | undefined;
-}
+  props: {
+    url: {
+      type: String as PropType<string | undefined>,
+      required: false,
+    },
+  },
+});
 </script>

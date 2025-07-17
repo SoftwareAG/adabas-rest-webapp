@@ -14,215 +14,223 @@
  * limitations under the License.-->
 
 <template>
-  <div class="bufferpooldisplay p-2">
+  <div class="bufferpooldisplay p-2" overflow-y="auto">
     <Sidebar :url="url" />
-    <b-card
-      :header="'Adabas Database Buffer Pool for database ' + url"
-      border-variant="secondary"
-      header-border-variant="secondary"
-    >
-      <b-card-body>
-        <b-container fluid>
-          <b-row
-            ><b-col>
-              This page provide the statistics of Adabas database Buffer Pool to be
-              monitored through this Adabas RESTful server.
-            </b-col>
-          </b-row>
-          <b-row
-            ><b-col>
-              <Url url="/adabas/database" />
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col class="text-right">
+    <div class="card border-secondary mb-3">
+      <div class="card-header border-secondary">
+        My header {{ url }}
+      </div>
+      <div class="card-body">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col">
+              This page provides the statistics of Adabas database Buffer Pool to be
+            </div>
+          </div>
+          <div class="row">
+            <div class="col text-right">
               Buffer Pool Size
-            </b-col>
-            <b-col>
+            </div>
+            <div class="col">
               {{ bufferPoolSize.toLocaleString() }}
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col class="text-right">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col text-right">
               Write Limit
-            </b-col>
-            <b-col>
-              {{
-                searchValue('WriteLimit').toLocaleString() +
-                  ' (' +
-                  ((searchValue('WriteLimit') / bufferPoolSize) * 100).toFixed(
-                    2,
-                  ) +
-                  '%)'
-              }}
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col class="text-right">
+            </div>
+            <div class="col">
+              {{ searchValue('Write Limit').toLocaleString() }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col text-right">
               Modified
-            </b-col>
-            <b-col>
+            </div>
+            <div class="col">
               {{ searchValue('Modified').toLocaleString() }}
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
               <div class="font-weight-bold">
                 Pool Allocations
               </div>
-              <b-table
-                striped
-                bordered
-                hover
-                small
-                :items="search('Alloc')"
-                :fields="statFields"
-              >
-                <template v-slot:cell(Name)="row">
-                  {{
-                    row.item.Name.substring(5)
-                      .replace(/([A-Z])/g, ' $1')
-                      .trim()
-                  }}
-                </template>
-                <template v-slot:cell(Value)="row">
-                  {{ row.item.Value.toLocaleString() }}
-                </template>
-                <template v-slot:cell(percent)="row">
-                  {{ ((row.item.Value / bufferPoolSize) * 100).toFixed(2) }}%
-                </template>
-              </b-table>
-            </b-col>
-            <b-col>
+              <table class="table table-striped table-bordered table-hover table-sm">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>percent</th>
+                    <th>Value</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="row in search('Alloc')" :key="row.Name">
+                    <td>
+                      {{
+                        row.Name.substring(5)
+                          .replace(/([A-Z])/g, ' $1')
+                          .trim()
+                      }}
+                    </td>
+                    <td>
+                      {{ ((row.Value / bufferPoolSize) * 100).toFixed(2) }}%
+                    </td>
+                    <td>
+                      {{ row.Value.toLocaleString() }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="col">
               <div class="font-weight-bold">
                 I/O statistics
               </div>
-              <b-table
-                striped
-                bordered
-                hover
-                small
-                :items="search('IO')"
-                :fields="fields"
-              >
-                <template v-slot:cell(Name)="row">
-                  {{
-                    row.item.Name.substring(2)
-                      .replace(/([A-Z])/g, ' $1')
-                      .trim()
-                  }}
-                </template>
-                <template v-slot:cell(Value)="row">
-                  {{ row.item.Value.toLocaleString() }}
-                </template>
-              </b-table>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col>
+              <table class="table table-striped table-bordered table-hover table-sm">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Value</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="row in search('IO')" :key="row.Name">
+                    <td>
+                      {{
+                        row.Name.substring(2)
+                          .replace(/([A-Z])/g, ' $1')
+                          .trim()
+                      }}
+                    </td>
+                    <td>
+                      {{ row.Value.toLocaleString() }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
               <div class="font-weight-bold">
                 RABNs present
               </div>
-              <b-table
-                striped
-                bordered
-                hover
-                small
-                :items="search('Rabns')"
-                :fields="fields"
-              >
-                <template v-slot:cell(Name)="row">
-                  {{
-                    row.item.Name.substring(5)
-                      .replace(/([A-Z])/g, ' $1')
-                      .trim()
-                  }}
-                </template>
-                <template v-slot:cell(Value)="row">
-                  {{ row.item.Value.toLocaleString() }}
-                </template>
-              </b-table>
-            </b-col>
-            <b-col>
+              <table class="table table-striped table-bordered table-hover table-sm">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Value</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="row in search('Rabns')" :key="row.Name">
+                    <td>
+                      {{
+                        row.Name.substring(5)
+                          .replace(/([A-Z])/g, ' $1')
+                          .trim()
+                      }}
+                    </td>
+                    <td>
+                      {{ row.Value.toLocaleString() }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="col">
               <div class="font-weight-bold">
                 Buffer Flushes
               </div>
-              <b-table
-                striped
-                bordered
-                hover
-                small
-                :items="search('Flushes')"
-                :fields="fields"
-              >
-                <template v-slot:cell(Name)="row">
-                  {{
-                    row.item.Name.substring(7)
-                      .replace(/([A-Z])/g, ' $1')
-                      .trim()
-                  }}
-                </template>
-                <template v-slot:cell(Value)="row">
-                  {{ row.item.Value.toLocaleString() }}
-                </template>
-              </b-table>
-            </b-col>
-          </b-row>
-        </b-container>
-      </b-card-body>
-    </b-card>
+              <table class="table table-striped table-bordered table-hover table-sm">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Value</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="row in search('Flushes')" :key="row.Name">
+                    <td>
+                      {{
+                        row.Name.substring(7)
+                          .replace(/([A-Z])/g, ' $1')
+                          .trim()
+                      }}
+                    </td>
+                    <td>
+                      {{ row.Value.toLocaleString() }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <StatusBar />
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { defineComponent, ref, onMounted } from 'vue';
 import Sidebar from './Sidebar.vue';
-import store from '../store/index';
-import StatusBar from './StatusBar.vue';
+import StatusBar from '@/components/StatusBar.vue';
 import Url from './Url.vue';
 import { SearchDatabases } from '@/adabas/admin';
 
-@Component({
+export default defineComponent({
   components: {
-    StatusBar,
+   StatusBar,
     Sidebar,
     Url,
   },
-})
-export default class BufferPoolData extends Vue {
-  @Prop(String) readonly url: string | undefined;
-  data() {
-    return {
-      bufferPoolSize: 0,
-      fields: ['Name', 'Value'],
-      statFields: ['Name', 'percent', 'Value'],
-      bufferpool: [],
-    };
-  }
-  created() {
-    const db = SearchDatabases(this.url);
-    db.bpStats().then((response: any) => {
-      this.$data.bufferpool = response;
-      this.$data.bufferPoolSize = this.searchValue('Size');
+  props: {
+    url: {
+      type: String,
+      required: false,
+    },
+  },
+  setup(props) {
+    // Define reactive state variables
+    const bufferPoolSize = ref(0);
+    const fields = ref(['Name', 'Value']);
+    const statFields = ref(['Name', 'percent', 'Value']);
+    const bufferpool = ref([]);
+
+    // Perform logic in created lifecycle
+    onMounted(() => {
+      const db = SearchDatabases(props.url);
+      db.bpStats().then((response: any) => {
+        bufferpool.value = response;
+        bufferPoolSize.value = searchValue('Size');
+      });
     });
-  }
-  searchValue(s: string): number {
-    let v = this.$data.bufferpool.filter((row: any) => {
-      return row.Name === s;
-    });
-    if (v.length > 0) {
-      return v[0].Value;
+
+    // Search logic
+    function searchValue(s: string): number {
+      const v = bufferpool.value.filter((row: { Name: string; Value: number }) => row.Name === s);
+      return v.length > 0 ? v[0].Value : 0;
     }
-    return 0;
-  }
-  search(s: string): any {
-    return this.$data.bufferpool.filter((row: any) => {
-      return row.Name.startsWith(s);
-    });
-  }
-}
+
+    function search(s: string): any {
+      return bufferpool.value.filter((row: any) => row.Name.startsWith(s));
+    }
+
+    return {
+      bufferPoolSize,
+      fields,
+      statFields,
+      bufferpool,
+      searchValue,
+      search,
+    };
+  },
+});
 </script>
+
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">

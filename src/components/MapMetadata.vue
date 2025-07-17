@@ -14,218 +14,185 @@
  * limitations under the License.-->
 
 <template>
-  <div class="mapmetadata p-2">
-    <b-card
-      header="Adabas Map Metadata"
-      border-variant="secondary"
-      header-border-variant="secondary"
-    >
-      <b-card-body>
+  <div class="mapmetadata p-2" overflow-y="auto">
+    <div class="card border-secondary">
+      <div class="card-header bg-secondary text-white">Adabas Map Metadata</div>
+      <div class="card-body">
         <p>
           This page query the Adabas Map Metadata of the Adabas Map technology
           used in Adabas Client for Java.
         </p>
         <Url url="/adabas/database" />
-        <b-container fluid>
-          <b-row class="my-1">
-            <b-col sm="2" class="text-right">
+        <div class="container-fluid">
+          <div class="row my-1">
+            <div class="col-sm-2 text-end">
               <label>Select Map to be displayed:</label>
-            </b-col>
-            <b-col sm="8">
-              <b-form-select
+            </div>
+            <div class="col-sm-8">
+              <select
                 v-model="selected"
-                v-on:change="getSelectedItem"
-                :options="options"
-                size="sm"
-                class="w-75"
-              />
-            </b-col>
-            <b-col sm="2">
-              <b-button
-                size="sm"
-                variant="outline-primary"
-                class="ml-2"
-                v-on:click="refreshMapList"
-                >Refresh Map list</b-button
+                @change="getSelectedItem"
+                class="form-select form-select-sm w-75"
               >
-            </b-col>
-          </b-row>
-        </b-container>
-      </b-card-body>
-    </b-card>
-    <b-card
-      header="RESTful HTTP-Request:"
-      header-bg-variant="light"
-      border-variant="secondary"
-      header-border-variant="secondary"
-    >
-      <b-card-body>
-        <b-container fluid>
-          <b-row>
-            <b-col sm="2">URL:</b-col>
-            <b-col sm="9">
-              {{ url }}
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col sm="2">Status:</b-col>
-            <b-col sm="9"> {{ status.status }}</b-col>
-          </b-row>
-        </b-container>
-      </b-card-body>
-    </b-card>
-    <b-card
-      no-body
-      class="mb-1"
-      border-variant="secondary"
-      header-border-variant="secondary"
-    >
-      <b-card-header header-tag="header" class="p-1" role="tab">
-        <b-button class="text-left" block v-b-toggle.accordion-1 variant="outline-primary"
-          >Response</b-button
-        >
-      </b-card-header>
-      <b-collapse
-        id="accordion-1"
-        accordion="my-accordion"
-        visible
-        role="tabpanel"
-      >
-        <b-card-body>
-          <b-card-text>
-            <b-container fluid>
-              <b-row>
-                <b-col sm="2"
-                  ><div class="font-weight-bold">Map definition:</div>
-                </b-col>
-                <b-col sm="5"
-                  ><div class="font-weight-bold">Target:</div>
-                  {{ map.data.target }}
-                </b-col>
-                <b-col sm="5"
-                  ><div class="font-weight-bold">File:</div>
-                  {{ map.data.file }}
-                </b-col>
-              </b-row>
-              <b-row>
-                <b-col sm="2"
-                  ><div class="font-weight-bold">Data reference:</div>
-                </b-col>
-                <b-col sm="5"
-                  ><div class="font-weight-bold">Target:</div>
-                  {{ map.definition.target }}
-                </b-col>
-                <b-col sm="5"
-                  ><div class="font-weight-bold">File:</div>
-                  {{ map.definition.file }}
-                </b-col>
-              </b-row>
-              <b-row>
-                <b-col sm="2"
-                  ><div class="font-weight-bold">Last modified:</div>
-                </b-col>
-                <b-col sm="8">{{ map.lastModified }} </b-col>
-              </b-row>
-            </b-container>
-            <b-table
-              striped
-              bordered
-              hover
-              small
-              :items="mapFields"
-              :fields="fields"
-            >
-              <template v-for="(field, index) in fields">
-                <div :key="index">
-                  {{ index }}{{ field.name }}
-                  Am Confused
-                </div>
-              </template>
-            </b-table>
-          </b-card-text>
-        </b-card-body>
-      </b-collapse>
-    </b-card>
-    <StatusBar />
+                <option v-for="option in options" :key="option.value" :value="option.value">
+                  {{ option.text }}
+                </option>
+              </select>
+            </div>
+            <div class="col-sm-2">
+              <button
+                class="btn btn-outline-primary btn-sm ms-2"
+                @click="refreshMapList"
+              >Refresh Map list</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card border-secondary mt-3">
+      <div class="card-header bg-light">RESTful HTTP-Request:</div>
+      <div class="card-body">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-sm-2">URL:</div>
+            <div class="col-sm-9">{{ url }}</div>
+          </div>
+          <div class="row">
+            <div class="col-sm-2">Status:</div>
+            <div class="col-sm-9">{{ status.status }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card border-secondary mt-3">
+      <div class="card-header p-1">
+        <button class="btn btn-outline-primary btn-block text-start" data-bs-toggle="collapse" data-bs-target="#accordion-1">Response</button>
+      </div>
+      <div id="accordion-1" class="collapse show">
+        <div class="card-body">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-sm-2 font-weight-bold">Map definition:</div>
+              <div class="col-sm-5 font-weight-bold">Target: {{ map.data.target }}</div>
+              <div class="col-sm-5 font-weight-bold">File: {{ map.data.file }}</div>
+            </div>
+            <div class="row">
+              <div class="col-sm-2 font-weight-bold">Data reference:</div>
+              <div class="col-sm-5 font-weight-bold">Target: {{ map.definition.target }}</div>
+              <div class="col-sm-5 font-weight-bold">File: {{ map.definition.file }}</div>
+            </div>
+            <div class="row">
+              <div class="col-sm-2 font-weight-bold">Last modified:</div>
+              <div class="col-sm-8">{{ map.lastModified }}</div>
+            </div>
+          </div>
+          <table class="table table-striped table-bordered table-hover table-sm">
+            <thead>
+              <tr>
+                <th v-for="field in fields" :key="field">{{ field }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(field, index) in mapFields" :key="index">
+                <td>{{ field.name }}</td>
+                <td>{{ field.contentType }}</td>
+                <td>{{ field.shortName }}</td>
+                <td>{{ field.length }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+        <StatusBar />
   </div>
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
-import 'bootstrap/dist/css/bootstrap.css';
+import { defineComponent, ref, onMounted, watch } from 'vue';
 import store from '../store/index';
 import { config } from '../store/config';
-import StatusBar from './StatusBar.vue';
+import StatusBar from '@/components/StatusBar.vue';
 import Url from './Url.vue';
 
-export default Vue.extend({
+export default defineComponent({
   name: 'MapMetadata',
   components: { StatusBar, Url },
-  data() {
-    return {
-      maps: store.state.maps,
-      map: {
-        data: { target: '', file: '' },
-        definition: { target: '', file: '' },
-        fields: [],
-      },
-      url: config.Url() + '/rest/metadata/map/<to be selected>',
-      selected: null,
-      status: store.state.status,
-      metadata: store.state.metadata,
-      mapFields: [],
-      fields: ['name', 'contentType', 'shortName', 'length'],
-      jsonString: 'No query JSON result available' as string,
-      options: [{ value: null, text: 'Please select an Adabas Map' }],
-      query: {
-        map: '',
-      },
-    };
-  },
-  created() {
-    store
-      .dispatch('INIT_MAPS')
-      .then((response) => {
-        console.log('Response: ' + JSON.stringify(response));
-      })
-      .catch((reason: any) => {
+  setup() {
+    const maps = ref(store.state.maps);
+    const map = ref({
+      data: { target: '', file: '' },
+      definition: { target: '', file: '' },
+      fields: [],
+    });
+    const url = ref(config.Url() + '/rest/metadata/map/<to be selected>');
+    const selected = ref(null);
+    const status = ref(store.state.status);
+    const metadata = ref(store.state.metadata);
+    const mapFields = ref([]);
+    const fields = ref(['name', 'contentType', 'shortName', 'length']);
+    const jsonString = ref('No query JSON result available');
+    const options = ref([{ value: null, text: 'Please select an Adabas Map' }]);
+    const query = ref({ map: '' });
+
+    onMounted(() => {
+      store.dispatch('INIT_MAPS').then((response) => {
+      }).catch((reason: any) => {
         console.log('Reason(created): ' + JSON.stringify(reason));
       });
-    this.adaptMapOptions();
-  },
-  methods: {
-    getSelectedItem: function(myarg: any) {
-      // Just a regular js function that takes 1 arg
-      if (this.query.map !== myarg) {
-        this.url = config.Url() + '/rest/metadata/map/' + myarg;
-        this.query.map = myarg;
+      adaptMapOptions();
+    });
+
+    function getSelectedItem(myarg: any) {
+      myarg = (event.target as HTMLSelectElement).value;
+      if (query.value.map !== myarg) {
+        url.value = config.Url() + '/rest/metadata/map/' + myarg;
+        query.value.map = myarg;
       }
 
       store.dispatch('QUERY_MAP_FIELDS', myarg).then((response) => {
-        // console.log("Query map: "+JSON.stringify(response));
-        this.mapFields = response.data.Map.fields;
-        this.map = response.data.Map;
-        this.jsonString = JSON.stringify(this.map);
+        mapFields.value = response.data.Map.fields;
+        map.value = response.data.Map;
+        jsonString.value = JSON.stringify(map.value);
       });
-    },
-    refreshMapList: function() {
+    }
+
+    function refreshMapList() {
       store.dispatch('INIT_MAPS');
-    },
-    adaptMapOptions: function() {
-      const options = [{ value: null, text: 'Please select an Adabas Map' }];
-      this.maps.forEach((i: any, index: any) => {
-        options.push({ value: i, text: i });
-        this.options = options;
+    }
+
+    function adaptMapOptions() {
+      const optionsList = [{ value: null, text: 'Please select an Adabas Map' }];
+      maps.value.forEach((i: any) => {
+        optionsList.push({ value: i, text: i });
+        options.value = optionsList;
       });
-    },
-  },
-  watch: {
-    maps: function(value: any, newvalue: any) {
-      this.adaptMapOptions();
-    },
-    metadata: function(value: any, newvalue: any) {
+    }
+
+    watch(maps, (value, newvalue) => {
+      adaptMapOptions();
+    });
+
+    watch(metadata, (value, newvalue) => {
       console.log('Metadata changed:' + JSON.stringify(newvalue));
-    },
+    });
+
+    return {
+      maps,
+      map,
+      url,
+      selected,
+      status,
+      metadata,
+      mapFields,
+      fields,
+      jsonString,
+      options,
+      query,
+      getSelectedItem,
+      refreshMapList,
+      adaptMapOptions,
+    };
   },
 });
 </script>

@@ -14,89 +14,99 @@
  * limitations under the License.-->
 
 <template>
-  <div class="databaseplogstats p-2">
+  <div class="databaseplogstats p-2" overflow-y="auto">
     <Sidebar :url="url" />
-    <b-card
-      :header="'Adabas Database PLOG information for database ' + url"
-      border-variant="secondary"
-      header-border-variant="secondary"
-    >
-      <b-card-body>
-        <b-row>
-          <b-col>
-        <Url url="/adabas/database" />
-          </b-col>
-            <b-col class="text-right">
-              <b-button v-on:click="forceFEOF()">Force EOF</b-button>
-            </b-col>
-        </b-row>
-        <b-row>
-        <b-table
-          class="w-100 p-3"
-          striped
-          bordered
-          hover
-          small
-          :items="infos"
-          :fields="fields"
-        ></b-table>
-        </b-row>
-      </b-card-body>
-    </b-card>
-    <StatusBar />
+    <div class="card border-secondary">
+      <div class="card-header border-secondary">
+        Adabas Database PLOG information for database {{ url }}
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col">
+            <Url url="/adabas/database" />
+          </div>
+          <div class="col text-end">
+            <button class="btn btn-primary" @click="forceFEOF()">Force EOF</button>
+          </div>
+        </div>
+        <div class="row">
+          <table class="table table-striped table-bordered table-hover table-sm w-100 p-3">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="info in infos" :key="info.Name">
+                <td>{{ info.Name }}</td>
+                <td>{{ info.Value }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    StatusBar /
     <ErrorModal />
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Provide, Vue } from 'vue-property-decorator';
+import { defineComponent, ref, onMounted, provide } from 'vue';
 import Sidebar from './Sidebar.vue';
-import StatusBar from './StatusBar.vue';
+import StatusBar from '@/components/StatusBar.vue';
 import store from '../store/index';
 import Url from './Url.vue';
 import ErrorModal from '@/components/ErrorModal.vue';
 import { SearchDatabases } from '@/adabas/admin';
 
-@Component({
+export default defineComponent({
+  name: 'DatabasePlogStat',
   components: {
     Sidebar,
-    StatusBar,
+   StatusBar,
     Url,
     ErrorModal,
   },
-})
-export default class DatabasePlogStat extends Vue {
-  @Prop(String) readonly url: string | undefined;
-  @Provide() type = 'static';
-  data() {
-    return {
-      db: null,
-      infos: [],
-      fields: ['Name', 'Value'],
-    };
-  }
-  created() {
-    this.$data.db = SearchDatabases(this.url);
-    this.queryInformation();
-  }
-  queryInformation(): void {
-    this.$data.db.plogstats().then((response: any) => {
-      console.log(JSON.stringify(response));
-      this.$data.information = response.PLOG;
-      this.$data.DatabaseInfos = [];
-      Object.entries(response["PLOG"]).forEach((key: any) => {
-        this.$data.infos.push({ Name: key[0], Value: key[1] });
+  props: {
+    url: {
+      type: String,
+      required: true,
+    },
+  },
+  setup(props) {
+    provide('type', 'static');
+    const db = ref(null);
+    const infos = ref([]);
+    const fields = ref(['Name', 'Value']);
+
+    const queryInformation = () => {
+      db.value.plogstats().then((response: any) => {
+        console.log(JSON.stringify(response));
+        infos.value = [];
+        Object.entries(response["PLOG"]).forEach((key: any) => {
+          infos.value.push({ Name: key[0], Value: key[1] });
+        });
       });
+    };
+
+    const forceFEOF = () => {
+      db.value.feofplog();
+    };
+
+    onMounted(() => {
+      db.value = SearchDatabases(props.url);
+      queryInformation();
     });
-  }
-  getTypeItem(newtype: any): void {
-    console.log('Get type item ' + newtype);
-    this.queryInformation();
-  }
-  forceFEOF(newtype: any): void {
-    this.$data.db.feofplog();
-  }
-}
+
+    return {
+      infos,
+      fields,
+      forceFEOF,
+    };
+  },
+});
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

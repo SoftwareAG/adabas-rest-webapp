@@ -14,119 +14,131 @@
  * limitations under the License.-->
 
 <template>
-  <div class="highwaterlist p-2">
+  <div class="highwaterlist p-2" overflow-y="auto">
     <Sidebar :url="url" />
-    <b-card
-      :header="'Adabas Database High Watermark for database ' + url"
-      border-variant="secondary"
-      header-border-variant="secondary"
-    >
-      <b-card-body>
-        <b-container fluid>
-          <b-row>
-            <b-col>
+    <div class="card border-secondary">
+      <div class="card-header border-secondary">
+        Adabas Database High Watermark for database {{ url }}
+      </div>
+      <div class="card-body">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col">
               This page provides the statistics of Adabas database High Watermark.
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
               <Url url="/adabas/database" />
-            </b-col>
-            <b-col class="text-right">
-              <b-button v-on:click="resetHWM()">Reset</b-button>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col>
-              <b-table
-                striped
-                bordered
-                hover
-                small
-                :items="highwater"
-                :fields="fields"
-              >
-                <template v-slot:cell(Time)="row">
-                  {{new Date(row.item.Time).toUTCString()}}
-                </template>
-                <template v-slot:cell(size)="row">
-                  {{new Intl.NumberFormat().format(row.item.Size)}}
-                </template>
-                <template v-slot:cell(high)="row">
-                  {{new Intl.NumberFormat().format(row.item.High)}}
-                </template>
-                <template v-slot:cell(inuse)="row">
-                  {{new Intl.NumberFormat().format(row.item.InUse)}}
-                </template>
-                <template v-slot:cell(statistics)="row">
-                  <b-progress
-                    :show-value="false"
-                    :value="row.item.Percent"
-                    max="100"
-                    :precision="2"
-                    class="mb-3"
-                  ></b-progress>
-                </template>
-              </b-table>
-            </b-col>
-          </b-row>
-        </b-container> </b-card-body
-    ></b-card>
+            </div>
+            <div class="col text-end">
+              <button class="btn btn-secondary" @click="resetHWM()">Reset</button>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <table class="table table-striped table-bordered table-hover table-sm">
+                <thead>
+                  <tr>
+                    <th>Area</th>
+                    <th>Size</th>
+                    <th>High</th>
+                    <th>InUse</th>
+                    <th>Time</th>
+                    <th>Percent</th>
+                    <th>Statistics</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="row in highwater" :key="row.Area">
+                    <td>{{ row.Area }}</td>
+                    <td>{{ new Intl.NumberFormat().format(row.Size) }}</td>
+                    <td>{{ new Intl.NumberFormat().format(row.High) }}</td>
+                    <td>{{ new Intl.NumberFormat().format(row.InUse) }}</td>
+                    <td>{{ new Date(row.Time).toUTCString() }}</td>
+                    <td>{{ row.Percent }}</td>
+                    <td>
+                      <div class="progress mb-3">
+                        <div
+                          class="progress-bar"
+                          role="progressbar"
+                          :style="{ width: row.Percent + '%' }"
+                          :aria-valuenow="row.Percent"
+                          aria-valuemin="0"
+                          aria-valuemax="100"
+                        ></div>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <StatusBar />
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Provide, Vue } from 'vue-property-decorator';
+import { defineComponent, ref, onMounted, onBeforeUnmount } from 'vue';
 import Sidebar from './Sidebar.vue';
 import store from '../store/index';
-import StatusBar from './StatusBar.vue';
+import StatusBar from '@/components/StatusBar.vue';
 import Url from './Url.vue';
 import { SearchDatabases } from '@/adabas/admin';
 
-@Component({
+export default defineComponent({
   components: {
-    StatusBar,
+   StatusBar,
     Sidebar,
     Url,
   },
-})
-export default class ParameterList extends Vue {
-  @Prop(String) readonly url: string | undefined;
-  @Provide() type = 'static';
-  data() {
-    return {
-      db: null,
-      fields: [
-        'Area',
-        'Size',
-        'High',
-        'InUse',
-        'Time',
-        'Percent',
-        'statistics',
-      ],
-      highwater: [] as any[],
-      timer: '',
+  props: {
+    url: String,
+  },
+  setup(props) {
+    const db = ref(null);
+    const fields = ref([
+      'Area',
+      'Size',
+      'High',
+      'InUse',
+      'Time',
+      'Percent',
+      'statistics',
+    ]);
+    const highwater = ref([] as any[]);
+    const timer = ref('');
+
+    const queryParameters = () => {
+      db.value.highWaterMark().then((response: any) => {
+        highwater.value = response;
+      });
     };
-  }
-  created(): void {
-    this.$data.db = SearchDatabases(this.url);
-    this.$data.timer = setInterval(this.queryParameters, 5000);
-    this.queryParameters();
-  }
-  queryParameters(): void {
-    this.$data.db.highWaterMark().then((response: any) => {
-      this.$data.highwater = response;
+
+    const resetHWM = () => {
+      db.value.highWaterMarkReset();
+    };
+
+    onMounted(() => {
+      db.value = SearchDatabases(props.url);
+      timer.value = setInterval(queryParameters, 5000);
+      queryParameters();
     });
-  }
-  resetHWM(): void {
-    this.$data.db.highWaterMarkReset();
-  }
-  beforeDestroy(): void {
-    clearInterval(this.$data.timer);
-  }
-}
+
+    onBeforeUnmount(() => {
+      clearInterval(timer.value);
+    });
+
+    return {
+      fields,
+      highwater,
+      resetHWM,
+    };
+  },
+});
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

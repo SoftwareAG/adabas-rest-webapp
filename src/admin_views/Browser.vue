@@ -21,15 +21,16 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { defineComponent } from 'vue';
 import MyHeader from '@/components/Header.vue';
 import FileBrowser from '@/components/FileBrowser.vue';
 
-@Component({
+export default defineComponent({
   components: {
     MyHeader,
     FileBrowser,
   },
-})
-export default class Browser extends Vue {}
+  setup() {
+  }
+});
 </script>

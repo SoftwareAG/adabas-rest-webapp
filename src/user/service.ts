@@ -59,6 +59,9 @@ async function version() {
     const response = await fetch(`${config.Url()}/version`, requestOptions);
     return handleVersionResponse(response);
 }
+function sleep(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
 
 // call login with username and password
 async function login(username: string, password: string): Promise<Response> {
@@ -70,9 +73,9 @@ async function login(username: string, password: string): Promise<Response> {
         method: 'POST',
         headers: authInitHeader(username, password),
     };
-
     const response = await fetch(`${config.Url()}/login`, requestOptions);
     const user = await handleResponse(response);
+
     // login successful if there's a user in the response
     if (user) {
         // store user details and basic auth credentials in local storage

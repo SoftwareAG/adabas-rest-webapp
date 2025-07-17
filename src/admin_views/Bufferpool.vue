@@ -21,17 +21,27 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { defineComponent, ref } from 'vue';
 import MyHeader from '@/components/Header.vue';
 import BufferPoolData from '@/components/BufferPoolData.vue';
 
-@Component({
+export default defineComponent({
+  name: 'Bufferpool',
   components: {
     MyHeader,
     BufferPoolData,
   },
-})
-export default class Bufferpool extends Vue {
-      @Prop(String) readonly url: string | undefined;
-}
+  props: {
+    url: {
+      type: String,
+      required: false,
+    },
+  },
+  setup(props) {
+    const url = ref(props.url);
+    return {
+      url,
+    };
+  },
+});
 </script>

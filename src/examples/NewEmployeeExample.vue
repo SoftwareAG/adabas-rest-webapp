@@ -14,7 +14,7 @@
  * limitations under the License.-->
 
 <template>
-  <div class="newemployeeexample p-2">
+  <div class="newemployeeexample p-2" overflow-y="auto">
     <GenericExample
       URL="/rest/map/NEW_EMPLOYEES"
       title="New employees example"
@@ -24,17 +24,14 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { defineComponent } from 'vue';
 import GenericExample from '@/components/GenericExample.vue';
 
-@Component({
+export default defineComponent({
   components: {
     GenericExample,
   },
-})
-export default class NewEmployeeExample extends Vue {
-  @Prop() private msg!: string;
-}
+});
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

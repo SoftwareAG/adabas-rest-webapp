@@ -15,39 +15,44 @@
 
 <template>
   <div class="footer">
-      <b-container fluid class="bg-light text-dark w-100">
-        <b-row><b-col class="text-left">Adabas REST-Console {{webAppVersion}}</b-col>
-        <b-col  class="text-right">
-          Adabas RESTfull application with REST server version: {{version}}
-        </b-col></b-row>
-      </b-container>
+      <div class="container-fluid bg-light text-dark w-100">
+        <div class="row">
+          <div class="col text-left">Adabas REST-Console {{webAppVersion}}</div>
+          <div class="col text-right">
+            Adabas RESTfull application with REST server version: {{version}}
+          </div>
+        </div>
+      </div>
   </div>
 </template>
 
 <script lang="ts">
-import {  Vue } from "vue-property-decorator";
-import { config } from "../store/config";
+import { defineComponent, ref, onMounted } from 'vue';
+import { config } from '../store/config';
 
-export default Vue.extend({
-  name: "Footer",
-  data() {
+export default defineComponent({
+  name: 'Footer',
+  setup() {
+    const webAppVersion = ref(config.Version());
+    const version = ref(null);
+
+    onMounted(() => {
+      const v = localStorage.getItem('version');
+      if (v) {
+        version.value = JSON.parse(v).version;
+      }
+      console.log('JSON local storage version: ' + v);
+      webAppVersion.value = config.Version();
+      if (webAppVersion.value === '') {
+        webAppVersion.value = 'Unknown';
+      }
+      console.log('Web App version: ' + webAppVersion.value);
+    });
+
     return {
-      webAppVersion: config.Version(),
-      checked: true,
-      version: null,
+      webAppVersion,
+      version,
     };
-  },
-  created() {
-    const v = localStorage.getItem("version");
-    if (v) {
-        this.$data.version = JSON.parse(v).version;
-    }
-    console.log("JSON local storage version: "+v);
-    this.$data.webAppVersion = config.Version()
-    if (this.$data.webAppVersion === "") {
-       this.$data.webAppVersion = "Unknown"
-    }
-    console.log("Web App version: "+this.$data.webAppVersion );
   },
 });
 </script>

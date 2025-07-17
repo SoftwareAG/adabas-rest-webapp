@@ -14,13 +14,12 @@
  * limitations under the License.-->
 
 <template>
-  <div class="modifydata p-2">
-    <b-card
-      header="Modify Adabas database"
-      border-variant="secondary"
-      header-border-variant="secondary"
-    >
-      <b-card-body>
+  <div class="modifydata p-2" overflow-y="auto">
+    <div class="card border-secondary">
+      <div class="card-header border-secondary">
+        Modify Adabas database
+      </div>
+      <div class="card-body">
         <p>
           This application provides access to Adabas data using the Adabas
           RESTful administration and the Adabas Map technology defined and being
@@ -30,292 +29,293 @@
           This application provide administration operations being called to
           Adabas database.
         </p>
-        <b-container fluid>
-          <b-row class="my-1">
-            <b-col sm="3" class="text-right">
+        <div class="container-fluid">
+          <div class="row my-1">
+            <div class="col-sm-3 text-end">
               <label>Select Map to be displayed:</label>
-            </b-col>
-            <b-col sm="5">
-              <b-form-select
+            </div>
+            <div class="col-sm-5">
+              <select
                 v-model="selected"
-                v-on:change="getSelectedItem"
-                :options="options"
-                size="sm"
-                class="w-75"
-              />
-            </b-col>
-            <b-col sm="2">
-              <b-button
-                size="sm"
-                variant="outline-primary"
-                class="ml-2"
-                v-on:click="refreshMapList"
-                >Refresh Map list</b-button
+                @change="getSelectedItem"
+                class="form-select form-select-sm w-75"
               >
-            </b-col>
-          </b-row>
-          <b-row class="my-1">
-            <b-col sm="3" class="text-right">
+                <option v-for="option in options" :key="option.value" :value="option.value">
+                  {{ option.text }}
+                </option>
+              </select>
+            </div>
+            <div class="col-sm-2">
+              <button
+                class="btn btn-outline-primary btn-sm ms-2"
+                @click="refreshMapList"
+              >
+                Refresh Map list
+              </button>
+            </div>
+          </div>
+          <div class="row my-1">
+            <div class="col-sm-3 text-end">
               <label for="input-none">Fields:</label>
-            </b-col>
-            <b-col sm="5">
-              <b-form-input
+            </div>
+            <div class="col-sm-5">
+              <input
                 id="input-none"
                 v-model="query.fields"
-                :state="null"
-                size="sm"
+                class="form-control form-control-sm"
                 placeholder="Enter fields to restrict to"
-              /> </b-col
-            ><b-col> </b-col>
-          </b-row>
-          <b-row class="my-1">
-            <b-col sm="3" class="text-right">
-              <label for="input-none">Search:</label>
-            </b-col>
-            <b-col sm="5">
-              <b-form-input
-                id="input-none"
-                v-model="query.search"
-                :state="null"
-                size="sm"
-                placeholder="Enter search"
-              /> </b-col
-            ><b-col sm="2">
-              <b-button
-                size="sm"
-                variant="outline-primary"
-                class="ml-2"
-                @click="readData()"
-                >Apply query parameter</b-button
-              ></b-col
-            >
-          </b-row>
-          <b-row>
-            <b-col sm="3">
-              <b-button
-                size="sm"
-                variant="outline-primary"
-                class="ml-2"
-                @click="decrement()"
-                >Previous</b-button
-              >
-              <b-button
-                size="sm"
-                variant="outline-primary"
-                class="ml-2"
-                @click="increment()"
-                >Next</b-button
-              >
-            </b-col>
-            <b-col sm="5">
-              <label>Records found:</label>{{ record.length }}
-            </b-col>
-            <b-col sm="2">
-              <b-button
-                size="sm"
-                variant="outline-primary"
-                class="ml-2"
-                @click="updateRecord()"
-                >Update record</b-button
-              >
-            </b-col>
-          </b-row>
-        </b-container>
-        {{ data }}
-        <b-table
-          id="my-table"
-          ref="table"
-          striped
-          bordered
-          hover
-          small
-          :items="mapFields"
-          :fields="fields"
-        >
-          <template v-slot:cell(field)="row">
-            {{ row.item.name + '(' + row.item.shortName + ')' }}
-          </template>
-          <template v-slot:cell(input)="row">
-            <div v-if="row.item.name == 'ISN'">
-              {{ getCurrentIsn() }}
-            </div>
-            <div
-              v-else-if="
-                row.item.formatType.trim() == 'A' ||
-                  row.item.formatType.trim() == 'U' ||
-                  row.item.formatType.trim() == 'B' ||
-                  row.item.formatType.trim() == 'P'
-              "
-            >
-              <b-form-input
-                v-on:input="changeInput($event, row.item)"
-                v-bind:value="getData(row.item.reference)"
               />
             </div>
-            <div v-else>----------------</div>
-          </template>
-        </b-table>
-      </b-card-body></b-card
-    >
+            <div class="col"></div>
+          </div>
+          <div class="row my-1">
+            <div class="col-sm-3 text-end">
+              <label for="input-none">Search:</label>
+            </div>
+            <div class="col-sm-5">
+              <input
+                id="input-none"
+                v-model="query.search"
+                class="form-control form-control-sm"
+                placeholder="Enter search"
+              />
+            </div>
+            <div class="col-sm-2">
+              <button
+                class="btn btn-outline-primary btn-sm ms-2"
+                @click="readData()"
+              >
+                Apply query parameter
+              </button>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-3">
+              <button
+                class="btn btn-outline-primary btn-sm ms-2"
+                @click="decrement()"
+              >
+                Previous
+              </button>
+              <button
+                class="btn btn-outline-primary btn-sm ms-2"
+                @click="increment()"
+              >
+                Next
+              </button>
+            </div>
+            <div class="col-sm-5">
+              <label>Records found:</label>{{ record.length }}
+            </div>
+            <div class="col-sm-2">
+              <button
+                class="btn btn-outline-primary btn-sm ms-2"
+                @click="updateRecord()"
+              >
+                Update record
+              </button>
+            </div>
+          </div>
+        </div>
+        {{ data }}
+        <table
+          id="my-table"
+          ref="table"
+          class="table table-striped table-bordered table-hover table-sm"
+        >
+          <thead>
+            <tr>
+              <th v-for="field in fields" :key="field">{{ field }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="row in mapFields" :key="row.name">
+              <td>{{ row.name + '(' + row.shortName + ')' }}</td>
+              <td>
+                <div v-if="row.name == 'ISN'">
+                  {{ getCurrentIsn() }}
+                </div>
+                <div
+                  v-else-if="
+                    row.formatType.trim() == 'A' ||
+                      row.formatType.trim() == 'U' ||
+                      row.formatType.trim() == 'B' ||
+                      row.formatType.trim() == 'P'
+                  "
+                >
+                  <input
+                    @input="changeInput($event, row)"
+                    :value="getData(row.reference)"
+                    class="form-control form-control-sm"
+                  />
+                </div>
+                <div v-else-if="
+                    row.formatType.trim() == 'D'
+                  ">
+                  <input
+                    @input="changeInput($event, row)"
+                    :value="getData(row.reference)"
+                    class="form-control form-control-sm"
+                  />
+                </div>
+                <div v-else>----------------</div>
+              </td>
+              <td>{{ row.formatType }}</td>
+              <td>{{ row.length }}</td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { defineComponent, ref, onMounted } from 'vue';
 import store from '../store/index';
 import { config } from '../store/config';
 import { authHeader } from '../user/auth-header';
 import axios, { AxiosResponse } from 'axios';
 import { userService } from '../user/service';
 
-@Component
-export default class ModifyData extends Vue {
-  data() {
-    return {
-      curIndex: 0,
-      maps: store.state.maps,
-      url: config.Url() + '/rest/metadata/map/<to be selected>',
-      dataUrl: '',
-      mapFields: [],
-      selected: null,
-      index: 1,
-      mapName: '',
-      fields: ['field', 'contentType', 'formatType', 'length', 'input'],
-      options: [{ value: null, text: 'Please select an Adabas Map' }],
-      record: [] as any[],
-      query: { search: '', fields: '' },
-    };
-  }
-  created() {
-    if (this.$data.maps.length == 0) {
-      this.refreshMapList();
-    } else {
-      this.adaptMapOptions();
-    }
-  }
-  increment(): void {
-    if (this.$data.curIndex < this.$data.record.length - 1) {
-      this.$data.curIndex++;
-      (this.$refs.table as any).refresh();
-    }
-  }
-  decrement(): void {
-    if (this.$data.curIndex === 0) {
-      alert('Negative quantity not allowed');
-    } else {
-      this.$data.curIndex--;
-      (this.$refs.table as any).refresh();
-    }
-  }
-  getCurrentIsn(): number {
-    if (this.$data.record.length > this.$data.curIndex) {
-      return this.$data.record[this.$data.curIndex].ISN;
-    }
-    return -1;
-  }
-  getSelectedItem(myarg: any): void {
-    // Just a regular js function that takes 1 arg
-    this.$data.query.search = '';
-    this.$data.query.fields = '';
-    this.$data.mapName = myarg;
-    this.$data.url = config.Url() + '/rest/metadata/map/' + myarg;
+export default defineComponent({
+  name: 'ModifyData',
+  setup() {
+    const curIndex = ref(0);
+    const maps = ref(store.state.maps);
+    const url = ref(config.Url() + '/rest/metadata/map/<to be selected>');
+    const dataUrl = ref('');
+    const mapFields = ref([]);
+    const selected = ref(null);
+    const index = ref(1);
+    const mapName = ref('');
+    const fields = ref(['field', 'contentType', 'formatType', 'length', 'input']);
+    const options = ref([{ value: null, text: 'Please select an Adabas Map' }]);
+    const record = ref([] as any[]);
+    const query = ref({ search: '', fields: '' });
 
-    store.dispatch('QUERY_MAP_FIELDS', myarg).then((response) => {
-      this.$data.mapFields = [{ name: 'ISN', formatType: 'B', shortName: '' }];
-      response.data.Map.fields.forEach((element: any) => {
-        this.$data.mapFields.push(element);
-      });
-      this.readData();
+    onMounted(() => {
+      if (maps.value.length == 0) {
+        refreshMapList();
+      } else {
+        adaptMapOptions();
+      }
     });
-  }
-  changeInput(event: any, item: any): void {
-    const ref = item.reference;
-    let r = this.$data.record[this.$data.curIndex];
-    //let l = r;
-    // console.log("Reference " + ref+" -> "+JSON.stringify(r));
-    if (ref) {
-      let s = ref.split('.');
-      s.forEach((x: any) => {
-        if (s[s.length - 1] == x) {
-          r[x] = event;
-        }
-        r = r[x];
+
+    function increment() {
+      if (curIndex.value < record.value.length - 1) {
+        curIndex.value++;
+        (this.$refs.table as any).refresh();
+      }
+    }
+
+    function decrement() {
+      if (curIndex.value === 0) {
+        alert('Negative quantity not allowed');
+      } else {
+        curIndex.value--;
+        (this.$refs.table as any).refresh();
+      }
+    }
+
+    function getCurrentIsn() {
+      if (record.value.length > curIndex.value) {
+        return record.value[curIndex.value].ISN;
+      }
+      return -1;
+    }
+
+    async function getSelectedItem(event: Event) {
+      const myarg = (event.target as HTMLSelectElement).value;
+      query.value.search = '';
+      query.value.fields = '';
+      mapName.value = myarg;
+      url.value = config.Url() + '/rest/metadata/map/' + myarg;
+
+      await store.dispatch('QUERY_MAP_FIELDS', myarg).then((response) => {
+        mapFields.value = [{ name: 'ISN', formatType: 'B', shortName: '' }];
+        response.data.Map.fields.forEach((element: any) => {
+          mapFields.value.push(element);
+        });
+        readData();
       });
     }
-  }
-  getData(ref: string): void {
-    let r = this.$data.record[this.$data.curIndex];
-    // console.log("Reference " + ref+" -> "+JSON.stringify(r));
-    if (ref) {
-      ref.split('.').forEach((x: any) => {
-        r = r[x];
-        // console.log("X " + x+" -> "+JSON.stringify(r));
+
+    function changeInput(event: Event, item: any) {
+      const value = (event.target as HTMLInputElement).value;
+      const ref = item.reference;
+      let r = record.value[curIndex.value];
+      if (ref) {
+        let s = ref.split('.');
+        s.forEach((x: any) => {
+          if (s[s.length - 1] == x) {
+            r[x] = value;
+          }
+          r = r[x];
+        });
+      }
+    }
+
+    function getData(ref: string) {
+      let r = record.value[curIndex.value];
+      if (ref) {
+        ref.split('.').forEach((x: any) => {
+          r = r[x];
+        });
+      }
+      return r;
+    }
+
+    function adaptMapOptions() {
+      const optionsList = [{ value: null, text: 'Please select an Adabas Map' }];
+      maps.value.forEach((i: any) => {
+        optionsList.push({ value: i, text: i });
+        options.value = optionsList;
       });
     }
-    return r;
-  }
-  adaptMapOptions(): void {
-    const options = [{ value: null, text: 'Please select an Adabas Map' }];
-    this.$data.maps.forEach((i: any) => {
-      options.push({ value: i, text: i });
-      this.$data.options = options;
-    });
-  }
-  refreshMapList(): void {
-    console.log('Refresh maps: ' + this.$data.maps.length);
-    store
-      .dispatch('INIT_MAPS')
-      .then((response) => {
-        console.log('Response: ' + JSON.stringify(response));
-        this.adaptMapOptions();
-      })
-      .catch((reason: any) => {
+
+    function refreshMapList() {
+      store.dispatch('INIT_MAPS').then((response) => {
+        adaptMapOptions();
+      }).catch((reason: any) => {
         console.log('Reason(created): ' + JSON.stringify(reason));
       });
-  }
-  readData(): Promise<void> {
-    this.$data.dataUrl = config.Url() + '/rest/map/' + this.$data.mapName; //+ "/" + this.$data.index;
-    if (this.$data.query.search !== '' || this.$data.query.fields !== '') {
-      this.$data.dataUrl = this.$data.dataUrl + '?';
-      if (this.$data.query.search !== '') {
-        this.$data.dataUrl =
-          this.$data.dataUrl + 'search=' + this.$data.query.search;
-      }
-      if (this.$data.query.search !== '' && this.$data.query.fields !== '') {
-        this.$data.dataUrl = this.$data.dataUrl + '&';
-      }
-      if (this.$data.query.fields !== '') {
-        this.$data.dataUrl =
-          this.$data.dataUrl + 'fields=' + this.$data.query.fields;
-      }
     }
-    const getConfig = {
-      headers: authHeader('application/json'),
-      useCredentails: true,
-    };
-    store.commit('SET_URL', { url: this.$data.dataUrl, method: 'get' });
-    return axios
-      .get(this.$data.dataUrl, getConfig)
-      .then((response: any) => {
-        console.log('Data response: ' + JSON.stringify(response));
-        this.$data.curIndex = 0;
-        this.$data.record = response.data.Records;
-        this.$data.mapFields.forEach((element: any) => {
-          //console.log("Work on " + element.name);
-          let n = this.searchReference(element.name, this.$data.record[0]);
-          // console.log("Found search " + n);
-          // element.reference = n;
-          // console.log("Search : " + JSON.stringify(element));
+
+    function readData(): Promise<void> {
+      dataUrl.value = config.Url() + '/rest/map/' + mapName.value;
+      if (query.value.search !== '' || query.value.fields !== '') {
+        dataUrl.value = dataUrl.value + '?';
+        if (query.value.search !== '') {
+          dataUrl.value = dataUrl.value + 'search=' + query.value.search;
+        }
+        if (query.value.search !== '' && query.value.fields !== '') {
+          dataUrl.value = dataUrl.value + '&';
+        }
+        if (query.value.fields !== '') {
+          dataUrl.value = dataUrl.value + 'fields=' + query.value.fields;
+        }
+      }
+      const getConfig = {
+        headers: authHeader('application/json'),
+        useCredentails: true,
+      };
+      store.commit('SET_URL', { url: dataUrl.value, method: 'get' });
+      return axios.get(dataUrl.value, getConfig).then((response: any) => {
+        curIndex.value = 0;
+        record.value = response.data.Records;
+        mapFields.value.forEach((element: any) => {
+          let n = searchReference(element.name, record.value[0]);
           if (n) {
-            Vue.set(element, 'reference', n);
+            element.reference = n;
           }
         });
-        if (this.$data.query.fields !== '') {
-          this.refreshRecordMapList(this.$data.record[0]);
+        if (query.value.fields !== '') {
+          refreshRecordMapList(record.value[0]);
           (this.$refs.table as any).refresh();
         }
-      })
-      .catch((error: any) => {
+      }).catch((error: any) => {
         if (error.response) {
           if (error.response.status == 401 || error.response.status == 403) {
             userService.logout();
@@ -324,64 +324,81 @@ export default class ModifyData extends Vue {
         }
         throw error;
       });
-  }
-  refreshRecordMapList(data: any): void {
-    let newMapList = [] as any[];
-    this.$data.mapFields.forEach((element: any) => {
-      // console.log("Search "+element.name);
-      let s = this.searchReference(
-        element.name,
-        this.$data.record[this.$data.curIndex],
-      );
-      // console.log("Found for "+element.name+" -> "+s);
-      if (s !== '') {
-        newMapList.push(element);
-      }
-    });
-    this.$data.mapFields = newMapList;
-  }
-  updateRecord(): Promise<void> {
-    const getConfig = {
-      headers: authHeader('application/json'),
-      useCredentails: true,
-    };
-    const inputData = { Store: [] as any[] };
-    inputData.Store.push(this.$data.record[this.$data.curIndex]);
-    let url = config.Url() + '/rest/map/' + this.$data.mapName;
-    return axios
-      .put(url, inputData, getConfig)
-      .then((response: AxiosResponse<any>) => {
+    }
+
+    function refreshRecordMapList(data: any) {
+      let newMapList = [] as any[];
+      mapFields.value.forEach((element: any) => {
+        let s = searchReference(element.name, record.value[curIndex.value]);
+        if (s !== '') {
+          newMapList.push(element);
+        }
+      });
+      mapFields.value = newMapList;
+    }
+
+    function updateRecord(): Promise<void> {
+      const getConfig = {
+        headers: authHeader('application/json'),
+        useCredentails: true,
+      };
+      const inputData = { Store: [] as any[] };
+      inputData.Store.push(record.value[curIndex.value]);
+      let url = config.Url() + '/rest/map/' + mapName.value;
+      return axios.put(url, inputData, getConfig).then((response: AxiosResponse<any>) => {
         console.log('Updated');
-      })
-      .catch((error: any) => {
+      }).catch((error: any) => {
         console.log('Update error:' + error);
       });
-  }
-  searchReference(field: string, data: any): string {
-    //console.log("Search field "+field+" in "+JSON.stringify(data));
-    let x = '';
-    // const self = this;
-    Object.keys(data).every((element: any, index: number) => {
-      //  console.log("Check: " + element + " -> " + field+" "+typeof data[element]+" "+data[element]);
-      if (field === element) {
-        //console.log(index + ": Found " + element);
-        x = element;
-        return false;
-      }
-      if (data[element] && typeof data[element] === 'object') {
-        //console.log(field+" -> Search in element "+element);
-        let s = this.searchReference(field, data[element]);
+    }
 
-        if (s !== '') {
-          x = element + '.' + s;
+    function searchReference(field: string, data: any): string {
+      let x = '';
+      Object.keys(data).every((element: any) => {
+        if (field === element) {
+          x = element;
           return false;
         }
-      }
-      return true;
-    });
-    return x;
-  }
-}
+        if (data[element] && typeof data[element] === 'object') {
+          let s = searchReference(field, data[element]);
+          if (s !== '') {
+            x = element + '.' + s;
+            return false;
+          }
+        }
+        return true;
+      });
+      return x;
+    }
+
+    return {
+      curIndex,
+      maps,
+      url,
+      dataUrl,
+      mapFields,
+      selected,
+      index,
+      mapName,
+      fields,
+      options,
+      record,
+      query,
+      increment,
+      decrement,
+      getCurrentIsn,
+      getSelectedItem,
+      changeInput,
+      getData,
+      adaptMapOptions,
+      refreshMapList,
+      readData,
+      refreshRecordMapList,
+      updateRecord,
+      searchReference,
+    };
+  },
+});
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

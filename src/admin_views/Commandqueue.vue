@@ -21,17 +21,21 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import MyHeader from "@/components/Header.vue";
-import CommandqueueList from "@/components/CommandqueueList.vue";
+import { defineComponent, PropType } from 'vue';
+import MyHeader from '@/components/Header.vue';
+import CommandqueueList from '@/components/CommandqueueList.vue';
 
-@Component({
+export default defineComponent({
+  name: 'Commandqueue',
   components: {
     MyHeader,
     CommandqueueList,
   },
-})
-export default class Commandqueue extends Vue {
-  @Prop(String) readonly url: string | undefined;
-}
+  props: {
+    url: {
+      type: String as PropType<string | undefined>,
+      required: false,
+    },
+  },
+});
 </script>

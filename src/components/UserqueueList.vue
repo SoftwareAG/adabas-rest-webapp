@@ -14,300 +14,313 @@
  * limitations under the License.-->
 
 <template>
-  <div class="userqueuelist p-2">
+  <div class="userqueuelist p-2" overflow-y="auto">
     <Sidebar :url="url" />
-    <b-card
-      :header="'Adabas Database user queue list for database ' + url"
-      border-variant="secondary"
-      header-border-variant="secondary"
-    >
-      <b-card-body>
-        <b-modal
+    <div class="card border-secondary mb-3">
+      <div class="card-header border-secondary">
+        Adabas Database user queue list for database {{ url }}
+      </div>
+      <div class="card-body">
+        <div
+          class="modal fade"
           id="modal-error-uqDetails"
-          size="xl"
-          title="Error creating file"
-          ok-only
+          tabindex="-1"
+          aria-labelledby="modal-error-uqDetailsLabel"
+          aria-hidden="true"
         >
-          <b-alert show variant="danger">
-            <p class="my-2">{{ errorResponse }}</p>
-            <b-table></b-table>
-          </b-alert>
-        </b-modal>
-        <b-modal
-          @ok="handleOk"
+          <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="modal-error-uqDetailsLabel">
+                  Error creating file
+                </h5>
+                <button
+                  type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                ></button>
+              </div>
+              <div class="modal-body">
+                <div class="alert alert-danger" role="alert">
+                  <p class="my-2">{{ errorResponse }}</p>
+                  <table class="table"></table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="modal fade"
           id="modal-display-uqDetails"
-          size="lg"
-          variant="outline-danger"
-          title="User Queue Details"
-          ok-only
+          tabindex="-1"
+          aria-labelledby="modal-display-uqDetailsLabel"
+          aria-hidden="true"
         >
-          <b-card
-            border-variant="secondary"
-            header-border-variant="secondary"
-            header="User Queue Entry"
-            align="center"
-          >
-            <b-row
-              ><b-col class="text-right">Id:</b-col
-              ><b-col class="text-left">{{
-                displayUq.UserQueueDetails.DetailEntry.UqId
-              }}</b-col></b-row
-            >
-            <b-row
-              ><b-col class="text-right">Command Count:</b-col
-              ><b-col class="text-left">{{
-                displayUq.UserQueueDetails.CommandCount
-              }}</b-col></b-row
-            >
-            <b-row
-              ><b-col class="text-right">Flags:</b-col
-              ><b-col class="text-left">{{
-                displayUq.UserQueueDetails.DetailEntry.Flags
-              }}</b-col></b-row
-            >
-            <b-row
-              ><b-col class="text-right">ET Flags:</b-col
-              ><b-col class="text-left">{{
-                displayUq.UserQueueDetails.DetailEntry.EtFlags
-              }}</b-col></b-row
-            >
-            <b-row
-              ><b-col class="text-right">User encoding:</b-col
-              ><b-col class="text-left">{{
-                displayUq.UserQueueDetails.UserEncoding
-              }}</b-col></b-row
-            >
-            <b-row
-              ><b-col class="text-right">ISN in Hold:</b-col
-              ><b-col class="text-left">{{
-                displayUq.UserQueueDetails.ISN_Hold
-              }}</b-col></b-row
-            >
-            <b-row
-              ><b-col class="text-right">ISN Lists:</b-col
-              ><b-col class="text-left">{{
-                displayUq.UserQueueDetails.ISN_Lists
-              }}</b-col></b-row
-            >
-            <b-row
-              ><b-col class="text-right">TNA Limit:</b-col
-              ><b-col class="text-left">{{
-                displayUq.UserQueueDetails.TNALimit
-              }}</b-col></b-row
-            >
-            <b-row
-              ><b-col class="text-right">TT Limit:</b-col
-              ><b-col class="text-left">{{
-                displayUq.UserQueueDetails.TTLimit
-              }}</b-col></b-row
-            >
-          </b-card>
-          <b-card
-            border-variant="secondary"
-            header-border-variant="secondary"
-            header="User"
-            align="center"
-          >
-            <b-row
-              ><b-col class="text-right">User Id:</b-col
-              ><b-col class="text-left">{{
-                displayUq.UserQueueDetails.DetailEntry.Uid.Id
-              }}</b-col></b-row
-            >
-            <b-row
-              ><b-col class="text-right">User Terminal:</b-col
-              ><b-col class="text-left">{{
-                displayUq.UserQueueDetails.DetailEntry.Uid.Terminal
-              }}</b-col></b-row
-            >
-            <b-row
-              ><b-col class="text-right">User Host:</b-col
-              ><b-col class="text-left">{{
-                displayUq.UserQueueDetails.DetailEntry.Uid.Node
-              }}</b-col></b-row
-            >
-            <b-row
-              ><b-col class="text-right">User Timestamp:</b-col
-              ><b-col class="text-left">{{
-                new Date(
-                  displayUq.UserQueueDetails.DetailEntry.Uid.Timestamp
-                ).toUTCString()
-              }}</b-col></b-row
-            >
-            <b-row
-              ><b-col class="text-right">User:</b-col
-              ><b-col class="text-left">{{
-                displayUq.UserQueueDetails.DetailEntry.User
-              }}</b-col></b-row
-            ></b-card
-          >
-          <b-card
-            border-variant="secondary"
-            header-border-variant="secondary"
-            header="Timestamps"
-            align="center"
-          >
-            <b-row
-              ><b-col class="text-right">Last Activity:</b-col
-              ><b-col class="text-left">{{
-                new Date(displayUq.UserQueueDetails.LastActivity).toUTCString()
-              }}</b-col></b-row
-            >
-            <b-row
-              ><b-col class="text-right">Start Session:</b-col
-              ><b-col class="text-left">{{
-                new Date(displayUq.UserQueueDetails.StartSession).toUTCString()
-              }}</b-col></b-row
-            >
-            <b-row
-              ><b-col class="text-right">Start Transaction:</b-col
-              ><b-col class="text-left">{{
-                new Date(displayUq.UserQueueDetails.StartTransaction).toUTCString()
-              }}</b-col></b-row
-            >
-          </b-card>
-          <b-card
-            border-variant="secondary"
-            header-border-variant="secondary"
-            align="center"
-            header="User Queue Files"
-          >
-            <b-row
-              ><b-col class="text-right">Used Files:</b-col
-              ><b-col class="text-left"
-                ><b-table
-                  :items="displayUq.UserQueueDetails.files"
-                ></b-table></b-col
-            ></b-row>
-          </b-card>
-        </b-modal>
-        <b-container fluid>
-          <b-row
-            ><b-col>
-              This page provides the list of Adabas database user queue to be
-              administrate through this Adabas RESTful server.
-            </b-col>
-          </b-row>
-          <b-row
-            ><b-col>
-              <Url url="/adabas/database" />
-            </b-col>
-          </b-row>
-          <b-row
-            ><b-col>
-              <b-table
-                striped
-                bordered
-                hover
-                small
-                :items="userqueues"
-                :fields="fields"
-              >
-                <template v-slot:cell(UqId)="row">
-                  <b-link v-on:click="display_detail(row.item)">{{
-                    row.item.UqId
-                  }}</b-link>
-                </template>
-                <template v-slot:cell(delete)="row">
-                  <div class="mx-auto text-center">
-                    <b-icon-x-circle
-                      scale="2"
-                      variant="danger"
-                      v-on:click="stop_user(row.item)"
-                    ></b-icon-x-circle>
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="modal-display-uqDetailsLabel">
+                  User Queue Details
+                </h5>
+                <button
+                  type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                ></button>
+              </div>
+              <div class="modal-body">
+                <div class="card border-secondary mb-3">
+                  <div class="card-header border-secondary">User Queue Entry</div>
+                  <div class="card-body text-center">
+                    <div class="row">
+                      <div class="col text-end">Id:</div>
+                      <div class="col text-start">{{ displayUq.UserQueueDetails.DetailEntry.UqId }}</div>
+                    </div>
+                    <div class="row">
+                      <div class="col text-end">Command Count:</div>
+                      <div class="col text-start">{{ displayUq.UserQueueDetails.CommandCount }}</div>
+                    </div>
+                    <div class="row">
+                      <div class="col text-end">Flags:</div>
+                      <div class="col text-start">{{ displayUq.UserQueueDetails.DetailEntry.Flags }}</div>
+                    </div>
+                    <div class="row">
+                      <div class="col text-end">ET Flags:</div>
+                      <div class="col text-start">{{ displayUq.UserQueueDetails.DetailEntry.EtFlags }}</div>
+                    </div>
+                    <div class="row">
+                      <div class="col text-end">User encoding:</div>
+                      <div class="col text-start">{{ displayUq.UserQueueDetails.UserEncoding }}</div>
+                    </div>
+                    <div class="row">
+                      <div class="col text-end">ISN in Hold:</div>
+                      <div class="col text-start">{{ displayUq.UserQueueDetails.ISN_Hold }}</div>
+                    </div>
+                    <div class="row">
+                      <div class="col text-end">ISN Lists:</div>
+                      <div class="col text-start">{{ displayUq.UserQueueDetails.ISN_Lists }}</div>
+                    </div>
+                    <div class="row">
+                      <div class="col text-end">TNA Limit:</div>
+                      <div class="col text-start">{{ displayUq.UserQueueDetails.TNALimit }}</div>
+                    </div>
+                    <div class="row">
+                      <div class="col text-end">TT Limit:</div>
+                      <div class="col text-start">{{ displayUq.UserQueueDetails.TTLimit }}</div>
+                    </div>
                   </div>
-                </template>
-              </b-table>
-            </b-col> </b-row></b-container></b-card-body
-    ></b-card>
-    <StatusBar />
+                </div>
+                <div class="card border-secondary mb-3">
+                  <div class="card-header border-secondary">User</div>
+                  <div class="card-body text-center">
+                    <div class="row">
+                      <div class="col text-end">User Id:</div>
+                      <div class="col text-start">{{ displayUq.UserQueueDetails.DetailEntry.Uid.Id }}</div>
+                    </div>
+                    <div class="row">
+                      <div class="col text-end">User Terminal:</div>
+                      <div class="col text-start">{{ displayUq.UserQueueDetails.DetailEntry.Uid.Terminal }}</div>
+                    </div>
+                    <div class="row">
+                      <div class="col text-end">User Host:</div>
+                      <div class="col text-start">{{ displayUq.UserQueueDetails.DetailEntry.Uid.Node }}</div>
+                    </div>
+                    <div class="row">
+                      <div class="col text-end">User Timestamp:</div>
+                      <div class="col text-start">{{ new Date(displayUq.UserQueueDetails.DetailEntry.Uid.Timestamp).toUTCString() }}</div>
+                    </div>
+                    <div class="row">
+                      <div class="col text-end">User:</div>
+                      <div class="col text-start">{{ displayUq.UserQueueDetails.DetailEntry.User }}</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="card border-secondary mb-3">
+                  <div class="card-header border-secondary">Timestamps</div>
+                  <div class="card-body text-center">
+                    <div class="row">
+                      <div class="col text-end">Last Activity:</div>
+                      <div class="col text-start">{{ new Date(displayUq.UserQueueDetails.LastActivity).toUTCString() }}</div>
+                    </div>
+                    <div class="row">
+                      <div class="col text-end">Start Session:</div>
+                      <div class="col text-start">{{ new Date(displayUq.UserQueueDetails.StartSession).toUTCString() }}</div>
+                    </div>
+                    <div class="row">
+                      <div class="col text-end">Start Transaction:</div>
+                      <div class="col text-start">{{ new Date(displayUq.UserQueueDetails.StartTransaction).toUTCString() }}</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="card border-secondary mb-3">
+                  <div class="card-header border-secondary">User Queue Files</div>
+                  <div class="card-body text-center">
+                    <div class="row">
+                      <div class="col text-end">Used Files:</div>
+                      <div class="col text-start">
+                        <table class="table" :items="displayUq.UserQueueDetails.files"></table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-outline-danger" @click="handleOk">OK</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col">
+              This page provides the list of Adabas database user queue to be administrate through this Adabas RESTful server.
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <Url url="/adabas/database" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <table class="table table-striped table-bordered table-hover table-sm">
+                <thead>
+                  <tr>
+                    <th v-for="field in fields" :key="field">{{ field }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="userqueue in userqueues" :key="userqueue.UqId">
+                    <td>
+                      <a href="#" @click="display_detail(userqueue)">{{ userqueue.UqId }}</a>
+                    </td>
+                    <td>{{ userqueue['Uid.Id'] }}</td>
+                    <td>{{ userqueue.Uid.Node }}</td>
+                    <td>{{ userqueue.Uid.Terminal }}</td>
+                    <td>{{ userqueue['Uid.Timestamp'] }}</td>
+                    <td>{{ userqueue.User }}</td>
+                    <td>{{ userqueue.Flags }}</td>
+                    <td>{{ userqueue.EtFlags }}</td>
+                    <td>
+                      <div class="text-center">
+                        <i class="bi bi-x-circle-fill text-danger" @click="stop_user(userqueue)"></i>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+        <StatusBar />
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import Sidebar from "./Sidebar.vue";
-import { BIconXCircle } from "bootstrap-vue";
-import StatusBar from "./StatusBar.vue";
-import Url from "./Url.vue";
-import store from "../store/index";
+import { defineComponent, ref, onMounted, onBeforeUnmount } from 'vue';
+import Sidebar from './Sidebar.vue';
+import StatusBar from '@/components/StatusBar.vue';
+import Url from './Url.vue';
 import { SearchDatabases } from '@/adabas/admin';
 
-@Component({
+export default defineComponent({
   components: {
     Sidebar,
     StatusBar,
-    BIconXCircle,
     Url,
   },
-})
-export default class UserqueueList extends Vue {
-  @Prop(String) readonly url: string | undefined;
-  data() {
-    return {
-      fields: [
-        "UqId",
-        { key: "Uid.Id", label: "Adabas ID" },
-        "Uid.Node",
-        "Uid.Terminal",
-        { key: "Uid.Timestamp", label: "Adabs ID Timestamp" },
-        "User",
-        "Flags",
-        "EtFlags",
-        "Delete",
-      ],
-      userqueues: [],
-      displayUq: {
-        UserQueueDetails: {
-          CommandCount: 0,
-          LastActivity: "",
-          StartSession: "",
-          StartTransaction: "",
-          UserEncoding: 0,
-          DetailEntry: {
-            EtFlags: "        ",
-            Flags: "  ",
-            Uid: { Id: 0, Node: "", "": "     ", Timestamp: "" },
-            UqId: 0,
-            User: " ",
-          },
+  props: {
+    url: {
+      type: String,
+      required: false,
+    },
+  },
+  setup(props) {
+    const fields = ref([
+      'UqId',
+      { key: 'Uid.Id', label: 'Adabas ID' },
+      'Uid.Node',
+      'Uid.Terminal',
+      { key: 'Uid.Timestamp', label: 'Adabs ID Timestamp' },
+      'User',
+      'Flags',
+      'EtFlags',
+      'Delete',
+    ]);
+    const userqueues = ref([]);
+    const displayUq = ref({
+      UserQueueDetails: {
+        CommandCount: 0,
+        LastActivity: '',
+        StartSession: '',
+        StartTransaction: '',
+        UserEncoding: 0,
+        DetailEntry: {
+          EtFlags: '        ',
+          Flags: '  ',
+          Uid: { Id: 0, Node: '', Terminal: '     ', Timestamp: '' },
+          UqId: 0,
+          User: ' ',
         },
-        files: [],
-      } as any,
-      timer: "",
-      errorResponse: "",
-      db: null,
-    };
-  }
-  created() {
-    this.$data.db = SearchDatabases(this.url);
-    this.$data.timer = setInterval(this.loadUserQueue, 5000);
-    this.loadUserQueue();
-  }
-  loadUserQueue() {
-    this.$data.db.userQueue().then((response: any) => {
-      this.$data.userqueues = response;
-      this.$data.userqueues.forEach(function(part:any, index:number, theArray:any) {
-        theArray[index].Uid.Timestamp = new Date(theArray[index].Uid.Timestamp).toUTCString();
+      },
+      files: [],
+    });
+    const errorResponse = ref('');
+    const db = ref(null);
+    const timer = ref('');
+
+    const loadUserQueue = () => {
+      db.value.userQueue().then((response: any) => {
+        userqueues.value = response;
+        userqueues.value.forEach((part: any, index: number, theArray: any) => {
+          theArray[index].Uid.Timestamp = new Date(theArray[index].Uid.Timestamp).toUTCString();
+        });
       });
+    };
+
+    const display_detail = (uq: any) => {
+      db.value.userQueueDetails(uq.UqId).then((response: any) => {
+        displayUq.value = response;
+      });
+      this.$root.$emit('bv::show::modal', 'modal-display-uqDetails', '#btnShow');
+    };
+
+    const stop_user = (uq: any) => {
+      db.value.stopUser(uq.UqId);
+    };
+
+    const handleOk = () => {
+      console.log('OK clicked');
+    };
+
+    onMounted(() => {
+      db.value = SearchDatabases(props.url);
+      timer.value = setInterval(loadUserQueue, 5000);
+      loadUserQueue();
     });
-  }
-  display_detail(uq: any) {
-    this.$data.db.userQueueDetails(uq.UqId).then((response: any) => {
-      this.$data.displayUq = response;
+
+    onBeforeUnmount(() => {
+      clearInterval(timer.value);
     });
-    this.$root.$emit("bv::show::modal", "modal-display-uqDetails", "#btnShow");
-  }
-  stop_user(uq: any): void {
-    this.$data.db.stopUser(uq.UqId);
-  }
-  handleOk(bvModalEvt: any): void {
-    console.log("OK clicked");
-  }
-  beforeDestroy() {
-    clearInterval(this.$data.timer);
-  }
-}
+
+    return {
+      fields,
+      userqueues,
+      displayUq,
+      errorResponse,
+      db,
+      timer,
+      loadUserQueue,
+      display_detail,
+      stop_user,
+      handleOk,
+    };
+  },
+});
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
